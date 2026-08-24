@@ -7,32 +7,32 @@ const demoReviews = [
     id: 1,
     customer: "Sarah M.",
     rating: 5,
-    time: "2 min ago",
-    status: "Replied",
+    time: "Demo",
+    status: "Demo",
     text: "Absolutely loved the experience. The staff were amazing and the service was incredibly fast."
   },
   {
     id: 2,
     customer: "James R.",
     rating: 4,
-    time: "18 min ago",
-    status: "Replied",
+    time: "Demo",
+    status: "Demo",
     text: "Great service overall. The food was excellent, although we had to wait a little longer than expected."
   },
   {
     id: 3,
     customer: "Michael T.",
     rating: 2,
-    time: "34 min ago",
-    status: "Approval",
+    time: "Demo",
+    status: "Demo",
     text: "The food was cold when it arrived and we waited almost an hour. Very disappointing."
   },
   {
     id: 4,
     customer: "Emma W.",
     rating: 5,
-    time: "1 hr ago",
-    status: "Replied",
+    time: "Demo",
+    status: "Demo",
     text: "Fantastic place. Friendly team, beautiful atmosphere and excellent quality."
   }
 ];
@@ -122,8 +122,93 @@ function Dashboard({ session }) {
   const [activePage, setActivePage] =
     useState("Dashboard");
 
-  const [autoReply, setAutoReply] =
+  const [workspace, setWorkspace] =
+    useState(null);
+
+  const [automation, setAutomation] =
+    useState(null);
+
+  const [workspaceLoading, setWorkspaceLoading] =
     useState(true);
+
+  const [workspaceError, setWorkspaceError] =
+    useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadWorkspace() {
+      setWorkspaceLoading(true);
+      setWorkspaceError("");
+
+      try {
+        const {
+          data: business,
+          error: businessError
+        } = await supabase
+          .from("businesses")
+          .select("*")
+          .eq("owner_id", session.user.id)
+          .order("created_at", {
+            ascending: true
+          })
+          .limit(1)
+          .maybeSingle();
+
+        if (businessError) {
+          throw businessError;
+        }
+
+        if (!business) {
+          throw new Error(
+            "No business workspace was found for this account."
+          );
+        }
+
+        const {
+          data: automationSettings,
+          error: automationError
+        } = await supabase
+          .from("automation_settings")
+          .select("*")
+          .eq("business_id", business.id)
+          .maybeSingle();
+
+        if (automationError) {
+          throw automationError;
+        }
+
+        if (mounted) {
+          setWorkspace(business);
+          setAutomation(
+            automationSettings
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Workspace loading error:",
+          error
+        );
+
+        if (mounted) {
+          setWorkspaceError(
+            error?.message ||
+              "Unable to load your workspace."
+          );
+        }
+      } finally {
+        if (mounted) {
+          setWorkspaceLoading(false);
+        }
+      }
+    }
+
+    loadWorkspace();
+
+    return () => {
+      mounted = false;
+    };
+  }, [session.user.id]);
 
   async function handleSignOut() {
     const { error } =
@@ -137,22 +222,75 @@ function Dashboard({ session }) {
     }
   }
 
+  async function toggleAutomation() {
+    if (!workspace || !automation) {
+      return;
+    }
+
+    const newValue =
+      !automation.enabled;
+
+    const {
+      data,
+      error
+    } = await supabase
+      .from("automation_settings")
+      .update({
+        enabled: newValue,
+        updated_at: new Date().toISOString()
+      })
+      .eq("business_id", workspace.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error(
+        "Automation update failed:",
+        error
+      );
+
+      return;
+    }
+
+    setAutomation(data);
+  }
+
+  if (workspaceLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (workspaceError) {
+    return (
+      <WorkspaceError
+        message={workspaceError}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+
   return (
     <div className="app">
       <Sidebar
         activePage={activePage}
         setActivePage={setActivePage}
         email={session.user.email}
+        businessName={workspace?.name}
         onSignOut={handleSignOut}
       />
 
       <main className="main">
-        <Header activePage={activePage} />
+        <Header
+          activePage={activePage}
+          businessName={workspace?.name}
+        />
 
         {activePage === "Dashboard" ? (
           <DashboardContent
-            autoReply={autoReply}
-            setAutoReply={setAutoReply}
+            workspace={workspace}
+            automation={automation}
+            onToggleAutomation={
+              toggleAutomation
+            }
           />
         ) : (
           <PlaceholderPage
@@ -167,10 +305,48 @@ function Dashboard({ session }) {
   );
 }
 
+function WorkspaceError({
+  message,
+  onSignOut
+}) {
+  return (
+    <main className="loading-page">
+      <div className="auth-card">
+        <div className="eyebrow">
+          WORKSPACE ERROR
+        </div>
+
+        <h1>
+          We couldn't load your workspace.
+        </h1>
+
+        <p
+          style={{
+            color: "#777",
+            fontSize: "11px",
+            lineHeight: 1.6
+          }}
+        >
+          {message}
+        </p>
+
+        <button
+          type="button"
+          className="auth-submit"
+          onClick={onSignOut}
+        >
+          Sign out
+        </button>
+      </div>
+    </main>
+  );
+}
+
 function Sidebar({
   activePage,
   setActivePage,
   email,
+  businessName,
   onSignOut
 }) {
   return (
@@ -188,6 +364,22 @@ function Sidebar({
 
       <div className="workspace-label">
         WORKSPACE
+      </div>
+
+      <div
+        style={{
+          padding:
+            "0 11px 12px",
+          color: "#d8d8d2",
+          fontSize: "10px",
+          fontWeight: 700,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap"
+        }}
+        title={businessName}
+      >
+        {businessName}
       </div>
 
       <nav className="navigation">
@@ -264,10 +456,13 @@ function getInitials(email = "") {
   return first || "U";
 }
 
-function Header({ activePage }) {
+function Header({
+  activePage,
+  businessName
+}) {
   const title =
     activePage === "Dashboard"
-      ? "Good morning, Business Owner."
+      ? `Good morning, ${businessName || "Business Owner"}.`
       : activePage;
 
   return (
@@ -302,40 +497,45 @@ function Header({ activePage }) {
 }
 
 function DashboardContent({
-  autoReply,
-  setAutoReply
+  workspace,
+  automation,
+  onToggleAutomation
 }) {
   return (
     <>
       <section className="stats-grid">
         <StatCard
           label="Total reviews"
-          value="247"
-          detail="+12 this week"
+          value="—"
+          detail="Waiting for Google connection"
         />
 
         <StatCard
           label="Average rating"
-          value="4.7"
-          detail="★★★★★"
+          value="—"
+          detail="Waiting for Google data"
         />
 
         <StatCard
           label="Replies sent"
-          value="231"
-          detail="93.5% response rate"
+          value="—"
+          detail="No reviews connected"
         />
 
         <StatCard
           label="Needs attention"
-          value="16"
-          detail="Requires approval"
+          value="—"
+          detail="No reviews connected"
         />
       </section>
 
       <AutomationBanner
-        enabled={autoReply}
-        setEnabled={setAutoReply}
+        enabled={
+          automation?.enabled || false
+        }
+        setEnabled={
+          onToggleAutomation
+        }
       />
 
       <section className="content-grid">
@@ -417,9 +617,7 @@ function AutomationBanner({
         }
         aria-label="Toggle automatic replies"
         aria-pressed={enabled}
-        onClick={() =>
-          setAutoReply(!enabled)
-        }
+        onClick={setEnabled}
       >
         <span />
       </button>
@@ -433,7 +631,7 @@ function ReviewsPanel() {
       <div className="panel-header">
         <div>
           <div className="eyebrow">
-            LIVE ACTIVITY
+            REVIEW ENGINE
           </div>
 
           <h2>
@@ -441,12 +639,14 @@ function ReviewsPanel() {
           </h2>
         </div>
 
-        <button
-          type="button"
-          className="text-button"
+        <span
+          style={{
+            color: "#aaa",
+            fontSize: "8px"
+          }}
         >
-          View all →
-        </button>
+          GOOGLE NOT CONNECTED
+        </span>
       </div>
 
       <div className="review-list">
@@ -465,9 +665,6 @@ function ReviewRow({ review }) {
   const stars =
     "★".repeat(review.rating) +
     "☆".repeat(5 - review.rating);
-
-  const approval =
-    review.status === "Approval";
 
   return (
     <article className="review-row">
@@ -492,13 +689,17 @@ function ReviewRow({ review }) {
       </div>
 
       <div
-        className={
-          approval
-            ? "review-status approval"
-            : "review-status replied"
-        }
+        className="review-status"
+        style={{
+          background: "#eeeeeb",
+          color: "#777"
+        }}
       >
-        <span />
+        <span
+          style={{
+            background: "#999"
+          }}
+        />
 
         {review.status}
       </div>
@@ -618,7 +819,7 @@ function LocationPanel() {
 
       <p className="location-description">
         Connect your Google Business Profile
-        after authentication is working.
+        to bring real reviews into ReviewAuto.
       </p>
 
       <button
