@@ -2,41 +2,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
 import Auth from "./components/Auth";
 
-const demoReviews = [
-  {
-    id: 1,
-    customer: "Sarah M.",
-    rating: 5,
-    time: "Demo",
-    status: "Demo",
-    text: "Absolutely loved the experience. The staff were amazing and the service was incredibly fast."
-  },
-  {
-    id: 2,
-    customer: "James R.",
-    rating: 4,
-    time: "Demo",
-    status: "Demo",
-    text: "Great service overall. The food was excellent, although we had to wait a little longer than expected."
-  },
-  {
-    id: 3,
-    customer: "Michael T.",
-    rating: 2,
-    time: "Demo",
-    status: "Demo",
-    text: "The food was cold when it arrived and we waited almost an hour. Very disappointing."
-  },
-  {
-    id: 4,
-    customer: "Emma W.",
-    rating: 5,
-    time: "Demo",
-    status: "Demo",
-    text: "Fantastic place. Friendly team, beautiful atmosphere and excellent quality."
-  }
-];
-
 const navigation = [
   { name: "Dashboard", icon: "⌂" },
   { name: "Reviews", icon: "★" },
@@ -53,16 +18,11 @@ function App() {
     let mounted = true;
 
     async function loadSession() {
-      const {
-        data,
-        error
-      } = await supabase.auth.getSession();
+      const { data, error } =
+        await supabase.auth.getSession();
 
       if (error) {
-        console.error(
-          "Failed to load session:",
-          error
-        );
+        console.error("Failed to load session:", error);
       }
 
       if (mounted) {
@@ -95,25 +55,15 @@ function App() {
     return <Auth />;
   }
 
-  return (
-    <Dashboard
-      session={session}
-    />
-  );
+  return <Dashboard session={session} />;
 }
 
 function LoadingScreen() {
   return (
     <main className="loading-page">
-      <div className="loading-mark">
-        R
-      </div>
-
+      <div className="loading-mark">R</div>
       <div className="loading-spinner" />
-
-      <p>
-        Loading your workspace...
-      </p>
+      <p>Loading your workspace...</p>
     </main>
   );
 }
@@ -128,8 +78,14 @@ function Dashboard({ session }) {
   const [automation, setAutomation] =
     useState(null);
 
+  const [reviews, setReviews] =
+    useState([]);
+
   const [workspaceLoading, setWorkspaceLoading] =
     useState(true);
+
+  const [reviewsLoading, setReviewsLoading] =
+    useState(false);
 
   const [workspaceError, setWorkspaceError] =
     useState("");
@@ -184,6 +140,11 @@ function Dashboard({ session }) {
             automationSettings
           );
         }
+
+        await loadReviews(
+          business.id,
+          mounted
+        );
       } catch (error) {
         console.error(
           "Workspace loading error:",
@@ -209,6 +170,41 @@ function Dashboard({ session }) {
       mounted = false;
     };
   }, [session.user.id]);
+
+  async function loadReviews(
+    businessId,
+    mounted = true
+  ) {
+    setReviewsLoading(true);
+
+    const {
+      data,
+      error
+    } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("created_at", {
+        ascending: false
+      });
+
+    if (error) {
+      console.error(
+        "Review loading error:",
+        error
+      );
+
+      if (mounted) {
+        setReviews([]);
+      }
+    } else if (mounted) {
+      setReviews(data || []);
+    }
+
+    if (mounted) {
+      setReviewsLoading(false);
+    }
+  }
 
   async function handleSignOut() {
     const { error } =
@@ -237,7 +233,8 @@ function Dashboard({ session }) {
       .from("automation_settings")
       .update({
         enabled: newValue,
-        updated_at: new Date().toISOString()
+        updated_at:
+          new Date().toISOString()
       })
       .eq("business_id", workspace.id)
       .select()
@@ -248,7 +245,6 @@ function Dashboard({ session }) {
         "Automation update failed:",
         error
       );
-
       return;
     }
 
@@ -288,6 +284,10 @@ function Dashboard({ session }) {
           <DashboardContent
             workspace={workspace}
             automation={automation}
+            reviews={reviews}
+            reviewsLoading={
+              reviewsLoading
+            }
             onToggleAutomation={
               toggleAutomation
             }
@@ -368,8 +368,7 @@ function Sidebar({
 
       <div
         style={{
-          padding:
-            "0 11px 12px",
+          padding: "0 11px 12px",
           color: "#d8d8d2",
           fontSize: "10px",
           fontWeight: 700,
@@ -426,9 +425,7 @@ function Sidebar({
           </div>
 
           <div className="account-details">
-            <strong>
-              {email}
-            </strong>
+            <strong>{email}</strong>
 
             <span>
               Authenticated
@@ -462,7 +459,10 @@ function Header({
 }) {
   const title =
     activePage === "Dashboard"
-      ? `Good morning, ${businessName || "Business Owner"}.`
+      ? `Good morning, ${
+          businessName ||
+          "Business Owner"
+        }.`
       : activePage;
 
   return (
@@ -499,33 +499,84 @@ function Header({
 function DashboardContent({
   workspace,
   automation,
+  reviews,
+  reviewsLoading,
   onToggleAutomation
 }) {
+  const totalReviews =
+    reviews.length;
+
+  const averageRating =
+    totalReviews > 0
+      ? (
+          reviews.reduce(
+            (sum, review) =>
+              sum +
+              Number(review.rating || 0),
+            0
+          ) / totalReviews
+        ).toFixed(1)
+      : "—";
+
+  const repliesSent =
+    reviews.filter(
+      (review) =>
+        review.reply_status ===
+        "published"
+    ).length;
+
+  const needsAttention =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+          "awaiting_approval" ||
+        review.ai_risk_level ===
+          "high" ||
+        review.ai_risk_level ===
+          "critical"
+    ).length;
+
   return (
     <>
       <section className="stats-grid">
         <StatCard
           label="Total reviews"
-          value="—"
-          detail="Waiting for Google connection"
+          value={totalReviews}
+          detail={
+            totalReviews > 0
+              ? "Stored in your workspace"
+              : "No reviews yet"
+          }
         />
 
         <StatCard
           label="Average rating"
-          value="—"
-          detail="Waiting for Google data"
+          value={averageRating}
+          detail={
+            totalReviews > 0
+              ? "Based on stored reviews"
+              : "Waiting for reviews"
+          }
         />
 
         <StatCard
           label="Replies sent"
-          value="—"
-          detail="No reviews connected"
+          value={repliesSent}
+          detail={
+            repliesSent > 0
+              ? "Published replies"
+              : "No replies published"
+          }
         />
 
         <StatCard
           label="Needs attention"
-          value="—"
-          detail="No reviews connected"
+          value={needsAttention}
+          detail={
+            needsAttention > 0
+              ? "Requires review"
+              : "Nothing requiring attention"
+          }
         />
       </section>
 
@@ -539,11 +590,13 @@ function DashboardContent({
       />
 
       <section className="content-grid">
-        <ReviewsPanel />
+        <ReviewsPanel
+          reviews={reviews}
+          loading={reviewsLoading}
+        />
 
         <div className="right-column">
           <WorkflowPanel />
-
           <LocationPanel />
         </div>
       </section>
@@ -604,7 +657,8 @@ function AutomationBanner({
 
         <p>
           New eligible reviews will be
-          analyzed and processed automatically.
+          analyzed and processed
+          automatically.
         </p>
       </div>
 
@@ -625,7 +679,10 @@ function AutomationBanner({
   );
 }
 
-function ReviewsPanel() {
+function ReviewsPanel({
+  reviews,
+  loading
+}) {
   return (
     <section className="panel reviews-panel">
       <div className="panel-header">
@@ -645,37 +702,77 @@ function ReviewsPanel() {
             fontSize: "8px"
           }}
         >
-          GOOGLE NOT CONNECTED
+          {reviews.length > 0
+            ? "DATABASE"
+            : "NO REVIEWS"}
         </span>
       </div>
 
       <div className="review-list">
-        {demoReviews.map((review) => (
-          <ReviewRow
-            key={review.id}
-            review={review}
-          />
-        ))}
+        {loading ? (
+          <div className="empty-state">
+            Loading reviews...
+          </div>
+        ) : reviews.length === 0 ? (
+          <div className="empty-state">
+            <strong>
+              No reviews yet
+            </strong>
+
+            <span>
+              Connect Google Business
+              Profile later to bring in
+              real customer reviews.
+            </span>
+          </div>
+        ) : (
+          reviews.map((review) => (
+            <ReviewRow
+              key={review.id}
+              review={review}
+            />
+          ))
+        )}
       </div>
     </section>
   );
 }
 
 function ReviewRow({ review }) {
+  const rating =
+    Number(review.rating || 0);
+
   const stars =
-    "★".repeat(review.rating) +
-    "☆".repeat(5 - review.rating);
+    "★".repeat(rating) +
+    "☆".repeat(
+      Math.max(0, 5 - rating)
+    );
+
+  const status =
+    review.reply_status ===
+    "published"
+      ? "REPLIED"
+      : review.automation_status ===
+        "awaiting_approval"
+      ? "APPROVAL"
+      : review.automation_status
+          ?.toUpperCase() ||
+        "PENDING";
 
   return (
     <article className="review-row">
       <div className="review-information">
         <div className="review-meta">
           <strong>
-            {review.customer}
+            {review.customer_name ||
+              "Anonymous customer"}
           </strong>
 
           <span>
-            {review.time}
+            {formatDate(
+              review.review_created_at ||
+                review.created_at
+            )}
           </span>
         </div>
 
@@ -684,7 +781,8 @@ function ReviewRow({ review }) {
         </div>
 
         <p>
-          {review.text}
+          {review.review_text ||
+            "No review text provided."}
         </p>
       </div>
 
@@ -701,9 +799,30 @@ function ReviewRow({ review }) {
           }}
         />
 
-        {review.status}
+        {status}
       </div>
     </article>
+  );
+}
+
+function formatDate(value) {
+  if (!value) {
+    return "Unknown date";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown date";
+  }
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }
   );
 }
 
@@ -750,16 +869,18 @@ function WorkflowPanel() {
       </div>
 
       <div className="workflow">
-        {steps.map((step, index) => (
-          <WorkflowStep
-            key={step.number}
-            {...step}
-            last={
-              index ===
-              steps.length - 1
-            }
-          />
-        ))}
+        {steps.map(
+          (step, index) => (
+            <WorkflowStep
+              key={step.number}
+              {...step}
+              last={
+                index ===
+                steps.length - 1
+              }
+            />
+          )
+        )}
       </div>
     </section>
   );
@@ -786,9 +907,7 @@ function WorkflowStep({
       <div className="step-content">
         <strong>{title}</strong>
 
-        <p>
-          {description}
-        </p>
+        <p>{description}</p>
       </div>
     </div>
   );
@@ -818,8 +937,9 @@ function LocationPanel() {
       </div>
 
       <p className="location-description">
-        Connect your Google Business Profile
-        to bring real reviews into ReviewAuto.
+        Connect your Google Business
+        Profile to bring real reviews
+        into ReviewAuto.
       </p>
 
       <button
@@ -843,13 +963,12 @@ function PlaceholderPage({
         ✦
       </div>
 
-      <h2>
-        {page}
-      </h2>
+      <h2>{page}</h2>
 
       <p>
         This section will be connected
-        during the next development stage.
+        during the next development
+        stage.
       </p>
 
       <button
