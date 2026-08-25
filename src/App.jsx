@@ -7,7 +7,7 @@ const navigation = [
   { name: "Reviews", icon: "★" },
   { name: "Locations", icon: "⌖" },
   { name: "Automation", icon: "⚡" },
-  { name: "Settings", icon: "⚙" }
+  { name: "Settings", icon: "⚙" },
 ];
 
 function App() {
@@ -18,8 +18,7 @@ function App() {
     let mounted = true;
 
     async function loadSession() {
-      const { data, error } =
-        await supabase.auth.getSession();
+      const { data, error } = await supabase.auth.getSession();
 
       if (error) {
         console.error("Failed to load session:", error);
@@ -34,7 +33,7 @@ function App() {
     loadSession();
 
     const {
-      data: authListener
+      data: authListener,
     } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
         setSession(newSession);
@@ -69,26 +68,15 @@ function LoadingScreen() {
 }
 
 function Dashboard({ session }) {
-  const [activePage, setActivePage] =
-    useState("Dashboard");
+  const [activePage, setActivePage] = useState("Dashboard");
 
-  const [workspace, setWorkspace] =
-    useState(null);
+  const [workspace, setWorkspace] = useState(null);
+  const [automation, setAutomation] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
-  const [automation, setAutomation] =
-    useState(null);
-
-  const [reviews, setReviews] =
-    useState([]);
-
-  const [workspaceLoading, setWorkspaceLoading] =
-    useState(true);
-
-  const [reviewsLoading, setReviewsLoading] =
-    useState(false);
-
-  const [workspaceError, setWorkspaceError] =
-    useState("");
+  const [workspaceLoading, setWorkspaceLoading] = useState(true);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [workspaceError, setWorkspaceError] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -100,13 +88,13 @@ function Dashboard({ session }) {
       try {
         const {
           data: business,
-          error: businessError
+          error: businessError,
         } = await supabase
           .from("businesses")
           .select("*")
           .eq("owner_id", session.user.id)
           .order("created_at", {
-            ascending: true
+            ascending: true,
           })
           .limit(1)
           .maybeSingle();
@@ -123,7 +111,7 @@ function Dashboard({ session }) {
 
         const {
           data: automationSettings,
-          error: automationError
+          error: automationError,
         } = await supabase
           .from("automation_settings")
           .select("*")
@@ -136,15 +124,10 @@ function Dashboard({ session }) {
 
         if (mounted) {
           setWorkspace(business);
-          setAutomation(
-            automationSettings
-          );
+          setAutomation(automationSettings);
         }
 
-        await loadReviews(
-          business.id,
-          mounted
-        );
+        await loadReviews(business.id, mounted);
       } catch (error) {
         console.error(
           "Workspace loading error:",
@@ -179,13 +162,13 @@ function Dashboard({ session }) {
 
     const {
       data,
-      error
+      error,
     } = await supabase
       .from("reviews")
       .select("*")
       .eq("business_id", businessId)
       .order("created_at", {
-        ascending: false
+        ascending: false,
       });
 
     if (error) {
@@ -223,18 +206,16 @@ function Dashboard({ session }) {
       return;
     }
 
-    const newValue =
-      !automation.enabled;
+    const newValue = !automation.enabled;
 
     const {
       data,
-      error
+      error,
     } = await supabase
       .from("automation_settings")
       .update({
         enabled: newValue,
-        updated_at:
-          new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq("business_id", workspace.id)
       .select()
@@ -285,12 +266,9 @@ function Dashboard({ session }) {
             workspace={workspace}
             automation={automation}
             reviews={reviews}
-            reviewsLoading={
-              reviewsLoading
-            }
-            onToggleAutomation={
-              toggleAutomation
-            }
+            setReviews={setReviews}
+            reviewsLoading={reviewsLoading}
+            onToggleAutomation={toggleAutomation}
           />
         ) : (
           <PlaceholderPage
@@ -307,7 +285,7 @@ function Dashboard({ session }) {
 
 function WorkspaceError({
   message,
-  onSignOut
+  onSignOut,
 }) {
   return (
     <main className="loading-page">
@@ -324,7 +302,7 @@ function WorkspaceError({
           style={{
             color: "#777",
             fontSize: "11px",
-            lineHeight: 1.6
+            lineHeight: 1.6,
           }}
         >
           {message}
@@ -347,14 +325,12 @@ function Sidebar({
   setActivePage,
   email,
   businessName,
-  onSignOut
+  onSignOut,
 }) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">
-          R
-        </div>
+        <div className="brand-mark">R</div>
 
         <div className="brand-name">
           <strong>ReviewAuto</strong>
@@ -374,7 +350,7 @@ function Sidebar({
           fontWeight: 700,
           overflow: "hidden",
           textOverflow: "ellipsis",
-          whiteSpace: "nowrap"
+          whiteSpace: "nowrap",
         }}
         title={businessName}
       >
@@ -427,9 +403,7 @@ function Sidebar({
           <div className="account-details">
             <strong>{email}</strong>
 
-            <span>
-              Authenticated
-            </span>
+            <span>Authenticated</span>
           </div>
 
           <button
@@ -455,7 +429,7 @@ function getInitials(email = "") {
 
 function Header({
   activePage,
-  businessName
+  businessName,
 }) {
   const title =
     activePage === "Dashboard"
@@ -500,11 +474,11 @@ function DashboardContent({
   workspace,
   automation,
   reviews,
+  setReviews,
   reviewsLoading,
-  onToggleAutomation
+  onToggleAutomation,
 }) {
-  const totalReviews =
-    reviews.length;
+  const totalReviews = reviews.length;
 
   const averageRating =
     totalReviews > 0
@@ -530,8 +504,7 @@ function DashboardContent({
       (review) =>
         review.automation_status ===
           "awaiting_approval" ||
-        review.ai_risk_level ===
-          "high" ||
+        review.ai_risk_level === "high" ||
         review.ai_risk_level ===
           "critical"
     ).length;
@@ -581,17 +554,14 @@ function DashboardContent({
       </section>
 
       <AutomationBanner
-        enabled={
-          automation?.enabled || false
-        }
-        setEnabled={
-          onToggleAutomation
-        }
+        enabled={automation?.enabled || false}
+        setEnabled={onToggleAutomation}
       />
 
       <section className="content-grid">
         <ReviewsPanel
           reviews={reviews}
+          setReviews={setReviews}
           loading={reviewsLoading}
         />
 
@@ -607,7 +577,7 @@ function DashboardContent({
 function StatCard({
   label,
   value,
-  detail
+  detail,
 }) {
   return (
     <div className="stat-card">
@@ -628,7 +598,7 @@ function StatCard({
 
 function AutomationBanner({
   enabled,
-  setEnabled
+  setEnabled,
 }) {
   return (
     <section className="automation-banner">
@@ -681,7 +651,8 @@ function AutomationBanner({
 
 function ReviewsPanel({
   reviews,
-  loading
+  setReviews,
+  loading,
 }) {
   return (
     <section className="panel reviews-panel">
@@ -699,7 +670,7 @@ function ReviewsPanel({
         <span
           style={{
             color: "#aaa",
-            fontSize: "8px"
+            fontSize: "8px",
           }}
         >
           {reviews.length > 0
@@ -730,6 +701,7 @@ function ReviewsPanel({
             <ReviewRow
               key={review.id}
               review={review}
+              setReviews={setReviews}
             />
           ))
         )}
@@ -738,7 +710,16 @@ function ReviewsPanel({
   );
 }
 
-function ReviewRow({ review }) {
+function ReviewRow({
+  review,
+  setReviews,
+}) {
+  const [analyzing, setAnalyzing] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
   const rating =
     Number(review.rating || 0);
 
@@ -758,6 +739,80 @@ function ReviewRow({ review }) {
       : review.automation_status
           ?.toUpperCase() ||
         "PENDING";
+
+  async function analyzeReview() {
+    setAnalyzing(true);
+    setError("");
+
+    try {
+      const {
+        data: {
+          session,
+        },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      if (!session?.access_token) {
+        throw new Error(
+          "Your session has expired. Please sign in again."
+        );
+      }
+
+      const {
+        data,
+        error: functionError,
+      } = await supabase.functions.invoke(
+        "analyze-review",
+        {
+          body: {
+            review_id: review.id,
+          },
+          headers: {
+            Authorization:
+              `Bearer ${session.access_token}`,
+          },
+        }
+      );
+
+      if (functionError) {
+        throw functionError;
+      }
+
+      if (!data?.success) {
+        throw new Error(
+          data?.error ||
+            "AI analysis failed."
+        );
+      }
+
+      const updatedReview =
+        data.review;
+
+      setReviews((current) =>
+        current.map((item) =>
+          item.id === review.id
+            ? updatedReview
+            : item
+        )
+      );
+    } catch (err) {
+      console.error(
+        "AI analysis failed:",
+        err
+      );
+
+      setError(
+        err?.message ||
+          "AI analysis failed."
+      );
+    } finally {
+      setAnalyzing(false);
+    }
+  }
 
   return (
     <article className="review-row">
@@ -784,18 +839,104 @@ function ReviewRow({ review }) {
           {review.review_text ||
             "No review text provided."}
         </p>
+
+        {review.ai_sentiment && (
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexWrap: "wrap",
+              marginTop: "8px",
+            }}
+          >
+            <span className="status-pill active">
+              {review.ai_sentiment.toUpperCase()}
+            </span>
+
+            {review.ai_risk_level && (
+              <span
+                className={
+                  review.ai_risk_level ===
+                    "high" ||
+                  review.ai_risk_level ===
+                    "critical"
+                    ? "status-pill paused"
+                    : "status-pill"
+                }
+              >
+                RISK:{" "}
+                {review.ai_risk_level.toUpperCase()}
+              </span>
+            )}
+          </div>
+        )}
+
+        {review.ai_generated_reply && (
+          <div
+            style={{
+              marginTop: "10px",
+              padding: "10px 12px",
+              background: "#f5f5f2",
+              borderLeft:
+                "2px solid #222",
+              fontSize: "11px",
+              lineHeight: 1.6,
+            }}
+          >
+            <strong>
+              AI draft:
+            </strong>
+
+            <div
+              style={{
+                marginTop: "4px",
+              }}
+            >
+              {review.ai_generated_reply}
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div
+            style={{
+              marginTop: "8px",
+              color: "#b42318",
+              fontSize: "10px",
+              lineHeight: 1.5,
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={analyzeReview}
+          disabled={analyzing}
+          style={{
+            marginTop: "10px",
+          }}
+        >
+          {analyzing
+            ? "Analyzing..."
+            : review.ai_generated_reply
+            ? "Analyze again"
+            : "Analyze with AI"}
+        </button>
       </div>
 
       <div
         className="review-status"
         style={{
           background: "#eeeeeb",
-          color: "#777"
+          color: "#777",
         }}
       >
         <span
           style={{
-            background: "#999"
+            background: "#999",
           }}
         />
 
@@ -821,7 +962,7 @@ function formatDate(value) {
     {
       month: "short",
       day: "numeric",
-      year: "numeric"
+      year: "numeric",
     }
   );
 }
@@ -832,26 +973,26 @@ function WorkflowPanel() {
       number: "01",
       title: "New review",
       description:
-        "Google sends a new-review event."
+        "Google sends a new-review event.",
     },
     {
       number: "02",
       title: "AI analysis",
       description:
-        "The system analyzes rating, sentiment and context."
+        "The system analyzes rating, sentiment and context.",
     },
     {
       number: "03",
       title: "Safety check",
       description:
-        "Rules decide whether the review can be handled automatically."
+        "Rules decide whether the review can be handled automatically.",
     },
     {
       number: "04",
       title: "Reply published",
       description:
-        "An approved response is sent through Google."
-    }
+        "An approved response is sent through Google.",
+    },
   ];
 
   return (
@@ -890,7 +1031,7 @@ function WorkflowStep({
   number,
   title,
   description,
-  last
+  last,
 }) {
   return (
     <div
@@ -955,7 +1096,7 @@ function LocationPanel() {
 
 function PlaceholderPage({
   page,
-  onBack
+  onBack,
 }) {
   return (
     <section className="placeholder-page">
