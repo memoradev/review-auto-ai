@@ -19,10 +19,8 @@ function App() {
 
     async function loadSession() {
       try {
-        const {
-          data,
-          error,
-        } = await supabase.auth.getSession();
+        const { data, error } =
+          await supabase.auth.getSession();
 
         if (error) {
           console.error(
@@ -50,19 +48,17 @@ function App() {
 
     loadSession();
 
-    const {
-      data: authListener,
-    } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        if (mounted) {
-          setSession(newSession);
+    const { data: authListener } =
+      supabase.auth.onAuthStateChange(
+        (_event, newSession) => {
+          if (mounted) {
+            setSession(newSession);
+          }
         }
-      }
-    );
+      );
 
     return () => {
       mounted = false;
-
       authListener?.subscription?.unsubscribe();
     };
   }, []);
@@ -110,22 +106,6 @@ function Dashboard({ session }) {
   const [workspaceError, setWorkspaceError] =
     useState("");
 
-  /*
-   * Load reviews.
-   *
-   * Important:
-   * This function does NOT automatically turn
-   * reviewsLoading on during background refreshes.
-   *
-   * That prevents:
-   *
-   * reviews -> Loading...
-   * reviews -> data
-   * reviews -> Loading...
-   * reviews -> data
-   *
-   * every few seconds.
-   */
   const loadReviews = useCallback(
     async (businessId, showLoading = false) => {
       if (!businessId) {
@@ -137,27 +117,20 @@ function Dashboard({ session }) {
       }
 
       try {
-        const {
-          data,
-          error,
-        } = await supabase
-          .from("reviews")
-          .select("*")
-          .eq("business_id", businessId)
-          .order("created_at", {
-            ascending: false,
-          });
+        const { data, error } =
+          await supabase
+            .from("reviews")
+            .select("*")
+            .eq("business_id", businessId)
+            .order("created_at", {
+              ascending: false,
+            });
 
         if (error) {
           console.error(
             "Review loading error:",
             error
           );
-
-          /*
-           * Do NOT erase already loaded reviews
-           * just because a background refresh failed.
-           */
           return;
         }
 
@@ -176,9 +149,6 @@ function Dashboard({ session }) {
     []
   );
 
-  /*
-   * Load workspace once after authentication.
-   */
   useEffect(() => {
     let mounted = true;
 
@@ -232,11 +202,6 @@ function Dashboard({ session }) {
           automationSettings
         );
 
-        /*
-         * Initial review load.
-         * This is the ONLY time we show
-         * "Loading reviews..."
-         */
         await loadReviews(
           business.id,
           true
@@ -270,13 +235,6 @@ function Dashboard({ session }) {
     loadReviews,
   ]);
 
-  /*
-   * Background review refresh.
-   *
-   * This refreshes silently so newly analyzed
-   * reviews appear without showing a loading
-   * screen every 5 seconds.
-   */
   useEffect(() => {
     if (!workspace?.id) {
       return undefined;
@@ -297,10 +255,6 @@ function Dashboard({ session }) {
     loadReviews,
   ]);
 
-  /*
-   * Also refresh when the browser tab becomes
-   * visible again.
-   */
   useEffect(() => {
     if (!workspace?.id) {
       return undefined;
@@ -347,39 +301,83 @@ function Dashboard({ session }) {
   }
 
   async function toggleAutomation() {
-    if (!workspace || !automation) {
+    if (!workspace) {
       return;
     }
+
+    const currentValue =
+      automation?.enabled === true;
 
     const newValue =
-      !automation.enabled;
+      !currentValue;
 
-    const {
-      data,
-      error,
-    } = await supabase
-      .from("automation_settings")
-      .update({
-        enabled: newValue,
-        updated_at:
-          new Date().toISOString(),
-      })
-      .eq(
-        "business_id",
-        workspace.id
-      )
-      .select()
-      .single();
+    try {
+      /*
+       * If settings don't exist yet,
+       * create them.
+       */
+      if (!automation?.id) {
+        const {
+          data,
+          error,
+        } = await supabase
+          .from("automation_settings")
+          .insert({
+            business_id:
+              workspace.id,
+            enabled:
+              newValue,
+            updated_at:
+              new Date().toISOString(),
+          })
+          .select()
+          .single();
 
-    if (error) {
+        if (error) {
+          console.error(
+            "Automation insert failed:",
+            error
+          );
+          return;
+        }
+
+        setAutomation(data);
+        return;
+      }
+
+      const {
+        data,
+        error,
+      } = await supabase
+        .from("automation_settings")
+        .update({
+          enabled:
+            newValue,
+          updated_at:
+            new Date().toISOString(),
+        })
+        .eq(
+          "business_id",
+          workspace.id
+        )
+        .select()
+        .single();
+
+      if (error) {
+        console.error(
+          "Automation update failed:",
+          error
+        );
+        return;
+      }
+
+      setAutomation(data);
+    } catch (error) {
       console.error(
-        "Automation update failed:",
+        "Automation toggle error:",
         error
       );
-      return;
     }
-
-    setAutomation(data);
   }
 
   if (workspaceLoading) {
@@ -411,7 +409,7 @@ function Dashboard({ session }) {
           businessName={workspace?.name}
         />
 
-        {activePage === "Dashboard" ? (
+        {activePage === "Dashboard" && (
           <DashboardContent
             workspace={workspace}
             automation={automation}
@@ -424,17 +422,39 @@ function Dashboard({ session }) {
               toggleAutomation
             }
           />
-        ) : activePage === "Reviews" ? (
+        )}
+
+        {activePage === "Reviews" && (
           <FullReviewsPage
             reviews={reviews}
             setReviews={setReviews}
             loading={reviewsLoading}
           />
-        ) : (
-          <PlaceholderPage
-            page={activePage}
-            onBack={() =>
-              setActivePage("Dashboard")
+        )}
+
+        {activePage === "Locations" && (
+          <LocationsPage
+            workspace={workspace}
+          />
+        )}
+
+        {activePage === "Automation" && (
+          <AutomationPage
+            automation={automation}
+            reviews={reviews}
+            onToggleAutomation={
+              toggleAutomation
+            }
+          />
+        )}
+
+        {activePage === "Settings" && (
+          <SettingsPage
+            workspace={workspace}
+            automation={automation}
+            reviews={reviews}
+            onToggleAutomation={
+              toggleAutomation
             }
           />
         )}
@@ -495,7 +515,9 @@ function Sidebar({
         </div>
 
         <div className="brand-name">
-          <strong>ReviewAuto</strong>
+          <strong>
+            ReviewAuto
+          </strong>
           <span>AI</span>
         </div>
       </div>
@@ -506,13 +528,16 @@ function Sidebar({
 
       <div
         style={{
-          padding: "0 11px 12px",
+          padding:
+            "0 11px 12px",
           color: "#d8d8d2",
           fontSize: "10px",
           fontWeight: 700,
           overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
+          textOverflow:
+            "ellipsis",
+          whiteSpace:
+            "nowrap",
         }}
         title={businessName}
       >
@@ -520,28 +545,33 @@ function Sidebar({
       </div>
 
       <nav className="navigation">
-        {navigation.map((item) => (
-          <button
-            key={item.name}
-            type="button"
-            className={
-              activePage === item.name
-                ? "nav-item active"
-                : "nav-item"
-            }
-            onClick={() =>
-              setActivePage(item.name)
-            }
-          >
-            <span className="nav-icon">
-              {item.icon}
-            </span>
+        {navigation.map(
+          (item) => (
+            <button
+              key={item.name}
+              type="button"
+              className={
+                activePage ===
+                item.name
+                  ? "nav-item active"
+                  : "nav-item"
+              }
+              onClick={() =>
+                setActivePage(
+                  item.name
+                )
+              }
+            >
+              <span className="nav-icon">
+                {item.icon}
+              </span>
 
-            <span>
-              {item.name}
-            </span>
-          </button>
-        ))}
+              <span>
+                {item.name}
+              </span>
+            </button>
+          )
+        )}
       </nav>
 
       <div className="sidebar-bottom">
@@ -565,7 +595,9 @@ function Sidebar({
           </div>
 
           <div className="account-details">
-            <strong>{email}</strong>
+            <strong>
+              {email}
+            </strong>
 
             <span>
               Authenticated
@@ -575,7 +607,9 @@ function Sidebar({
           <button
             type="button"
             className="signout-button"
-            onClick={onSignOut}
+            onClick={
+              onSignOut
+            }
             title="Sign out"
           >
             ↪
@@ -639,6 +673,10 @@ function Header({
   );
 }
 
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
 function DashboardContent({
   workspace,
   automation,
@@ -660,7 +698,8 @@ function DashboardContent({
                 review.rating || 0
               ),
             0
-          ) / totalReviews
+          ) /
+          totalReviews
         ).toFixed(1)
       : "—";
 
@@ -728,8 +767,8 @@ function DashboardContent({
 
       <AutomationBanner
         enabled={
-          automation?.enabled ||
-          false
+          automation?.enabled ===
+          true
         }
         setEnabled={
           onToggleAutomation
@@ -740,7 +779,9 @@ function DashboardContent({
         <ReviewsPanel
           reviews={reviews}
           setReviews={setReviews}
-          loading={reviewsLoading}
+          loading={
+            reviewsLoading
+          }
         />
 
         <div className="right-column">
@@ -827,6 +868,10 @@ function AutomationBanner({
   );
 }
 
+/* =========================================================
+   REVIEWS
+   ========================================================= */
+
 function ReviewsPanel({
   reviews,
   setReviews,
@@ -862,7 +907,8 @@ function ReviewsPanel({
           <div className="empty-state">
             Loading reviews...
           </div>
-        ) : reviews.length === 0 ? (
+        ) : reviews.length ===
+          0 ? (
           <div className="empty-state">
             <strong>
               No reviews yet
@@ -877,15 +923,17 @@ function ReviewsPanel({
         ) : (
           reviews
             .slice(0, 5)
-            .map((review) => (
-              <ReviewRow
-                key={review.id}
-                review={review}
-                setReviews={
-                  setReviews
-                }
-              />
-            ))
+            .map(
+              (review) => (
+                <ReviewRow
+                  key={review.id}
+                  review={review}
+                  setReviews={
+                    setReviews
+                  }
+                />
+              )
+            )
         )}
       </div>
     </section>
@@ -906,7 +954,9 @@ function FullReviewsPage({
   const filteredReviews =
     reviews.filter((review) => {
       const query =
-        search.trim().toLowerCase();
+        search
+          .trim()
+          .toLowerCase();
 
       const customerName =
         String(
@@ -922,32 +972,47 @@ function FullReviewsPage({
 
       const matchesSearch =
         query === "" ||
-        customerName.includes(query) ||
-        reviewText.includes(query);
+        customerName.includes(
+          query
+        ) ||
+        reviewText.includes(
+          query
+        );
 
       if (!matchesSearch) {
         return false;
       }
 
-      if (filter === "positive") {
+      if (
+        filter ===
+        "positive"
+      ) {
         return (
           review.ai_sentiment ===
             "positive" ||
-          Number(review.rating || 0) >=
-            4
+          Number(
+            review.rating || 0
+          ) >= 4
         );
       }
 
-      if (filter === "negative") {
+      if (
+        filter ===
+        "negative"
+      ) {
         return (
           review.ai_sentiment ===
             "negative" ||
-          Number(review.rating || 0) <=
-            2
+          Number(
+            review.rating || 0
+          ) <= 2
         );
       }
 
-      if (filter === "attention") {
+      if (
+        filter ===
+        "attention"
+      ) {
         return (
           review.automation_status ===
             "awaiting_approval" ||
@@ -958,7 +1023,10 @@ function FullReviewsPage({
         );
       }
 
-      if (filter === "analyzed") {
+      if (
+        filter ===
+        "analyzed"
+      ) {
         return Boolean(
           review.ai_sentiment ||
             review.ai_risk_level ||
@@ -985,8 +1053,9 @@ function FullReviewsPage({
       (review) =>
         review.ai_sentiment ===
           "positive" ||
-        Number(review.rating || 0) >=
-          4
+        Number(
+          review.rating || 0
+        ) >= 4
     ).length;
 
   const attention =
@@ -1274,7 +1343,9 @@ function ReviewRow({
   );
 
   const stars =
-    "★".repeat(safeRating) +
+    "★".repeat(
+      safeRating
+    ) +
     "☆".repeat(
       5 - safeRating
     );
@@ -1298,15 +1369,6 @@ function ReviewRow({
       review.automation_status.toUpperCase();
   }
 
-  /*
-   * Read an Edge Function error properly.
-   *
-   * Supabase often gives the frontend only:
-   * "Edge Function returned a non-2xx status code"
-   *
-   * The actual JSON response can be inside
-   * error.context.
-   */
   async function getFunctionErrorMessage(
     functionError
   ) {
@@ -1346,10 +1408,7 @@ function ReviewRow({
         }
       }
     } catch {
-      /*
-       * The response may already have
-       * been consumed or may not be JSON.
-       */
+      // Ignore response parsing errors.
     }
 
     return message;
@@ -1364,9 +1423,6 @@ function ReviewRow({
     setError("");
 
     try {
-      /*
-       * Get the current authenticated session.
-       */
       const {
         data,
         error: sessionError,
@@ -1397,16 +1453,6 @@ function ReviewRow({
         );
       }
 
-      /*
-       * IMPORTANT:
-       *
-       * Do NOT put your Vault secret,
-       * service-role key, or automation key
-       * in this frontend code.
-       *
-       * The Edge Function must authenticate
-       * this request using the user's JWT.
-       */
       const {
         data: result,
         error: functionError,
@@ -1444,7 +1490,8 @@ function ReviewRow({
       }
 
       if (
-        result.success === false
+        result.success ===
+        false
       ) {
         throw new Error(
           result.error ||
@@ -1453,10 +1500,6 @@ function ReviewRow({
         );
       }
 
-      /*
-       * Your successful function response
-       * contains result.review.
-       */
       if (result.review) {
         setReviews(
           (current) =>
@@ -1475,11 +1518,6 @@ function ReviewRow({
         return;
       }
 
-      /*
-       * If the function succeeded but didn't
-       * return the complete review object,
-       * fetch this review directly.
-       */
       const {
         data: updatedReview,
         error: refreshError,
@@ -1487,7 +1525,10 @@ function ReviewRow({
         await supabase
           .from("reviews")
           .select("*")
-          .eq("id", review.id)
+          .eq(
+            "id",
+            review.id
+          )
           .maybeSingle();
 
       if (refreshError) {
@@ -1496,10 +1537,6 @@ function ReviewRow({
           refreshError
         );
 
-        /*
-         * The function itself succeeded,
-         * so don't report this as an AI failure.
-         */
         return;
       }
 
@@ -1556,15 +1593,14 @@ function ReviewRow({
             "No review text provided."}
         </p>
 
-        {(
-          review.ai_sentiment ||
-          review.ai_risk_level
-        ) && (
+        {(review.ai_sentiment ||
+          review.ai_risk_level) && (
           <div
             style={{
               display: "flex",
               gap: "6px",
-              flexWrap: "wrap",
+              flexWrap:
+                "wrap",
               marginTop: "8px",
             }}
           >
@@ -1638,16 +1674,23 @@ function ReviewRow({
         <button
           type="button"
           className="secondary-button"
-          onClick={analyzeReview}
-          disabled={analyzing}
+          onClick={
+            analyzeReview
+          }
+          disabled={
+            analyzing
+          }
           style={{
-            marginTop: "10px",
-            opacity: analyzing
-              ? 0.6
-              : 1,
-            cursor: analyzing
-              ? "wait"
-              : "pointer",
+            marginTop:
+              "10px",
+            opacity:
+              analyzing
+                ? 0.6
+                : 1,
+            cursor:
+              analyzing
+                ? "wait"
+                : "pointer",
           }}
         >
           {analyzing
@@ -1662,9 +1705,12 @@ function ReviewRow({
             "pending" && (
             <div
               style={{
-                marginTop: "10px",
-                color: "#888",
-                fontSize: "10px",
+                marginTop:
+                  "10px",
+                color:
+                  "#888",
+                fontSize:
+                  "10px",
               }}
             >
               AI analysis is being
@@ -1720,6 +1766,10 @@ function formatDate(value) {
   );
 }
 
+/* =========================================================
+   WORKFLOW
+   ========================================================= */
+
 function WorkflowPanel() {
   const steps = [
     {
@@ -1766,11 +1816,14 @@ function WorkflowPanel() {
         {steps.map(
           (step, index) => (
             <WorkflowStep
-              key={step.number}
+              key={
+                step.number
+              }
               {...step}
               last={
                 index ===
-                steps.length - 1
+                steps.length -
+                  1
               }
             />
           )
@@ -1852,32 +1905,798 @@ function LocationPanel() {
   );
 }
 
-function PlaceholderPage({
-  page,
-  onBack,
+/* =========================================================
+   AUTOMATION PAGE
+   ========================================================= */
+
+function AutomationPage({
+  automation,
+  reviews,
+  onToggleAutomation,
+}) {
+  const enabled =
+    automation?.enabled === true;
+
+  const analyzed =
+    reviews.filter(
+      (review) =>
+        review.ai_sentiment ||
+        review.ai_risk_level ||
+        review.ai_generated_reply
+    ).length;
+
+  const pending =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "pending"
+    ).length;
+
+  const approval =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "awaiting_approval"
+    ).length;
+
+  const replied =
+    reviews.filter(
+      (review) =>
+        review.reply_status ===
+        "published" ||
+        review.automation_status ===
+        "replied"
+    ).length;
+
+  return (
+    <section className="reviews-page">
+      <section className="automation-banner">
+        <div className="automation-mark">
+          ⚡
+        </div>
+
+        <div className="automation-content">
+          <div className="automation-title">
+            <strong>
+              Review automation
+            </strong>
+
+            <span
+              className={
+                enabled
+                  ? "status-pill active"
+                  : "status-pill paused"
+              }
+            >
+              {enabled
+                ? "ACTIVE"
+                : "PAUSED"}
+            </span>
+          </div>
+
+          <p>
+            {enabled
+              ? "Eligible reviews can move through the analysis and automation pipeline."
+              : "Automation is paused. Reviews can still be analyzed manually."}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className={
+            enabled
+              ? "switch enabled"
+              : "switch"
+          }
+          aria-label="Toggle automation"
+          aria-pressed={enabled}
+          onClick={
+            onToggleAutomation
+          }
+        >
+          <span />
+        </button>
+      </section>
+
+      <section className="stats-grid">
+        <StatCard
+          label="Analyzed"
+          value={analyzed}
+          detail="Reviews processed by AI"
+        />
+
+        <StatCard
+          label="Pending"
+          value={pending}
+          detail="Waiting in the pipeline"
+        />
+
+        <StatCard
+          label="Approval"
+          value={approval}
+          detail="Human approval required"
+        />
+
+        <StatCard
+          label="Replied"
+          value={replied}
+          detail="Published replies"
+        />
+      </section>
+
+      <section className="content-grid">
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                PIPELINE
+              </div>
+
+              <h2>
+                Automation flow
+              </h2>
+            </div>
+          </div>
+
+          <div className="workflow">
+            <WorkflowStep
+              number="01"
+              title="Review received"
+              description="A review enters the ReviewAuto workspace."
+            />
+
+            <WorkflowStep
+              number="02"
+              title="AI analysis"
+              description="Sentiment, risk and a customer-facing reply are generated."
+            />
+
+            <WorkflowStep
+              number="03"
+              title="Safety decision"
+              description="High-risk reviews are routed for human approval."
+            />
+
+            <WorkflowStep
+              number="04"
+              title="Automation"
+              description="Eligible reviews continue toward publishing."
+              last
+            />
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                SAFETY
+              </div>
+
+              <h2>
+                Protection rules
+              </h2>
+            </div>
+          </div>
+
+          <AutomationRule
+            title="High risk"
+            description="Always requires human approval."
+          />
+
+          <AutomationRule
+            title="Critical risk"
+            description="Never automatically published."
+          />
+
+          <AutomationRule
+            title="No AI reply"
+            description="Review is skipped instead of publishing an empty response."
+          />
+
+          <AutomationRule
+            title="Automation paused"
+            description="Reviews remain available for manual handling."
+          />
+        </section>
+      </section>
+    </section>
+  );
+}
+
+function AutomationRule({
+  title,
+  description,
 }) {
   return (
-    <section className="placeholder-page">
-      <div className="placeholder-icon">
-        ✦
+    <div
+      style={{
+        padding:
+          "13px 0",
+        borderBottom:
+          "1px solid #e8e8e3",
+      }}
+    >
+      <strong
+        style={{
+          display:
+            "block",
+          fontSize:
+            "11px",
+          color:
+            "#222",
+        }}
+      >
+        {title}
+      </strong>
+
+      <span
+        style={{
+          display:
+            "block",
+          marginTop:
+            "4px",
+          color:
+            "#888",
+          fontSize:
+            "10px",
+          lineHeight:
+            1.5,
+        }}
+      >
+        {description}
+      </span>
+    </div>
+  );
+}
+
+/* =========================================================
+   LOCATIONS PAGE
+   ========================================================= */
+
+function LocationsPage({
+  workspace,
+}) {
+  return (
+    <section className="reviews-page">
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">
+              LOCATIONS
+            </div>
+
+            <h2>
+              Business locations
+            </h2>
+
+            <p
+              style={{
+                marginTop:
+                  "6px",
+                color:
+                  "#888",
+                fontSize:
+                  "11px",
+                lineHeight:
+                  1.6,
+              }}
+            >
+              Manage the locations connected
+              to your ReviewAuto workspace.
+            </p>
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop:
+              "18px",
+            padding:
+              "18px",
+            border:
+              "1px solid #e3e3de",
+            background:
+              "#fafaf8",
+          }}
+        >
+          <div
+            className="location-top"
+          >
+            <div className="google-mark">
+              G
+            </div>
+
+            <div className="location-title">
+              <div className="eyebrow">
+                GOOGLE BUSINESS PROFILE
+              </div>
+
+              <h3>
+                Not connected
+              </h3>
+            </div>
+
+            <span className="connected-badge disconnected">
+              NOT CONNECTED
+            </span>
+          </div>
+
+          <p
+            className="location-description"
+            style={{
+              maxWidth:
+                "620px",
+            }}
+          >
+            Your ReviewAuto workspace is
+            ready for a Google Business
+            Profile connection. The Google
+            OAuth integration will be added
+            later.
+          </p>
+
+          <button
+            type="button"
+            className="secondary-button"
+            disabled
+          >
+            Google connection
+            coming next
+          </button>
+        </div>
+      </section>
+
+      <section className="content-grid">
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                WORKSPACE
+              </div>
+
+              <h2>
+                Current business
+              </h2>
+            </div>
+          </div>
+
+          <InfoRow
+            label="Business name"
+            value={
+              workspace?.name ||
+              "—"
+            }
+          />
+
+          <InfoRow
+            label="Business ID"
+            value={
+              workspace?.id ||
+              "—"
+            }
+          />
+
+          <InfoRow
+            label="Google status"
+            value="Not connected"
+          />
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                NEXT INTEGRATION
+              </div>
+
+              <h2>
+                Google Business Profile
+              </h2>
+            </div>
+          </div>
+
+          <p
+            style={{
+              color:
+                "#777",
+              fontSize:
+                "11px",
+              lineHeight:
+                1.7,
+            }}
+          >
+            Once Google OAuth is connected,
+            this area will handle the Google
+            Business Profile location,
+            review synchronization and
+            publishing connection.
+          </p>
+
+          <div
+            style={{
+              marginTop:
+                "14px",
+            }}
+          >
+            <span className="status-pill">
+              BACKEND NOT CONNECTED
+            </span>
+          </div>
+        </section>
+      </section>
+    </section>
+  );
+}
+
+/* =========================================================
+   SETTINGS PAGE
+   ========================================================= */
+
+function SettingsPage({
+  workspace,
+  automation,
+  reviews,
+  onToggleAutomation,
+}) {
+  const enabled =
+    automation?.enabled === true;
+
+  const averageRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce(
+            (sum, review) =>
+              sum +
+              Number(
+                review.rating || 0
+              ),
+            0
+          ) /
+          reviews.length
+        ).toFixed(1)
+      : "—";
+
+  return (
+    <section className="reviews-page">
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">
+              SETTINGS
+            </div>
+
+            <h2>
+              Workspace settings
+            </h2>
+
+            <p
+              style={{
+                marginTop:
+                  "6px",
+                color:
+                  "#888",
+                fontSize:
+                  "11px",
+                lineHeight:
+                  1.6,
+              }}
+            >
+              ReviewAuto workspace information
+              and automation controls.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="content-grid">
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                WORKSPACE
+              </div>
+
+              <h2>
+                Business information
+              </h2>
+            </div>
+          </div>
+
+          <InfoRow
+            label="Business name"
+            value={
+              workspace?.name ||
+              "—"
+            }
+          />
+
+          <InfoRow
+            label="Business ID"
+            value={
+              workspace?.id ||
+              "—"
+            }
+          />
+
+          <InfoRow
+            label="Total reviews"
+            value={
+              String(
+                reviews.length
+              )
+            }
+          />
+
+          <InfoRow
+            label="Average rating"
+            value={
+              averageRating
+            }
+          />
+        </section>
+
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                AUTOMATION
+              </div>
+
+              <h2>
+                Automatic replies
+              </h2>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display:
+                "flex",
+              alignItems:
+                "center",
+              justifyContent:
+                "space-between",
+              gap:
+                "15px",
+              padding:
+                "14px 0",
+              borderBottom:
+                "1px solid #e8e8e3",
+            }}
+          >
+            <div>
+              <strong
+                style={{
+                  display:
+                    "block",
+                  fontSize:
+                    "11px",
+                }}
+              >
+                Automation status
+              </strong>
+
+              <span
+                style={{
+                  display:
+                    "block",
+                  marginTop:
+                    "4px",
+                  color:
+                    "#888",
+                  fontSize:
+                    "10px",
+                }}
+              >
+                {enabled
+                  ? "Automation is enabled."
+                  : "Automation is currently paused."}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              className={
+                enabled
+                  ? "switch enabled"
+                  : "switch"
+              }
+              aria-label="Toggle automation"
+              aria-pressed={
+                enabled
+              }
+              onClick={
+                onToggleAutomation
+              }
+            >
+              <span />
+            </button>
+          </div>
+
+          <div
+            style={{
+              marginTop:
+                "14px",
+            }}
+          >
+            <span
+              className={
+                enabled
+                  ? "status-pill active"
+                  : "status-pill paused"
+              }
+            >
+              {enabled
+                ? "ACTIVE"
+                : "PAUSED"}
+            </span>
+          </div>
+        </section>
+      </section>
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">
+              INTEGRATIONS
+            </div>
+
+            <h2>
+              Connected services
+            </h2>
+          </div>
+        </div>
+
+        <div
+          style={{
+            display:
+              "grid",
+            gridTemplateColumns:
+              "repeat(2, minmax(0, 1fr))",
+            gap:
+              "12px",
+          }}
+        >
+          <IntegrationCard
+            name="Google Business Profile"
+            status="Not connected"
+            description="Review synchronization and reply publishing."
+          />
+
+          <IntegrationCard
+            name="AI Review Engine"
+            status="Connected"
+            description="Groq-powered review analysis is active."
+            active
+          />
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function IntegrationCard({
+  name,
+  status,
+  description,
+  active = false,
+}) {
+  return (
+    <div
+      style={{
+        padding:
+          "16px",
+        border:
+          "1px solid #e3e3de",
+        background:
+          "#fafaf8",
+      }}
+    >
+      <div
+        style={{
+          display:
+            "flex",
+          justifyContent:
+            "space-between",
+          alignItems:
+            "flex-start",
+          gap:
+            "10px",
+        }}
+      >
+        <strong
+          style={{
+            fontSize:
+              "11px",
+          }}
+        >
+          {name}
+        </strong>
+
+        <span
+          className={
+            active
+              ? "status-pill active"
+              : "status-pill paused"
+          }
+        >
+          {status.toUpperCase()}
+        </span>
       </div>
 
-      <h2>{page}</h2>
-
-      <p>
-        This section will be
-        connected during the next
-        development stage.
-      </p>
-
-      <button
-        type="button"
-        className="primary-button"
-        onClick={onBack}
+      <p
+        style={{
+          marginTop:
+            "8px",
+          color:
+            "#888",
+          fontSize:
+            "10px",
+          lineHeight:
+            1.6,
+        }}
       >
-        Back to dashboard
-      </button>
-    </section>
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function InfoRow({
+  label,
+  value,
+}) {
+  return (
+    <div
+      style={{
+        display:
+          "flex",
+        justifyContent:
+          "space-between",
+        alignItems:
+          "center",
+        gap:
+          "15px",
+        padding:
+          "12px 0",
+        borderBottom:
+          "1px solid #e8e8e3",
+      }}
+    >
+      <span
+        style={{
+          color:
+            "#888",
+          fontSize:
+            "10px",
+        }}
+      >
+        {label}
+      </span>
+
+      <strong
+        style={{
+          color:
+            "#222",
+          fontSize:
+            "10px",
+          textAlign:
+            "right",
+          maxWidth:
+            "65%",
+          overflow:
+            "hidden",
+          textOverflow:
+            "ellipsis",
+          whiteSpace:
+            "nowrap",
+        }}
+        title={value}
+      >
+        {value}
+      </strong>
+    </div>
   );
 }
 
