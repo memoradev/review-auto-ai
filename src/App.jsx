@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "./lib/supabaseClient";
 import Auth from "./components/Auth";
 
@@ -18,19 +18,33 @@ function App() {
     let mounted = true;
 
     async function loadSession() {
-      const { data, error } =
-        await supabase.auth.getSession();
+      try {
+        const {
+          data,
+          error,
+        } = await supabase.auth.getSession();
 
-      if (error) {
+        if (error) {
+          console.error(
+            "Failed to load session:",
+            error
+          );
+        }
+
+        if (mounted) {
+          setSession(data?.session || null);
+          setLoading(false);
+        }
+      } catch (error) {
         console.error(
-          "Failed to load session:",
+          "Session loading error:",
           error
         );
-      }
 
-      if (mounted) {
-        setSession(data?.session || null);
-        setLoading(false);
+        if (mounted) {
+          setSession(null);
+          setLoading(false);
+        }
       }
     }
 
@@ -40,19 +54,16 @@ function App() {
       data: authListener,
     } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
-        setSession(newSession);
+        if (mounted) {
+          setSession(newSession);
+        }
       }
     );
 
     return () => {
       mounted = false;
 
-      if (
-        authListener &&
-        authListener.subscription
-      ) {
-        authListener.subscription.unsubscribe();
-      }
+      authListener?.subscription?.unsubscribe();
     };
   }, []);
 
@@ -94,11 +105,80 @@ function Dashboard({ session }) {
     useState(true);
 
   const [reviewsLoading, setReviewsLoading] =
-    useState(false);
+    useState(true);
 
   const [workspaceError, setWorkspaceError] =
     useState("");
 
+  /*
+   * Load reviews.
+   *
+   * Important:
+   * This function does NOT automatically turn
+   * reviewsLoading on during background refreshes.
+   *
+   * That prevents:
+   *
+   * reviews -> Loading...
+   * reviews -> data
+   * reviews -> Loading...
+   * reviews -> data
+   *
+   * every few seconds.
+   */
+  const loadReviews = useCallback(
+    async (businessId, showLoading = false) => {
+      if (!businessId) {
+        return;
+      }
+
+      if (showLoading) {
+        setReviewsLoading(true);
+      }
+
+      try {
+        const {
+          data,
+          error,
+        } = await supabase
+          .from("reviews")
+          .select("*")
+          .eq("business_id", businessId)
+          .order("created_at", {
+            ascending: false,
+          });
+
+        if (error) {
+          console.error(
+            "Review loading error:",
+            error
+          );
+
+          /*
+           * Do NOT erase already loaded reviews
+           * just because a background refresh failed.
+           */
+          return;
+        }
+
+        setReviews(data || []);
+      } catch (error) {
+        console.error(
+          "Unexpected review loading error:",
+          error
+        );
+      } finally {
+        if (showLoading) {
+          setReviewsLoading(false);
+        }
+      }
+    },
+    []
+  );
+
+  /*
+   * Load workspace once after authentication.
+   */
   useEffect(() => {
     let mounted = true;
 
@@ -143,16 +223,23 @@ function Dashboard({ session }) {
           throw automationError;
         }
 
-        if (mounted) {
-          setWorkspace(business);
-          setAutomation(
-            automationSettings
-          );
+        if (!mounted) {
+          return;
         }
 
+        setWorkspace(business);
+        setAutomation(
+          automationSettings
+        );
+
+        /*
+         * Initial review load.
+         * This is the ONLY time we show
+         * "Loading reviews..."
+         */
         await loadReviews(
           business.id,
-          mounted
+          true
         );
       } catch (error) {
         console.error(
@@ -178,68 +265,74 @@ function Dashboard({ session }) {
     return () => {
       mounted = false;
     };
-  }, [session.user.id]);
+  }, [
+    session.user.id,
+    loadReviews,
+  ]);
 
   /*
-   * Automatically refresh reviews every 5 seconds.
+   * Background review refresh.
    *
-   * This allows the UI to pick up:
-   * - AI sentiment
-   * - AI risk
-   * - AI generated reply
-   * - automation status
-   *
-   * after the database trigger finishes processing
-   * a newly inserted review.
+   * This refreshes silently so newly analyzed
+   * reviews appear without showing a loading
+   * screen every 5 seconds.
    */
   useEffect(() => {
     if (!workspace?.id) {
-      return;
+      return undefined;
     }
 
     const interval = setInterval(() => {
-      loadReviews(workspace.id);
+      loadReviews(
+        workspace.id,
+        false
+      );
     }, 5000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [workspace?.id]);
+  }, [
+    workspace?.id,
+    loadReviews,
+  ]);
 
-  async function loadReviews(
-    businessId,
-    mounted = true
-  ) {
-    setReviewsLoading(true);
+  /*
+   * Also refresh when the browser tab becomes
+   * visible again.
+   */
+  useEffect(() => {
+    if (!workspace?.id) {
+      return undefined;
+    }
 
-    const {
-      data,
-      error,
-    } = await supabase
-      .from("reviews")
-      .select("*")
-      .eq("business_id", businessId)
-      .order("created_at", {
-        ascending: false,
-      });
-
-    if (error) {
-      console.error(
-        "Review loading error:",
-        error
-      );
-
-      if (mounted) {
-        setReviews([]);
+    function handleVisibilityChange() {
+      if (
+        document.visibilityState ===
+        "visible"
+      ) {
+        loadReviews(
+          workspace.id,
+          false
+        );
       }
-    } else if (mounted) {
-      setReviews(data || []);
     }
 
-    if (mounted) {
-      setReviewsLoading(false);
-    }
-  }
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+    };
+  }, [
+    workspace?.id,
+    loadReviews,
+  ]);
 
   async function handleSignOut() {
     const { error } =
@@ -1164,7 +1257,14 @@ function ReviewMetric({
 
 function ReviewRow({
   review,
+  setReviews,
 }) {
+  const [analyzing, setAnalyzing] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
   const rating =
     Number(review.rating || 0);
 
@@ -1196,6 +1296,238 @@ function ReviewRow({
   ) {
     status =
       review.automation_status.toUpperCase();
+  }
+
+  /*
+   * Read an Edge Function error properly.
+   *
+   * Supabase often gives the frontend only:
+   * "Edge Function returned a non-2xx status code"
+   *
+   * The actual JSON response can be inside
+   * error.context.
+   */
+  async function getFunctionErrorMessage(
+    functionError
+  ) {
+    if (!functionError) {
+      return "AI analysis failed.";
+    }
+
+    let message =
+      functionError.message ||
+      "AI analysis failed.";
+
+    try {
+      const context =
+        functionError.context;
+
+      if (
+        context &&
+        typeof context.json ===
+          "function"
+      ) {
+        const body =
+          await context.json();
+
+        if (body?.error) {
+          message =
+            body.error;
+        } else if (
+          body?.message
+        ) {
+          message =
+            body.message;
+        } else if (
+          body?.details
+        ) {
+          message =
+            body.details;
+        }
+      }
+    } catch {
+      /*
+       * The response may already have
+       * been consumed or may not be JSON.
+       */
+    }
+
+    return message;
+  }
+
+  async function analyzeReview() {
+    if (analyzing) {
+      return;
+    }
+
+    setAnalyzing(true);
+    setError("");
+
+    try {
+      /*
+       * Get the current authenticated session.
+       */
+      const {
+        data,
+        error: sessionError,
+      } =
+        await supabase.auth.getSession();
+
+      if (sessionError) {
+        throw new Error(
+          sessionError.message ||
+            "Unable to verify your session."
+        );
+      }
+
+      const currentSession =
+        data?.session;
+
+      if (
+        !currentSession?.access_token
+      ) {
+        throw new Error(
+          "Your session has expired. Please sign in again."
+        );
+      }
+
+      if (!review?.id) {
+        throw new Error(
+          "This review does not have a valid review ID."
+        );
+      }
+
+      /*
+       * IMPORTANT:
+       *
+       * Do NOT put your Vault secret,
+       * service-role key, or automation key
+       * in this frontend code.
+       *
+       * The Edge Function must authenticate
+       * this request using the user's JWT.
+       */
+      const {
+        data: result,
+        error: functionError,
+      } =
+        await supabase.functions.invoke(
+          "analyze-review",
+          {
+            body: {
+              review_id:
+                review.id,
+            },
+
+            headers: {
+              Authorization:
+                `Bearer ${currentSession.access_token}`,
+            },
+          }
+        );
+
+      if (functionError) {
+        const readableError =
+          await getFunctionErrorMessage(
+            functionError
+          );
+
+        throw new Error(
+          readableError
+        );
+      }
+
+      if (!result) {
+        throw new Error(
+          "The AI function returned an empty response."
+        );
+      }
+
+      if (
+        result.success === false
+      ) {
+        throw new Error(
+          result.error ||
+            result.message ||
+            "AI analysis failed."
+        );
+      }
+
+      /*
+       * Your successful function response
+       * contains result.review.
+       */
+      if (result.review) {
+        setReviews(
+          (current) =>
+            current.map(
+              (item) =>
+                item.id ===
+                review.id
+                  ? {
+                      ...item,
+                      ...result.review,
+                    }
+                  : item
+            )
+        );
+
+        return;
+      }
+
+      /*
+       * If the function succeeded but didn't
+       * return the complete review object,
+       * fetch this review directly.
+       */
+      const {
+        data: updatedReview,
+        error: refreshError,
+      } =
+        await supabase
+          .from("reviews")
+          .select("*")
+          .eq("id", review.id)
+          .maybeSingle();
+
+      if (refreshError) {
+        console.error(
+          "Updated review fetch failed:",
+          refreshError
+        );
+
+        /*
+         * The function itself succeeded,
+         * so don't report this as an AI failure.
+         */
+        return;
+      }
+
+      if (updatedReview) {
+        setReviews(
+          (current) =>
+            current.map(
+              (item) =>
+                item.id ===
+                review.id
+                  ? updatedReview
+                  : item
+            )
+        );
+      }
+    } catch (err) {
+      console.error(
+        "AI analysis failed:",
+        err
+      );
+
+      setError(
+        err?.message ||
+          "AI analysis failed."
+      );
+    } finally {
+      setAnalyzing(false);
+    }
   }
 
   return (
@@ -1289,6 +1621,41 @@ function ReviewRow({
             </div>
           </div>
         )}
+
+        {error && (
+          <div
+            style={{
+              marginTop: "8px",
+              color: "#b42318",
+              fontSize: "10px",
+              lineHeight: 1.5,
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={analyzeReview}
+          disabled={analyzing}
+          style={{
+            marginTop: "10px",
+            opacity: analyzing
+              ? 0.6
+              : 1,
+            cursor: analyzing
+              ? "wait"
+              : "pointer",
+          }}
+        >
+          {analyzing
+            ? "Analyzing..."
+            : review.ai_generated_reply
+            ? "Analyze again"
+            : "Analyze with AI"}
+        </button>
 
         {!review.ai_generated_reply &&
           review.automation_status ===
