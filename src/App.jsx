@@ -1,3 +1,4 @@
+```jsx
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
 import Auth from "./components/Auth";
