@@ -37,16 +37,23 @@ function App() {
 
     loadSession();
 
-    const { data: authListener } =
-      supabase.auth.onAuthStateChange(
-        (_event, newSession) => {
-          setSession(newSession);
-        }
-      );
+    const {
+      data: authListener,
+    } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        setSession(newSession);
+      }
+    );
 
     return () => {
       mounted = false;
-      authListener?.subscription?.unsubscribe();
+
+      if (
+        authListener &&
+        authListener.subscription
+      ) {
+        authListener.subscription.unsubscribe();
+      }
     };
   }, []);
 
@@ -405,9 +412,7 @@ function Sidebar({
                 : "nav-item"
             }
             onClick={() =>
-              setActivePage(
-                item.name
-              )
+              setActivePage(item.name)
             }
           >
             <span className="nav-icon">
@@ -443,7 +448,10 @@ function Sidebar({
 
           <div className="account-details">
             <strong>{email}</strong>
-            <span>Authenticated</span>
+
+            <span>
+              Authenticated
+            </span>
           </div>
 
           <button
@@ -460,9 +468,12 @@ function Sidebar({
   );
 }
 
-function getInitials(email = "") {
+function getInitials(email) {
   const first =
-    email.trim().charAt(0).toUpperCase();
+    String(email || "")
+      .trim()
+      .charAt(0)
+      .toUpperCase();
 
   return first || "U";
 }
@@ -763,20 +774,23 @@ function ReviewsPanel({
   );
 }
 
+/*
+ * FULL REVIEWS PAGE
+ */
 function FullReviewsPage({
   reviews,
   setReviews,
   loading,
 }) {
-  const [filter, setFilter] =
-    useState("all");
-
   const [search, setSearch] =
     useState("");
 
+  const [filter, setFilter] =
+    useState("all");
+
   const filteredReviews =
     reviews.filter((review) => {
-      const searchText =
+      const query =
         search.trim().toLowerCase();
 
       const customerName =
@@ -792,13 +806,9 @@ function FullReviewsPage({
         ).toLowerCase();
 
       const matchesSearch =
-        !searchText ||
-        customerName.includes(
-          searchText
-        ) ||
-        reviewText.includes(
-          searchText
-        );
+        query === "" ||
+        customerName.includes(query) ||
+        reviewText.includes(query);
 
       if (!matchesSearch) {
         return false;
@@ -808,7 +818,8 @@ function FullReviewsPage({
         return (
           review.ai_sentiment ===
             "positive" ||
-          Number(review.rating) >= 4
+          Number(review.rating || 0) >=
+            4
         );
       }
 
@@ -816,14 +827,12 @@ function FullReviewsPage({
         return (
           review.ai_sentiment ===
             "negative" ||
-          Number(review.rating) <= 2
+          Number(review.rating || 0) <=
+            2
         );
       }
 
-      if (
-        filter ===
-        "needs_attention"
-      ) {
+      if (filter === "attention") {
         return (
           review.automation_status ===
             "awaiting_approval" ||
@@ -861,7 +870,8 @@ function FullReviewsPage({
       (review) =>
         review.ai_sentiment ===
           "positive" ||
-        Number(review.rating) >= 4
+        Number(review.rating || 0) >=
+          4
     ).length;
 
   const attention =
@@ -975,7 +985,7 @@ function FullReviewsPage({
             placeholder="Search reviews..."
             style={{
               flex:
-                "1 1 220px",
+                "1 1 240px",
               minWidth: "200px",
               padding:
                 "11px 12px",
@@ -1024,7 +1034,7 @@ function FullReviewsPage({
               Negative
             </option>
 
-            <option value="needs_attention">
+            <option value="attention">
               Needs attention
             </option>
           </select>
@@ -1039,11 +1049,11 @@ function FullReviewsPage({
             </div>
 
             <h2>
+              {filteredReviews.length}{" "}
               {filteredReviews.length ===
               1
-                ? "1 review"
-                : filteredReviews.length +
-                  " reviews"}
+                ? "review"
+                : "reviews"}
             </h2>
           </div>
         </div>
@@ -1154,16 +1164,24 @@ function ReviewRow({
       5 - safeRating
     );
 
-  const status =
+  let status = "PENDING";
+
+  if (
     review.reply_status ===
     "published"
-      ? "REPLIED"
-      : review.automation_status ===
-        "awaiting_approval"
-      ? "APPROVAL"
-      : review.automation_status
-          ?.toUpperCase() ||
-        "PENDING";
+  ) {
+    status = "REPLIED";
+  } else if (
+    review.automation_status ===
+    "awaiting_approval"
+  ) {
+    status = "APPROVAL";
+  } else if (
+    review.automation_status
+  ) {
+    status =
+      review.automation_status.toUpperCase();
+  }
 
   async function analyzeReview() {
     setAnalyzing(true);
@@ -1218,17 +1236,14 @@ function ReviewRow({
         );
       }
 
-      const updatedReview =
-        data.review;
-
-      if (updatedReview) {
+      if (data.review) {
         setReviews(
           (current) =>
             current.map(
               (item) =>
                 item.id ===
                 review.id
-                  ? updatedReview
+                  ? data.review
                   : item
             )
         );
