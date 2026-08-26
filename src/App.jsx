@@ -180,6 +180,32 @@ function Dashboard({ session }) {
     };
   }, [session.user.id]);
 
+  /*
+   * Automatically refresh reviews every 5 seconds.
+   *
+   * This allows the UI to pick up:
+   * - AI sentiment
+   * - AI risk
+   * - AI generated reply
+   * - automation status
+   *
+   * after the database trigger finishes processing
+   * a newly inserted review.
+   */
+  useEffect(() => {
+    if (!workspace?.id) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      loadReviews(workspace.id);
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [workspace?.id]);
+
   async function loadReviews(
     businessId,
     mounted = true
@@ -773,9 +799,6 @@ function ReviewsPanel({
   );
 }
 
-/*
- * FULL REVIEWS PAGE
- */
 function FullReviewsPage({
   reviews,
   setReviews,
@@ -1141,14 +1164,7 @@ function ReviewMetric({
 
 function ReviewRow({
   review,
-  setReviews,
 }) {
-  const [analyzing, setAnalyzing] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
   const rating =
     Number(review.rating || 0);
 
@@ -1180,86 +1196,6 @@ function ReviewRow({
   ) {
     status =
       review.automation_status.toUpperCase();
-  }
-
-  async function analyzeReview() {
-    setAnalyzing(true);
-    setError("");
-
-    try {
-      const {
-        data: {
-          session,
-        },
-        error: sessionError,
-      } =
-        await supabase.auth.getSession();
-
-      if (sessionError) {
-        throw sessionError;
-      }
-
-      if (!session?.access_token) {
-        throw new Error(
-          "Your session has expired. Please sign in again."
-        );
-      }
-
-      const {
-        data,
-        error: functionError,
-      } =
-        await supabase.functions.invoke(
-          "analyze-review",
-          {
-            body: {
-              review_id:
-                review.id,
-            },
-            headers: {
-              Authorization:
-                "Bearer " +
-                session.access_token,
-            },
-          }
-        );
-
-      if (functionError) {
-        throw functionError;
-      }
-
-      if (!data?.success) {
-        throw new Error(
-          data?.error ||
-            "AI analysis failed."
-        );
-      }
-
-      if (data.review) {
-        setReviews(
-          (current) =>
-            current.map(
-              (item) =>
-                item.id ===
-                review.id
-                  ? data.review
-                  : item
-            )
-        );
-      }
-    } catch (err) {
-      console.error(
-        "AI analysis failed:",
-        err
-      );
-
-      setError(
-        err?.message ||
-          "AI analysis failed."
-      );
-    } finally {
-      setAnalyzing(false);
-    }
   }
 
   return (
@@ -1354,34 +1290,20 @@ function ReviewRow({
           </div>
         )}
 
-        {error && (
-          <div
-            style={{
-              marginTop: "8px",
-              color: "#b42318",
-              fontSize: "10px",
-              lineHeight: 1.5,
-            }}
-          >
-            {error}
-          </div>
-        )}
-
-        <button
-          type="button"
-          className="secondary-button"
-          onClick={analyzeReview}
-          disabled={analyzing}
-          style={{
-            marginTop: "10px",
-          }}
-        >
-          {analyzing
-            ? "Analyzing..."
-            : review.ai_generated_reply
-            ? "Analyze again"
-            : "Analyze with AI"}
-        </button>
+        {!review.ai_generated_reply &&
+          review.automation_status ===
+            "pending" && (
+            <div
+              style={{
+                marginTop: "10px",
+                color: "#888",
+                fontSize: "10px",
+              }}
+            >
+              AI analysis is being
+              processed automatically...
+            </div>
+          )}
       </div>
 
       <div
