@@ -325,6 +325,72 @@ function Dashboard({ session }) {
     setAutomation(data);
   }
 
+  /*
+   * -------------------------------------------------------
+   * FEEDBACK LINK MANAGEMENT
+   * -------------------------------------------------------
+   */
+
+  async function toggleFeedbackEnabled() {
+    if (!workspace) {
+      return;
+    }
+
+    const newValue =
+      workspace.feedback_enabled === false;
+
+    const {
+      data,
+      error,
+    } = await supabase
+      .from("businesses")
+      .update({
+        feedback_enabled: newValue,
+      })
+      .eq(
+        "id",
+        workspace.id
+      )
+      .eq(
+        "owner_id",
+        session.user.id
+      )
+      .select()
+      .single();
+
+    if (error) {
+      console.error(
+        "Feedback link update failed:",
+        error
+      );
+      return;
+    }
+
+    setWorkspace(data);
+  }
+
+  async function copyFeedbackLink() {
+    if (
+      !workspace?.feedback_slug
+    ) {
+      return;
+    }
+
+    const feedbackUrl =
+      `${window.location.origin}/f/${workspace.feedback_slug}`;
+
+    try {
+      await navigator.clipboard.writeText(
+        feedbackUrl
+      );
+    } catch (error) {
+      console.error(
+        "Failed to copy feedback link:",
+        error
+      );
+    }
+  }
+
   if (workspaceLoading) {
     return <LoadingScreen />;
   }
@@ -365,6 +431,16 @@ function Dashboard({ session }) {
             }
             onToggleAutomation={
               toggleAutomation
+            }
+          />
+        ) : activePage === "Settings" ? (
+          <SettingsContent
+            workspace={workspace}
+            onToggleFeedback={
+              toggleFeedbackEnabled
+            }
+            onCopyFeedbackLink={
+              copyFeedbackLink
             }
           />
         ) : (
@@ -508,11 +584,11 @@ function Sidebar({
 
           <div>
             <strong>
-              Google not connected
+              Feedback collection
             </strong>
 
             <span>
-              Connection coming next
+              ReviewAuto link active
             </span>
           </div>
         </div>
@@ -908,10 +984,10 @@ function ReviewsPanel({
             </strong>
 
             <span>
-              Customer feedback
-              collected through
-              ReviewAuto will appear
-              here automatically.
+              Share your ReviewAuto
+              feedback link to start
+              collecting customer
+              experiences.
             </span>
           </div>
         ) : (
@@ -1316,6 +1392,217 @@ function LocationPanel() {
         </button>
       </div>
     </section>
+  );
+}
+
+/*
+ * ---------------------------------------------------------
+ * SETTINGS — PHASE 2A
+ * ---------------------------------------------------------
+ */
+
+function SettingsContent({
+  workspace,
+  onToggleFeedback,
+  onCopyFeedbackLink,
+}) {
+  const feedbackSlug =
+    workspace?.feedback_slug ||
+    "";
+
+  const feedbackUrl =
+    feedbackSlug
+      ? `${window.location.origin}/f/${feedbackSlug}`
+      : "";
+
+  const feedbackEnabled =
+    workspace?.feedback_enabled !==
+    false;
+
+  return (
+    <section className="content-grid">
+      <div className="left-column">
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                FEEDBACK COLLECTION
+              </div>
+
+              <h2>
+                ReviewAuto feedback link
+              </h2>
+            </div>
+
+            <span
+              className={
+                feedbackEnabled
+                  ? "status-pill active"
+                  : "status-pill paused"
+              }
+            >
+              {feedbackEnabled
+                ? "ACTIVE"
+                : "PAUSED"}
+            </span>
+          </div>
+
+          <p
+            style={{
+              color: "#777",
+              fontSize: "11px",
+              lineHeight: 1.6,
+              marginBottom: "14px",
+            }}
+          >
+            Share this link with
+            customers to collect
+            feedback directly through
+            ReviewAuto.
+          </p>
+
+          {feedbackUrl ? (
+            <>
+              <div
+                style={{
+                  padding:
+                    "10px 12px",
+                  background:
+                    "#f5f5f2",
+                  border:
+                    "1px solid #e4e4df",
+                  fontSize: "11px",
+                  lineHeight: 1.5,
+                  wordBreak:
+                    "break-all",
+                  marginBottom:
+                    "10px",
+                }}
+              >
+                {feedbackUrl}
+              </div>
+
+              <div
+                style={{
+                  display:
+                    "flex",
+                  gap: "8px",
+                  flexWrap:
+                    "wrap",
+                }}
+              >
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={
+                    onCopyFeedbackLink
+                  }
+                >
+                  Copy feedback link
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={
+                    onToggleFeedback
+                  }
+                >
+                  {feedbackEnabled
+                    ? "Disable feedback"
+                    : "Enable feedback"}
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="empty-state">
+              <strong>
+                Feedback link unavailable
+              </strong>
+
+              <span>
+                This workspace does
+                not have a feedback link
+                configured yet.
+              </span>
+            </div>
+          )}
+        </section>
+      </div>
+
+      <div className="right-column">
+        <section className="panel">
+          <div className="panel-header">
+            <div>
+              <div className="eyebrow">
+                CUSTOMER EXPERIENCE
+              </div>
+
+              <h2>
+                How to use it
+              </h2>
+            </div>
+          </div>
+
+          <div className="workflow-list">
+            <WorkflowStep
+              number="01"
+              title="Share your link"
+              description="Send the ReviewAuto feedback link to customers after an interaction."
+            />
+
+            <WorkflowStep
+              number="02"
+              title="Customer responds"
+              description="Customers submit a rating and describe their experience."
+            />
+
+            <WorkflowStep
+              number="03"
+              title="ReviewAuto analyzes"
+              description="The Review Engine analyzes sentiment, risk and intent."
+            />
+
+            <WorkflowStep
+              number="04"
+              title="Take action"
+              description="ReviewAuto generates the appropriate response and next step."
+              last
+            />
+          </div>
+        </section>
+      </div>
+    </section>
+  );
+}
+
+/*
+ * ---------------------------------------------------------
+ * WORKFLOW STEP
+ * ---------------------------------------------------------
+ */
+
+function WorkflowStep({
+  number,
+  title,
+  description,
+}) {
+  return (
+    <div className="workflow-step">
+      <div className="workflow-number">
+        {number}
+      </div>
+
+      <div>
+        <strong>
+          {title}
+        </strong>
+
+        <p>
+          {description}
+        </p>
+      </div>
+    </div>
   );
 }
 
