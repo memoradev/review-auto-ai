@@ -331,131 +331,68 @@ function Dashboard({ session }) {
    * -------------------------------------------------------
    */
 
-  async function toggleFeedbackEnabled() {
-    if (!workspace) {
-      return;
-    }
-
-    const newValue =
-      workspace.feedback_enabled === false;
-
-    const {
-      data,
-      error,
-    } = await supabase
-      .from("businesses")
-      .update({
-        feedback_enabled: newValue,
-      })
-      .eq(
-        "id",
-        workspace.id
-      )
-      .eq(
-        "owner_id",
-        session.user.id
-      )
-      .select()
-      .single();
-
-    if (error) {
-      console.error(
-        "Feedback link update failed:",
-        error
-      );
-      return;
-    }
-
-    setWorkspace(data);
+ async function copyFeedbackLink() {
+  if (!workspace?.feedback_slug) {
+    return;
   }
 
-  async function copyFeedbackLink() {
+  const feedbackUrl =
+    `${window.location.origin}/f/${workspace.feedback_slug}`;
+
+  try {
     if (
-      !workspace?.feedback_slug
+      navigator.clipboard &&
+      window.isSecureContext
     ) {
-      return;
-    }
-
-    const feedbackUrl =
-      `${window.location.origin}/f/${workspace.feedback_slug}`;
-
-    try {
       await navigator.clipboard.writeText(
         feedbackUrl
       );
-    } catch (error) {
-      console.error(
-        "Failed to copy feedback link:",
-        error
+
+      return;
+    }
+
+    // Fallback for browsers where Clipboard API
+    // is unavailable or blocked.
+    const textArea =
+      document.createElement("textarea");
+
+    textArea.value = feedbackUrl;
+
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    textArea.style.top = "0";
+
+    document.body.appendChild(
+      textArea
+    );
+
+    textArea.focus();
+    textArea.select();
+
+    const successful =
+      document.execCommand("copy");
+
+    document.body.removeChild(
+      textArea
+    );
+
+    if (!successful) {
+      throw new Error(
+        "Browser blocked clipboard access."
       );
     }
-  }
+  } catch (error) {
+    console.error(
+      "Failed to copy feedback link:",
+      error
+    );
 
-  if (workspaceLoading) {
-    return <LoadingScreen />;
-  }
-
-  if (workspaceError) {
-    return (
-      <WorkspaceError
-        message={workspaceError}
-        onSignOut={handleSignOut}
-      />
+    // Last-resort fallback:
+    window.prompt(
+      "Copy your feedback link:",
+      feedbackUrl
     );
   }
-
-  return (
-    <div className="app">
-      <Sidebar
-        activePage={activePage}
-        setActivePage={setActivePage}
-        email={session.user.email}
-        businessName={workspace?.name}
-        onSignOut={handleSignOut}
-      />
-
-      <main className="main">
-        <Header
-          activePage={activePage}
-          businessName={workspace?.name}
-        />
-
-        {activePage === "Dashboard" ? (
-          <DashboardContent
-            workspace={workspace}
-            automation={automation}
-            reviews={reviews}
-            setReviews={setReviews}
-            reviewsLoading={
-              reviewsLoading
-            }
-            onToggleAutomation={
-              toggleAutomation
-            }
-          />
-        ) : activePage === "Settings" ? (
-          <SettingsContent
-            workspace={workspace}
-            onToggleFeedback={
-              toggleFeedbackEnabled
-            }
-            onCopyFeedbackLink={
-              copyFeedbackLink
-            }
-          />
-        ) : (
-          <PlaceholderPage
-            page={activePage}
-            onBack={() =>
-              setActivePage(
-                "Dashboard"
-              )
-            }
-          />
-        )}
-      </main>
-    </div>
-  );
 }
 
 /*
