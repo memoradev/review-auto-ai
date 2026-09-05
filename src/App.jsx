@@ -6,6 +6,7 @@ import FeedbackPage from "./components/FeedbackPage";
 const navigation = [
   { name: "Dashboard", icon: "⌂" },
   { name: "Reviews", icon: "★" },
+  { name: "Website Widget", icon: "▣" },
   { name: "Locations", icon: "⌖" },
   { name: "Automation", icon: "⚡" },
   { name: "Settings", icon: "⚙" },
@@ -364,13 +365,40 @@ function Dashboard({ session }) {
     const feedbackUrl =
       `${window.location.origin}/f/${workspace.feedback_slug}`;
 
+    return copyText(
+      feedbackUrl,
+      "feedback link"
+    );
+  }
+
+  async function copyWidgetCode() {
+    if (!workspace?.feedback_slug) {
+      return false;
+    }
+
+    const feedbackUrl =
+      `${window.location.origin}/f/${workspace.feedback_slug}`;
+
+    const embedCode =
+      `<iframe\n  src="${feedbackUrl}"\n  title="Customer feedback"\n  width="100%"\n  height="560"\n  frameborder="0"\n  style="border:0; max-width:100%;"\n  loading="lazy"\n></iframe>`;
+
+    return copyText(
+      embedCode,
+      "widget embed code"
+    );
+  }
+
+  async function copyText(
+    text,
+    label = "text"
+  ) {
     try {
       if (
         navigator.clipboard &&
         window.isSecureContext
       ) {
         await navigator.clipboard.writeText(
-          feedbackUrl
+          text
         );
 
         return true;
@@ -381,8 +409,7 @@ function Dashboard({ session }) {
           "textarea"
         );
 
-      textArea.value =
-        feedbackUrl;
+      textArea.value = text;
 
       textArea.setAttribute(
         "readonly",
@@ -425,13 +452,13 @@ function Dashboard({ session }) {
       );
     } catch (error) {
       console.error(
-        "Failed to copy feedback link:",
+        `Failed to copy ${label}:`,
         error
       );
 
       window.prompt(
-        "Copy your feedback link:",
-        feedbackUrl
+        `Copy your ${label}:`,
+        text
       );
 
       return false;
@@ -496,6 +523,17 @@ function Dashboard({ session }) {
             setReviews={setReviews}
             loading={
               reviewsLoading
+            }
+          />
+        ) : activePage ===
+          "Website Widget" ? (
+          <WebsiteWidgetPage
+            workspace={workspace}
+            onCopyWidgetCode={
+              copyWidgetCode
+            }
+            onCopyFeedbackLink={
+              copyFeedbackLink
             }
           />
         ) : activePage ===
@@ -1844,6 +1882,289 @@ function ReviewRow({
     </article>
   );
 }
+
+/* =========================================================
+   PHASE 2C — WEBSITE FEEDBACK WIDGET
+   ========================================================= */
+
+function WebsiteWidgetPage({
+  workspace,
+  onCopyWidgetCode,
+  onCopyFeedbackLink,
+}) {
+  const [copiedWidget, setCopiedWidget] =
+    useState(false);
+
+  const [copiedLink, setCopiedLink] =
+    useState(false);
+
+  if (!workspace) {
+    return null;
+  }
+
+  const feedbackEnabled =
+    workspace.feedback_enabled !==
+    false;
+
+  const feedbackUrl =
+    workspace.feedback_slug
+      ? `${window.location.origin}/f/${workspace.feedback_slug}`
+      : "";
+
+  const embedCode =
+    feedbackUrl
+      ? `<iframe
+  src="${feedbackUrl}"
+  title="Customer feedback"
+  width="100%"
+  height="560"
+  frameborder="0"
+  style="border:0; max-width:100%;"
+  loading="lazy"
+></iframe>`
+      : "";
+
+  async function handleCopyWidget() {
+    const success =
+      await onCopyWidgetCode();
+
+    if (success) {
+      setCopiedWidget(true);
+
+      setTimeout(() => {
+        setCopiedWidget(false);
+      }, 1800);
+    }
+  }
+
+  async function handleCopyLink() {
+    const success =
+      await onCopyFeedbackLink();
+
+    if (success) {
+      setCopiedLink(true);
+
+      setTimeout(() => {
+        setCopiedLink(false);
+      }, 1800);
+    }
+  }
+
+  return (
+    <section>
+      <div className="panel">
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">
+              WEBSITE WIDGET
+            </div>
+
+            <h2>
+              Collect feedback on your website
+            </h2>
+          </div>
+
+          <span
+            className={
+              feedbackEnabled
+                ? "status-pill active"
+                : "status-pill paused"
+            }
+          >
+            {feedbackEnabled
+              ? "ACTIVE"
+              : "PAUSED"}
+          </span>
+        </div>
+
+        <p
+          style={{
+            color: "#777",
+            fontSize: "11px",
+            lineHeight: 1.6,
+            maxWidth: "650px",
+            marginTop: "10px",
+          }}
+        >
+          Add the ReviewAuto feedback
+          form directly to your website.
+          Customer submissions use the
+          same ReviewAuto feedback engine
+          and existing automation workflow.
+        </p>
+
+        {!feedbackUrl ? (
+          <div
+            className="empty-state"
+            style={{
+              marginTop: "20px",
+            }}
+          >
+            <strong>
+              Widget unavailable
+            </strong>
+
+            <span>
+              Your workspace does not have
+              a feedback link configured yet.
+            </span>
+          </div>
+        ) : (
+          <>
+            <div
+              style={{
+                marginTop: "22px",
+              }}
+            >
+              <div className="eyebrow">
+                EMBED CODE
+              </div>
+
+              <div
+                style={{
+                  marginTop: "10px",
+                  padding: "14px",
+                  background:
+                    "#f5f5f2",
+                  border:
+                    "1px solid #e3e3de",
+                  overflowX:
+                    "auto",
+                  whiteSpace:
+                    "pre-wrap",
+                  wordBreak:
+                    "break-word",
+                  fontFamily:
+                    "monospace",
+                  fontSize: "10px",
+                  lineHeight: 1.7,
+                  color: "#333",
+                }}
+              >
+                {embedCode}
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "8px",
+                  flexWrap: "wrap",
+                  marginTop: "12px",
+                }}
+              >
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={
+                    handleCopyWidget
+                  }
+                >
+                  {copiedWidget
+                    ? "Copied"
+                    : "Copy embed code"}
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={
+                    handleCopyLink
+                  }
+                >
+                  {copiedLink
+                    ? "Copied"
+                    : "Copy feedback link"}
+                </button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: "26px",
+              }}
+            >
+              <div className="eyebrow">
+                PREVIEW
+              </div>
+
+              <div
+                style={{
+                  marginTop: "10px",
+                  padding: "20px",
+                  background:
+                    "#f5f5f2",
+                  border:
+                    "1px solid #e3e3de",
+                  overflow: "hidden",
+                }}
+              >
+                <iframe
+                  src={feedbackUrl}
+                  title="ReviewAuto customer feedback preview"
+                  width="100%"
+                  height="560"
+                  frameBorder="0"
+                  loading="lazy"
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    maxWidth: "100%",
+                    border: "0",
+                    background:
+                      "#f5f5f2",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: "18px",
+                fontSize: "10px",
+                color: "#777",
+                lineHeight: 1.6,
+              }}
+            >
+              <strong>
+                How to use it:
+              </strong>{" "}
+              Copy the embed code and paste
+              it into the HTML of the page
+              where you want customers to
+              leave feedback.
+            </div>
+
+            {!feedbackEnabled && (
+              <div
+                style={{
+                  marginTop: "14px",
+                  padding: "10px 12px",
+                  background:
+                    "#eeeeeb",
+                  borderLeft:
+                    "2px solid #999",
+                  fontSize: "10px",
+                  color: "#777",
+                  lineHeight: 1.6,
+                }}
+              >
+                Feedback collection is
+                currently paused. The widget
+                will show the unavailable
+                state until feedback collection
+                is enabled again.
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
 
 function SettingsContent({
   workspace,
