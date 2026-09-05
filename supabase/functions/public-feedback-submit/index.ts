@@ -53,6 +53,10 @@ Deno.serve(async (req) => {
 
     const rating = Number(body?.rating);
 
+    // -----------------------------
+    // Validate input
+    // -----------------------------
+
     if (!slug) {
       return json(
         { error: "Feedback link is invalid." },
@@ -73,7 +77,10 @@ Deno.serve(async (req) => {
 
     if (!reviewText) {
       return json(
-        { error: "Please tell us about your experience." },
+        {
+          error:
+            "Please tell us about your experience.",
+        },
         400
       );
     }
@@ -92,6 +99,10 @@ Deno.serve(async (req) => {
       );
     }
 
+    // -----------------------------
+    // Find business
+    // -----------------------------
+
     const {
       data: business,
       error: businessError,
@@ -104,17 +115,61 @@ Deno.serve(async (req) => {
       .eq("feedback_enabled", true)
       .maybeSingle();
 
-    if (businessError || !business) {
+    if (businessError) {
       console.error(
         "Business lookup failed:",
         businessError
       );
 
       return json(
-        { error: "This feedback page is unavailable." },
+        { error: "Unable to load feedback page." },
+        500
+      );
+    }
+
+    if (!business) {
+      return json(
+        {
+          error:
+            "This feedback page is unavailable.",
+        },
         404
       );
     }
+
+    // -----------------------------
+    // Check automation setting
+    // -----------------------------
+
+    const {
+      data: automationSettings,
+      error: automationSettingsError,
+    } = await supabase
+      .from("automation_settings")
+      .select("business_id, enabled")
+      .eq("business_id", business.id)
+      .maybeSingle();
+
+    if (automationSettingsError) {
+      console.error(
+        "Automation settings lookup failed:",
+        automationSettingsError
+      );
+
+      // IMPORTANT:
+      // Feedback collection must still work even if
+      // automation settings cannot be read.
+      // Treat automation as disabled.
+    }
+
+    const automationEnabled =
+      automationSettingsError
+        ? false
+        : automationSettings?.enabled === true;
+
+    // -----------------------------
+    // Save feedback FIRST
+    // -----------------------------
 
     const now = new Date().toISOString();
 
@@ -151,50 +206,92 @@ Deno.serve(async (req) => {
       );
     }
 
-    /*
-     * Send the new feedback into the EXISTING
-     * ReviewAuto automation pipeline.
-     *
-     * We are NOT creating a second AI pipeline.
-     */
+    // ==================================================
+    // AUTOMATION OFF
+    // ==================================================
+    //
+    // The review has already been successfully saved.
+    //
+    // DO NOT call process-review-automation.
+    //
+    // This guarantees that disabling automation cannot
+    // break customer feedback submission.
+    //
+
+    if (!automationEnabled) {
+      return json({
+        success: true,
+        review_id: review.id,
+        automation_enabled: false,
+        processed: false,
+        message: "Feedback received.",
+      });
+    }
+
+    // ==================================================
+    // AUTOMATION ON
+    // ==================================================
+    //
+    // Only now do we call the automation engine.
+    //
+
     const automationUrl =
       `${supabaseUrl}/functions/v1/process-review-automation`;
 
-    const automationResponse = await fetch(
-      automationUrl,
-      {
-        method: "POST",
-        headers: {
-          Authorization:
-            `Bearer ${serviceRoleKey}`,
-          "Content-Type": "application/json",
-          "x-automation-key": serviceRoleKey,
-        },
-        body: JSON.stringify({
-          review_id: review.id,
-        }),
+    try {
+      const automationResponse =
+        await fetch(
+          automationUrl,
+          {
+            method: "POST",
+            headers: {
+              Authorization:
+                `Bearer ${serviceRoleKey}`,
+              "Content-Type":
+                "application/json",
+              "x-automation-key":
+                serviceRoleKey,
+            },
+            body: JSON.stringify({
+              review_id: review.id,
+            }),
+          }
+        );
+
+      if (!automationResponse.ok) {
+        const automationError =
+          await automationResponse.text();
+
+        console.error(
+          "Automation processing failed:",
+          automationResponse.status,
+          automationError
+        );
+
+        // IMPORTANT:
+        // Do NOT fail the customer's feedback submission.
+        // The review is already safely stored.
       }
-    );
-
-    if (!automationResponse.ok) {
-      const automationError =
-        await automationResponse.text();
-
+    } catch (automationError) {
       console.error(
-        "Automation processing failed:",
-        automationResponse.status,
+        "Automation request failed:",
         automationError
       );
 
-      /*
-       * The feedback itself was already saved.
-       * Do not tell the customer submission failed.
-       */
+      // IMPORTANT:
+      // Do NOT return an error to the customer.
+      // Feedback was already saved successfully.
     }
+
+    // -----------------------------
+    // Final success response
+    // -----------------------------
 
     return json({
       success: true,
       review_id: review.id,
+      automation_enabled: true,
+      processed: true,
       message: "Feedback received.",
     });
   } catch (error) {
@@ -225,7 +322,8 @@ function json(
       status,
       headers: {
         ...corsHeaders,
-        "Content-Type": "application/json",
+        "Content-Type":
+          "application/json",
       },
     }
   );
