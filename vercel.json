@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/f/:slug",
+      "destination": "/"
+    }
+  ]
+}
