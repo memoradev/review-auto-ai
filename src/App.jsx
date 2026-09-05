@@ -11,21 +11,6 @@ const navigation = [
   { name: "Settings", icon: "⚙" },
 ];
 
-/*
- * ---------------------------------------------------------
- * APP ROUTER
- * ---------------------------------------------------------
- *
- * Public ReviewAuto feedback pages:
- *
- *   /f/business-slug
- *
- * Everything else uses the normal authenticated application.
- *
- * Keep this routing outside AuthenticatedApp so React hooks
- * are never conditionally executed.
- */
-
 function App() {
   const feedbackMatch =
     window.location.pathname.match(
@@ -44,12 +29,6 @@ function App() {
 
   return <AuthenticatedApp />;
 }
-
-/*
- * ---------------------------------------------------------
- * AUTHENTICATED APPLICATION
- * ---------------------------------------------------------
- */
 
 function AuthenticatedApp() {
   const [session, setSession] = useState(null);
@@ -105,27 +84,17 @@ function AuthenticatedApp() {
   return <Dashboard session={session} />;
 }
 
-/*
- * ---------------------------------------------------------
- * LOADING
- * ---------------------------------------------------------
- */
-
 function LoadingScreen() {
   return (
     <main className="loading-page">
       <div className="loading-mark">R</div>
       <div className="loading-spinner" />
-      <p>Loading your workspace...</p>
+      <p>
+        Loading your workspace...
+      </p>
     </main>
   );
 }
-
-/*
- * ---------------------------------------------------------
- * DASHBOARD
- * ---------------------------------------------------------
- */
 
 function Dashboard({ session }) {
   const [activePage, setActivePage] =
@@ -287,15 +256,42 @@ function Dashboard({ session }) {
   }
 
   async function toggleAutomation() {
-    if (
-      !workspace ||
-      !automation
-    ) {
+    if (!workspace) {
       return;
     }
 
-    const newValue =
-      !automation.enabled;
+    const currentValue =
+      automation?.enabled || false;
+
+    const newValue = !currentValue;
+
+    if (!automation) {
+      const {
+        data,
+        error,
+      } = await supabase
+        .from("automation_settings")
+        .insert({
+          business_id:
+            workspace.id,
+          enabled: newValue,
+          updated_at:
+            new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error(
+          "Automation creation failed:",
+          error
+        );
+        return;
+      }
+
+      setAutomation(data);
+      return;
+    }
 
     const {
       data,
@@ -325,12 +321,6 @@ function Dashboard({ session }) {
     setAutomation(data);
   }
 
-  /*
-   * -------------------------------------------------------
-   * FEEDBACK LINK MANAGEMENT
-   * -------------------------------------------------------
-   */
-
   async function updateFeedbackEnabled() {
     if (!workspace) {
       return;
@@ -345,7 +335,8 @@ function Dashboard({ session }) {
     } = await supabase
       .from("businesses")
       .update({
-        feedback_enabled: nextValue,
+        feedback_enabled:
+          nextValue,
       })
       .eq(
         "id",
@@ -366,9 +357,7 @@ function Dashboard({ session }) {
   }
 
   async function copyFeedbackLink() {
-    if (
-      !workspace?.feedback_slug
-    ) {
+    if (!workspace?.feedback_slug) {
       return false;
     }
 
@@ -376,11 +365,6 @@ function Dashboard({ session }) {
       `${window.location.origin}/f/${workspace.feedback_slug}`;
 
     try {
-      /*
-       * Primary method.
-       *
-       * Works on HTTPS deployments such as Vercel.
-       */
       if (
         navigator.clipboard &&
         window.isSecureContext
@@ -392,14 +376,13 @@ function Dashboard({ session }) {
         return true;
       }
 
-      /*
-       * Fallback method for browsers where
-       * Clipboard API is unavailable.
-       */
       const textArea =
-        document.createElement("textarea");
+        document.createElement(
+          "textarea"
+        );
 
-      textArea.value = feedbackUrl;
+      textArea.value =
+        feedbackUrl;
 
       textArea.setAttribute(
         "readonly",
@@ -446,9 +429,6 @@ function Dashboard({ session }) {
         error
       );
 
-      /*
-       * Last-resort fallback.
-       */
       window.prompt(
         "Copy your feedback link:",
         feedbackUrl
@@ -477,17 +457,26 @@ function Dashboard({ session }) {
         activePage={activePage}
         setActivePage={setActivePage}
         email={session.user.email}
-        businessName={workspace?.name}
+        businessName={
+          workspace?.name
+        }
         onSignOut={handleSignOut}
+        feedbackEnabled={
+          workspace?.feedback_enabled !==
+          false
+        }
       />
 
       <main className="main">
         <Header
           activePage={activePage}
-          businessName={workspace?.name}
+          businessName={
+            workspace?.name
+          }
         />
 
-        {activePage === "Dashboard" ? (
+        {activePage ===
+        "Dashboard" ? (
           <DashboardContent
             workspace={workspace}
             automation={automation}
@@ -498,6 +487,15 @@ function Dashboard({ session }) {
             }
             onToggleAutomation={
               toggleAutomation
+            }
+          />
+        ) : activePage ===
+          "Reviews" ? (
+          <ReviewsPage
+            reviews={reviews}
+            setReviews={setReviews}
+            loading={
+              reviewsLoading
             }
           />
         ) : activePage ===
@@ -525,12 +523,6 @@ function Dashboard({ session }) {
     </div>
   );
 }
-
-/*
- * ---------------------------------------------------------
- * WORKSPACE ERROR
- * ---------------------------------------------------------
- */
 
 function WorkspaceError({
   message,
@@ -569,18 +561,13 @@ function WorkspaceError({
   );
 }
 
-/*
- * ---------------------------------------------------------
- * SIDEBAR
- * ---------------------------------------------------------
- */
-
 function Sidebar({
   activePage,
   setActivePage,
   email,
   businessName,
   onSignOut,
+  feedbackEnabled,
 }) {
   return (
     <aside className="sidebar">
@@ -603,13 +590,16 @@ function Sidebar({
 
       <div
         style={{
-          padding: "0 11px 12px",
+          padding:
+            "0 11px 12px",
           color: "#d8d8d2",
           fontSize: "10px",
           fontWeight: 700,
           overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
+          textOverflow:
+            "ellipsis",
+          whiteSpace:
+            "nowrap",
         }}
         title={businessName}
       >
@@ -656,14 +646,18 @@ function Sidebar({
             </strong>
 
             <span>
-              Feedback collection active
+              {feedbackEnabled
+                ? "Feedback collection active"
+                : "Feedback collection paused"}
             </span>
           </div>
         </div>
 
         <div className="account-card">
           <div className="account-avatar">
-            {getInitials(email)}
+            {getInitials(
+              email
+            )}
           </div>
 
           <div className="account-details">
@@ -679,9 +673,7 @@ function Sidebar({
           <button
             type="button"
             className="signout-button"
-            onClick={
-              onSignOut
-            }
+            onClick={onSignOut}
             title="Sign out"
           >
             ↪
@@ -691,12 +683,6 @@ function Sidebar({
     </aside>
   );
 }
-
-/*
- * ---------------------------------------------------------
- * HELPERS
- * ---------------------------------------------------------
- */
 
 function getInitials(
   email = ""
@@ -710,45 +696,12 @@ function getInitials(
   return first || "U";
 }
 
-function formatDate(value) {
-  if (!value) {
-    return "Unknown date";
-  }
-
-  const date =
-    new Date(value);
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-    return "Unknown date";
-  }
-
-  return date.toLocaleDateString(
-    undefined,
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }
-  );
-}
-
-/*
- * ---------------------------------------------------------
- * HEADER
- * ---------------------------------------------------------
- */
-
 function Header({
   activePage,
   businessName,
 }) {
   const title =
-    activePage ===
-    "Dashboard"
+    activePage === "Dashboard"
       ? `Good morning, ${
           businessName ||
           "Business Owner"
@@ -786,12 +739,6 @@ function Header({
   );
 }
 
-/*
- * ---------------------------------------------------------
- * DASHBOARD CONTENT
- * ---------------------------------------------------------
- */
-
 function DashboardContent({
   workspace,
   automation,
@@ -814,7 +761,8 @@ function DashboardContent({
                   0
               ),
             0
-          ) / totalReviews
+          ) /
+          totalReviews
         ).toFixed(1)
       : "—";
 
@@ -841,9 +789,7 @@ function DashboardContent({
       <section className="stats-grid">
         <StatCard
           label="Total reviews"
-          value={
-            totalReviews
-          }
+          value={totalReviews}
           detail={
             totalReviews > 0
               ? "Stored in your workspace"
@@ -865,9 +811,7 @@ function DashboardContent({
 
         <StatCard
           label="Replies sent"
-          value={
-            repliesSent
-          }
+          value={repliesSent}
           detail={
             repliesSent > 0
               ? "Published replies"
@@ -901,7 +845,9 @@ function DashboardContent({
       <section className="content-grid">
         <ReviewsPanel
           reviews={reviews}
-          setReviews={setReviews}
+          setReviews={
+            setReviews
+          }
           loading={
             reviewsLoading
           }
@@ -915,12 +861,6 @@ function DashboardContent({
     </>
   );
 }
-
-/*
- * ---------------------------------------------------------
- * STAT CARD
- * ---------------------------------------------------------
- */
 
 function StatCard({
   label,
@@ -943,12 +883,6 @@ function StatCard({
     </div>
   );
 }
-
-/*
- * ---------------------------------------------------------
- * AUTOMATION BANNER
- * ---------------------------------------------------------
- */
 
 function AutomationBanner({
   enabled,
@@ -1003,12 +937,6 @@ function AutomationBanner({
   );
 }
 
-/*
- * ---------------------------------------------------------
- * REVIEWS PANEL
- * ---------------------------------------------------------
- */
-
 function ReviewsPanel({
   reviews,
   setReviews,
@@ -1052,35 +980,609 @@ function ReviewsPanel({
             </strong>
 
             <span>
-              Customer feedback
-              collected through
-              ReviewAuto will appear
-              here automatically.
+              Customer feedback submitted
+              through your ReviewAuto
+              link will appear here.
             </span>
           </div>
         ) : (
-          reviews.map(
-            (review) => (
-              <ReviewRow
-                key={review.id}
-                review={review}
-                setReviews={
-                  setReviews
-                }
-              />
+          reviews
+            .slice(0, 5)
+            .map(
+              (review) => (
+                <ReviewRow
+                  key={review.id}
+                  review={review}
+                  setReviews={
+                    setReviews
+                  }
+                />
+              )
             )
-          )
         )}
       </div>
     </section>
   );
 }
 
-/*
- * ---------------------------------------------------------
- * REVIEW ROW
- * ---------------------------------------------------------
- */
+function ReviewsPage({
+  reviews,
+  setReviews,
+  loading,
+}) {
+  const awaitingApproval =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "awaiting_approval"
+    ).length;
+
+  const approved =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "approved"
+    ).length;
+
+  const rejected =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "skipped"
+    ).length;
+
+  return (
+    <section>
+      <section className="stats-grid">
+        <StatCard
+          label="Total reviews"
+          value={reviews.length}
+          detail={
+            reviews.length > 0
+              ? "Stored in your workspace"
+              : "No reviews yet"
+          }
+        />
+
+        <StatCard
+          label="Needs approval"
+          value={
+            awaitingApproval
+          }
+          detail={
+            awaitingApproval > 0
+              ? "Waiting for your decision"
+              : "Nothing waiting"
+          }
+        />
+
+        <StatCard
+          label="Approved"
+          value={approved}
+          detail={
+            approved > 0
+              ? "Approved responses"
+              : "No approvals yet"
+          }
+        />
+
+        <StatCard
+          label="Rejected"
+          value={rejected}
+          detail={
+            rejected > 0
+              ? "Skipped responses"
+              : "No rejected reviews"
+          }
+        />
+      </section>
+
+      <section className="panel reviews-panel">
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">
+              REVIEW ENGINE
+            </div>
+
+            <h2>
+              All reviews
+            </h2>
+          </div>
+
+          <span
+            style={{
+              color: "#aaa",
+              fontSize: "8px",
+            }}
+          >
+            {reviews.length > 0
+              ? `${reviews.length} REVIEW${
+                  reviews.length ===
+                  1
+                    ? ""
+                    : "S"
+                }`
+              : "NO REVIEWS"}
+          </span>
+        </div>
+
+        <div className="review-list">
+          {loading ? (
+            <div className="empty-state">
+              Loading reviews...
+            </div>
+          ) : reviews.length ===
+            0 ? (
+            <div className="empty-state">
+              <strong>
+                No reviews yet
+              </strong>
+
+              <span>
+                Customer feedback submitted
+                through your ReviewAuto
+                link will appear here.
+              </span>
+            </div>
+          ) : (
+            reviews.map(
+              (review) => (
+                <ReviewWorkflowRow
+                  key={review.id}
+                  review={review}
+                  setReviews={
+                    setReviews
+                  }
+                />
+              )
+            )
+          )}
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function ReviewWorkflowRow({
+  review,
+  setReviews,
+}) {
+  const [editing, setEditing] =
+    useState(false);
+
+  const [reply, setReply] =
+    useState(
+      review.ai_generated_reply ||
+        ""
+    );
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const rating =
+    Number(review.rating || 0);
+
+  const stars =
+    "★".repeat(rating) +
+    "☆".repeat(
+      Math.max(
+        0,
+        5 - rating
+      )
+    );
+
+  const needsApproval =
+    review.automation_status ===
+      "awaiting_approval" ||
+    review.reply_status ===
+      "draft";
+
+  async function updateReview(
+    updates
+  ) {
+    setSaving(true);
+    setError("");
+
+    try {
+      const {
+        data,
+        error: updateError,
+      } = await supabase
+        .from("reviews")
+        .update({
+          ...updates,
+          updated_at:
+            new Date().toISOString(),
+        })
+        .eq(
+          "id",
+          review.id
+        )
+        .select()
+        .single();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      setReviews(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              review.id
+                ? data
+                : item
+          )
+      );
+
+      setEditing(false);
+
+      setReply(
+        data.ai_generated_reply ||
+          ""
+      );
+    } catch (err) {
+      console.error(
+        "Review update failed:",
+        err
+      );
+
+      setError(
+        err?.message ||
+          "Unable to update review."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function approveReview() {
+    if (!reply.trim()) {
+      setError(
+        "A response is required before approval."
+      );
+      return;
+    }
+
+    await updateReview({
+      ai_generated_reply:
+        reply.trim(),
+
+      automation_status:
+        "approved",
+
+      reply_status:
+        "draft",
+    });
+  }
+
+  async function saveEdit() {
+    if (!reply.trim()) {
+      setError(
+        "Response cannot be empty."
+      );
+      return;
+    }
+
+    await updateReview({
+      ai_generated_reply:
+        reply.trim(),
+
+      automation_status:
+        "approved",
+
+      reply_status:
+        "draft",
+    });
+  }
+
+  async function rejectReview() {
+    await updateReview({
+      automation_status:
+        "skipped",
+
+      reply_status:
+        "not_replied",
+    });
+  }
+
+  const status =
+    review.reply_status ===
+    "published"
+      ? "REPLIED"
+      : review.automation_status ===
+        "awaiting_approval"
+      ? "APPROVAL"
+      : review.automation_status ===
+        "approved"
+      ? "APPROVED"
+      : review.automation_status ===
+        "skipped"
+      ? "REJECTED"
+      : review.automation_status
+          ?.toUpperCase() ||
+        "PENDING";
+
+  return (
+    <article className="review-row">
+      <div className="review-information">
+        <div className="review-meta">
+          <strong>
+            {review.customer_name ||
+              "Anonymous customer"}
+          </strong>
+
+          <span>
+            {formatDate(
+              review.review_created_at ||
+                review.created_at
+            )}
+          </span>
+        </div>
+
+        <div className="rating">
+          {stars}
+        </div>
+
+        <p>
+          {review.review_text ||
+            "No review text provided."}
+        </p>
+
+        <div
+          style={{
+            display: "flex",
+            gap: "6px",
+            flexWrap: "wrap",
+            marginTop: "8px",
+          }}
+        >
+          {review.source && (
+            <span className="status-pill">
+              {review.source.toUpperCase()}
+            </span>
+          )}
+
+          {review.ai_sentiment && (
+            <span className="status-pill active">
+              {review.ai_sentiment.toUpperCase()}
+            </span>
+          )}
+
+          {review.ai_risk_level && (
+            <span
+              className={
+                review.ai_risk_level ===
+                  "high" ||
+                review.ai_risk_level ===
+                  "critical"
+                  ? "status-pill paused"
+                  : "status-pill"
+              }
+            >
+              RISK:{" "}
+              {review.ai_risk_level.toUpperCase()}
+            </span>
+          )}
+        </div>
+
+        {review.ai_generated_reply && (
+          <div
+            style={{
+              marginTop: "10px",
+              padding:
+                "10px 12px",
+              background:
+                "#f5f5f2",
+              borderLeft:
+                "2px solid #222",
+              fontSize: "11px",
+              lineHeight: 1.6,
+            }}
+          >
+            <strong>
+              AI response:
+            </strong>
+
+            {editing ? (
+              <textarea
+                value={reply}
+                onChange={(
+                  event
+                ) =>
+                  setReply(
+                    event.target
+                      .value
+                  )
+                }
+                rows={5}
+                style={{
+                  width:
+                    "100%",
+                  marginTop:
+                    "7px",
+                  padding:
+                    "8px",
+                  border:
+                    "1px solid #ccc",
+                  resize:
+                    "vertical",
+                  fontFamily:
+                    "inherit",
+                  fontSize:
+                    "11px",
+                  boxSizing:
+                    "border-box",
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  marginTop:
+                    "4px",
+                }}
+              >
+                {
+                  review.ai_generated_reply
+                }
+              </div>
+            )}
+          </div>
+        )}
+
+        {error && (
+          <div
+            style={{
+              marginTop: "8px",
+              color: "#b42318",
+              fontSize: "10px",
+              lineHeight: 1.5,
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {needsApproval && (
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexWrap: "wrap",
+              marginTop: "10px",
+            }}
+          >
+            {editing ? (
+              <>
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={
+                    saveEdit
+                  }
+                  disabled={
+                    saving
+                  }
+                >
+                  {saving
+                    ? "Saving..."
+                    : "Save & approve"}
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => {
+                    setEditing(
+                      false
+                    );
+                    setReply(
+                      review.ai_generated_reply ||
+                        ""
+                    );
+                    setError("");
+                  }}
+                  disabled={
+                    saving
+                  }
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={
+                    approveReview
+                  }
+                  disabled={
+                    saving
+                  }
+                >
+                  {saving
+                    ? "Saving..."
+                    : "Approve"}
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => {
+                    setEditing(
+                      true
+                    );
+                    setError("");
+                  }}
+                  disabled={
+                    saving
+                  }
+                >
+                  Edit
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={
+                    rejectReview
+                  }
+                  disabled={
+                    saving
+                  }
+                >
+                  Reject
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {review.automation_status ===
+          "approved" && (
+          <div
+            style={{
+              marginTop: "10px",
+              fontSize: "10px",
+              color: "#777",
+            }}
+          >
+            Approved. Ready for the
+            appropriate response
+            destination.
+          </div>
+        )}
+      </div>
+
+      <div
+        className="review-status"
+        style={{
+          background:
+            status === "REJECTED"
+              ? "#eeeeeb"
+              : status ===
+                "APPROVAL"
+              ? "#e8e8e3"
+              : "#eeeeeb",
+          color: "#777",
+        }}
+      >
+        <span
+          style={{
+            background: "#999",
+          }}
+        />
+
+        {status}
+      </div>
+    </article>
+  );
+}
 
 function ReviewRow({
   review,
@@ -1093,9 +1595,7 @@ function ReviewRow({
     useState("");
 
   const rating =
-    Number(
-      review.rating || 0
-    );
+    Number(review.rating || 0);
 
   const stars =
     "★".repeat(rating) +
@@ -1113,6 +1613,12 @@ function ReviewRow({
       : review.automation_status ===
         "awaiting_approval"
       ? "APPROVAL"
+      : review.automation_status ===
+        "approved"
+      ? "APPROVED"
+      : review.automation_status ===
+        "skipped"
+      ? "REJECTED"
       : review.automation_status
           ?.toUpperCase() ||
         "PENDING";
@@ -1276,7 +1782,8 @@ function ReviewRow({
 
             <div
               style={{
-                marginTop: "4px",
+                marginTop:
+                  "4px",
               }}
             >
               {
@@ -1328,8 +1835,7 @@ function ReviewRow({
       >
         <span
           style={{
-            background:
-              "#999",
+            background: "#999",
           }}
         />
 
@@ -1339,11 +1845,181 @@ function ReviewRow({
   );
 }
 
-/*
- * ---------------------------------------------------------
- * WORKFLOW
- * ---------------------------------------------------------
- */
+function SettingsContent({
+  workspace,
+  onToggleFeedback,
+  onCopyFeedbackLink,
+}) {
+  const [copied, setCopied] =
+    useState(false);
+
+  if (!workspace) {
+    return null;
+  }
+
+  const feedbackUrl =
+    workspace.feedback_slug
+      ? `${window.location.origin}/f/${workspace.feedback_slug}`
+      : "";
+
+  const feedbackEnabled =
+    workspace.feedback_enabled !==
+    false;
+
+  async function handleCopy() {
+    const success =
+      await onCopyFeedbackLink();
+
+    if (success) {
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1800);
+    }
+  }
+
+  return (
+    <section className="panel">
+      <div className="panel-header">
+        <div>
+          <div className="eyebrow">
+            SETTINGS
+          </div>
+
+          <h2>
+            ReviewAuto feedback
+          </h2>
+        </div>
+
+        <span
+          className={
+            feedbackEnabled
+              ? "status-pill active"
+              : "status-pill paused"
+          }
+        >
+          {feedbackEnabled
+            ? "ACTIVE"
+            : "PAUSED"}
+        </span>
+      </div>
+
+      <div
+        style={{
+          marginTop: "20px",
+        }}
+      >
+        <div className="eyebrow">
+          FEEDBACK LINK
+        </div>
+
+        <p
+          style={{
+            color: "#777",
+            fontSize: "11px",
+            lineHeight: 1.6,
+            maxWidth: "620px",
+          }}
+        >
+          Share this link with customers
+          to collect direct feedback through
+          ReviewAuto.
+        </p>
+
+        <div
+          style={{
+            marginTop: "14px",
+            padding:
+              "12px 14px",
+            background:
+              "#f5f5f2",
+            border:
+              "1px solid #e3e3de",
+            fontSize: "11px",
+            wordBreak:
+              "break-all",
+          }}
+        >
+          {feedbackUrl ||
+            "Feedback link unavailable"}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            flexWrap: "wrap",
+            marginTop: "12px",
+          }}
+        >
+          <button
+            type="button"
+            className="primary-button"
+            onClick={
+              handleCopy
+            }
+            disabled={!feedbackUrl}
+          >
+            {copied
+              ? "Copied"
+              : "Copy feedback link"}
+          </button>
+
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={
+              onToggleFeedback
+            }
+          >
+            {feedbackEnabled
+              ? "Disable feedback"
+              : "Enable feedback"}
+          </button>
+        </div>
+
+        <div
+          style={{
+            marginTop: "14px",
+            fontSize: "10px",
+            color: "#777",
+          }}
+        >
+          {feedbackEnabled
+            ? "Customers can currently submit feedback through this link."
+            : "Customer submissions are currently paused."}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function formatDate(value) {
+  if (!value) {
+    return "Unknown date";
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "Unknown date";
+  }
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+}
 
 function WorkflowPanel() {
   const steps = [
@@ -1378,40 +2054,26 @@ function WorkflowPanel() {
       <div className="panel-header">
         <div>
           <div className="eyebrow">
-            WORKFLOW
+            AUTOMATION
           </div>
 
           <h2>
-            Review engine
+            How it works
           </h2>
         </div>
       </div>
 
-      <div className="workflow-list">
+      <div className="workflow">
         {steps.map(
-          (step) => (
-            <div
-              className="workflow-step"
-              key={
-                step.number
+          (step, index) => (
+            <WorkflowStep
+              key={step.number}
+              {...step}
+              last={
+                index ===
+                steps.length - 1
               }
-            >
-              <div className="workflow-number">
-                {step.number}
-              </div>
-
-              <div>
-                <strong>
-                  {step.title}
-                </strong>
-
-                <p>
-                  {
-                    step.description
-                  }
-                </p>
-              </div>
-            </div>
+            />
           )
         )}
       </div>
@@ -1419,268 +2081,25 @@ function WorkflowPanel() {
   );
 }
 
-/*
- * ---------------------------------------------------------
- * LOCATION
- * ---------------------------------------------------------
- */
-
-function LocationPanel() {
-  return (
-    <section className="panel">
-      <div className="panel-header">
-        <div>
-          <div className="eyebrow">
-            GOOGLE BUSINESS PROFILE
-          </div>
-
-          <h2>
-            Location
-          </h2>
-        </div>
-
-        <span className="status-pill">
-          NOT CONNECTED
-        </span>
-      </div>
-
-      <div className="location-content">
-        <p>
-          Google Business Profile
-          will be available as an
-          external review source.
-        </p>
-
-        <button
-          type="button"
-          className="secondary-button"
-          disabled
-        >
-          Connect later
-        </button>
-      </div>
-    </section>
-  );
-}
-
-/*
- * ---------------------------------------------------------
- * SETTINGS
- * ---------------------------------------------------------
- */
-
-function SettingsContent({
-  workspace,
-  onToggleFeedback,
-  onCopyFeedbackLink,
-}) {
-  const [
-    copied,
-    setCopied,
-  ] = useState(false);
-
-  const feedbackSlug =
-    workspace?.feedback_slug ||
-    "";
-
-  const feedbackUrl =
-    feedbackSlug
-      ? `${window.location.origin}/f/${feedbackSlug}`
-      : "";
-
-  const enabled =
-    workspace?.feedback_enabled !==
-    false;
-
-  async function handleCopy() {
-    const success =
-      await onCopyFeedbackLink();
-
-    if (success) {
-      setCopied(true);
-
-      setTimeout(() => {
-        setCopied(false);
-      }, 1800);
-    }
-  }
-
-  return (
-    <section className="content-grid">
-      <div className="left-column">
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <div className="eyebrow">
-                FEEDBACK COLLECTION
-              </div>
-
-              <h2>
-                ReviewAuto feedback link
-              </h2>
-            </div>
-
-            <span
-              className={
-                enabled
-                  ? "status-pill active"
-                  : "status-pill paused"
-              }
-            >
-              {enabled
-                ? "ACTIVE"
-                : "PAUSED"}
-            </span>
-          </div>
-
-          <p
-            style={{
-              color: "#777",
-              fontSize: "11px",
-              lineHeight: 1.6,
-              marginBottom: "14px",
-            }}
-          >
-            Share this link with
-            customers to collect
-            feedback directly through
-            ReviewAuto.
-          </p>
-
-          {feedbackUrl ? (
-            <>
-              <div
-                style={{
-                  padding:
-                    "10px 12px",
-                  background:
-                    "#f5f5f2",
-                  border:
-                    "1px solid #e4e4df",
-                  fontSize: "11px",
-                  lineHeight: 1.5,
-                  wordBreak:
-                    "break-all",
-                  marginBottom:
-                    "10px",
-                }}
-              >
-                {feedbackUrl}
-              </div>
-
-              <div
-                style={{
-                  display:
-                    "flex",
-                  gap: "8px",
-                  flexWrap:
-                    "wrap",
-                }}
-              >
-                <button
-                  type="button"
-                  className="primary-button"
-                  onClick={
-                    handleCopy
-                  }
-                >
-                  {copied
-                    ? "Copied"
-                    : "Copy feedback link"}
-                </button>
-
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={
-                    onToggleFeedback
-                  }
-                >
-                  {enabled
-                    ? "Disable feedback"
-                    : "Enable feedback"}
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="empty-state">
-              <strong>
-                Feedback link unavailable
-              </strong>
-
-              <span>
-                This workspace does not
-                have a feedback link
-                configured yet.
-              </span>
-            </div>
-          )}
-        </section>
-      </div>
-
-      <div className="right-column">
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <div className="eyebrow">
-                CUSTOMER EXPERIENCE
-              </div>
-
-              <h2>
-                How to use it
-              </h2>
-            </div>
-          </div>
-
-          <div className="workflow-list">
-            <WorkflowStep
-              number="01"
-              title="Share your link"
-              description="Send the ReviewAuto feedback link to customers after an interaction."
-            />
-
-            <WorkflowStep
-              number="02"
-              title="Customer responds"
-              description="Customers submit a rating and describe their experience."
-            />
-
-            <WorkflowStep
-              number="03"
-              title="ReviewAuto analyzes"
-              description="The Review Engine analyzes sentiment, risk and intent."
-            />
-
-            <WorkflowStep
-              number="04"
-              title="Take action"
-              description="ReviewAuto generates the appropriate response and next step."
-            />
-          </div>
-        </section>
-      </div>
-    </section>
-  );
-}
-
-/*
- * ---------------------------------------------------------
- * WORKFLOW STEP
- * ---------------------------------------------------------
- */
-
 function WorkflowStep({
   number,
   title,
   description,
+  last,
 }) {
   return (
-    <div className="workflow-step">
-      <div className="workflow-number">
+    <div
+      className={
+        last
+          ? "workflow-step last"
+          : "workflow-step"
+      }
+    >
+      <div className="step-number">
         {number}
       </div>
 
-      <div>
+      <div className="step-content">
         <strong>
           {title}
         </strong>
@@ -1693,11 +2112,45 @@ function WorkflowStep({
   );
 }
 
-/*
- * ---------------------------------------------------------
- * PLACEHOLDER PAGES
- * ---------------------------------------------------------
- */
+function LocationPanel() {
+  return (
+    <section className="panel location-panel">
+      <div className="location-top">
+        <div className="google-mark">
+          G
+        </div>
+
+        <div className="location-title">
+          <div className="eyebrow">
+            GOOGLE BUSINESS PROFILE
+          </div>
+
+          <h3>
+            Not connected
+          </h3>
+        </div>
+
+        <span className="connected-badge disconnected">
+          NEXT
+        </span>
+      </div>
+
+      <p className="location-description">
+        Connect your Google Business
+        Profile to bring real reviews
+        into ReviewAuto.
+      </p>
+
+      <button
+        type="button"
+        className="secondary-button"
+        disabled
+      >
+        Connect Google
+      </button>
+    </section>
+  );
+}
 
 function PlaceholderPage({
   page,
@@ -1705,30 +2158,25 @@ function PlaceholderPage({
 }) {
   return (
     <section className="placeholder-page">
-      <div className="panel">
-        <div className="eyebrow">
-          {page.toUpperCase()}
-        </div>
-
-        <h2>
-          {page}
-        </h2>
-
-        <p>
-          This section is part of
-          the ReviewAuto workspace
-          and will be connected in
-          the next development stage.
-        </p>
-
-        <button
-          type="button"
-          className="secondary-button"
-          onClick={onBack}
-        >
-          Back to Dashboard
-        </button>
+      <div className="placeholder-icon">
+        ✦
       </div>
+
+      <h2>{page}</h2>
+
+      <p>
+        This section will be connected
+        during the next development
+        stage.
+      </p>
+
+      <button
+        type="button"
+        className="primary-button"
+        onClick={onBack}
+      >
+        Back to dashboard
+      </button>
     </section>
   );
 }
