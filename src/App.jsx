@@ -331,68 +331,199 @@ function Dashboard({ session }) {
    * -------------------------------------------------------
    */
 
- async function copyFeedbackLink() {
-  if (!workspace?.feedback_slug) {
-    return;
-  }
-
-  const feedbackUrl =
-    `${window.location.origin}/f/${workspace.feedback_slug}`;
-
-  try {
-    if (
-      navigator.clipboard &&
-      window.isSecureContext
-    ) {
-      await navigator.clipboard.writeText(
-        feedbackUrl
-      );
-
+  async function updateFeedbackEnabled() {
+    if (!workspace) {
       return;
     }
 
-    // Fallback for browsers where Clipboard API
-    // is unavailable or blocked.
-    const textArea =
-      document.createElement("textarea");
+    const nextValue =
+      workspace.feedback_enabled === false;
 
-    textArea.value = feedbackUrl;
+    const {
+      data,
+      error,
+    } = await supabase
+      .from("businesses")
+      .update({
+        feedback_enabled: nextValue,
+      })
+      .eq(
+        "id",
+        workspace.id
+      )
+      .select()
+      .single();
 
-    textArea.style.position = "fixed";
-    textArea.style.left = "-9999px";
-    textArea.style.top = "0";
+    if (error) {
+      console.error(
+        "Feedback link update failed:",
+        error
+      );
+      return;
+    }
 
-    document.body.appendChild(
-      textArea
-    );
+    setWorkspace(data);
+  }
 
-    textArea.focus();
-    textArea.select();
+  async function copyFeedbackLink() {
+    if (
+      !workspace?.feedback_slug
+    ) {
+      return false;
+    }
 
-    const successful =
-      document.execCommand("copy");
+    const feedbackUrl =
+      `${window.location.origin}/f/${workspace.feedback_slug}`;
 
-    document.body.removeChild(
-      textArea
-    );
+    try {
+      /*
+       * Primary method.
+       *
+       * Works on HTTPS deployments such as Vercel.
+       */
+      if (
+        navigator.clipboard &&
+        window.isSecureContext
+      ) {
+        await navigator.clipboard.writeText(
+          feedbackUrl
+        );
 
-    if (!successful) {
+        return true;
+      }
+
+      /*
+       * Fallback method for browsers where
+       * Clipboard API is unavailable.
+       */
+      const textArea =
+        document.createElement("textarea");
+
+      textArea.value = feedbackUrl;
+
+      textArea.setAttribute(
+        "readonly",
+        ""
+      );
+
+      textArea.style.position =
+        "fixed";
+      textArea.style.left =
+        "-9999px";
+      textArea.style.top = "0";
+      textArea.style.opacity = "0";
+
+      document.body.appendChild(
+        textArea
+      );
+
+      textArea.focus();
+      textArea.select();
+      textArea.setSelectionRange(
+        0,
+        textArea.value.length
+      );
+
+      const successful =
+        document.execCommand(
+          "copy"
+        );
+
+      document.body.removeChild(
+        textArea
+      );
+
+      if (successful) {
+        return true;
+      }
+
       throw new Error(
         "Browser blocked clipboard access."
       );
-    }
-  } catch (error) {
-    console.error(
-      "Failed to copy feedback link:",
-      error
-    );
+    } catch (error) {
+      console.error(
+        "Failed to copy feedback link:",
+        error
+      );
 
-    // Last-resort fallback:
-    window.prompt(
-      "Copy your feedback link:",
-      feedbackUrl
+      /*
+       * Last-resort fallback.
+       */
+      window.prompt(
+        "Copy your feedback link:",
+        feedbackUrl
+      );
+
+      return false;
+    }
+  }
+
+  if (workspaceLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (workspaceError) {
+    return (
+      <WorkspaceError
+        message={workspaceError}
+        onSignOut={handleSignOut}
+      />
     );
   }
+
+  return (
+    <div className="app">
+      <Sidebar
+        activePage={activePage}
+        setActivePage={setActivePage}
+        email={session.user.email}
+        businessName={workspace?.name}
+        onSignOut={handleSignOut}
+      />
+
+      <main className="main">
+        <Header
+          activePage={activePage}
+          businessName={workspace?.name}
+        />
+
+        {activePage === "Dashboard" ? (
+          <DashboardContent
+            workspace={workspace}
+            automation={automation}
+            reviews={reviews}
+            setReviews={setReviews}
+            reviewsLoading={
+              reviewsLoading
+            }
+            onToggleAutomation={
+              toggleAutomation
+            }
+          />
+        ) : activePage ===
+          "Settings" ? (
+          <SettingsContent
+            workspace={workspace}
+            onToggleFeedback={
+              updateFeedbackEnabled
+            }
+            onCopyFeedbackLink={
+              copyFeedbackLink
+            }
+          />
+        ) : (
+          <PlaceholderPage
+            page={activePage}
+            onBack={() =>
+              setActivePage(
+                "Dashboard"
+              )
+            }
+          />
+        )}
+      </main>
+    </div>
+  );
 }
 
 /*
@@ -521,11 +652,11 @@ function Sidebar({
 
           <div>
             <strong>
-              Feedback collection
+              ReviewAuto feedback
             </strong>
 
             <span>
-              ReviewAuto link active
+              Feedback collection active
             </span>
           </div>
         </div>
@@ -921,10 +1052,10 @@ function ReviewsPanel({
             </strong>
 
             <span>
-              Share your ReviewAuto
-              feedback link to start
-              collecting customer
-              experiences.
+              Customer feedback
+              collected through
+              ReviewAuto will appear
+              here automatically.
             </span>
           </div>
         ) : (
@@ -1334,7 +1465,7 @@ function LocationPanel() {
 
 /*
  * ---------------------------------------------------------
- * SETTINGS — PHASE 2A
+ * SETTINGS
  * ---------------------------------------------------------
  */
 
@@ -1343,6 +1474,11 @@ function SettingsContent({
   onToggleFeedback,
   onCopyFeedbackLink,
 }) {
+  const [
+    copied,
+    setCopied,
+  ] = useState(false);
+
   const feedbackSlug =
     workspace?.feedback_slug ||
     "";
@@ -1352,9 +1488,22 @@ function SettingsContent({
       ? `${window.location.origin}/f/${feedbackSlug}`
       : "";
 
-  const feedbackEnabled =
+  const enabled =
     workspace?.feedback_enabled !==
     false;
+
+  async function handleCopy() {
+    const success =
+      await onCopyFeedbackLink();
+
+    if (success) {
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1800);
+    }
+  }
 
   return (
     <section className="content-grid">
@@ -1373,12 +1522,12 @@ function SettingsContent({
 
             <span
               className={
-                feedbackEnabled
+                enabled
                   ? "status-pill active"
                   : "status-pill paused"
               }
             >
-              {feedbackEnabled
+              {enabled
                 ? "ACTIVE"
                 : "PAUSED"}
             </span>
@@ -1432,10 +1581,12 @@ function SettingsContent({
                   type="button"
                   className="primary-button"
                   onClick={
-                    onCopyFeedbackLink
+                    handleCopy
                   }
                 >
-                  Copy feedback link
+                  {copied
+                    ? "Copied"
+                    : "Copy feedback link"}
                 </button>
 
                 <button
@@ -1445,7 +1596,7 @@ function SettingsContent({
                     onToggleFeedback
                   }
                 >
-                  {feedbackEnabled
+                  {enabled
                     ? "Disable feedback"
                     : "Enable feedback"}
                 </button>
@@ -1458,8 +1609,8 @@ function SettingsContent({
               </strong>
 
               <span>
-                This workspace does
-                not have a feedback link
+                This workspace does not
+                have a feedback link
                 configured yet.
               </span>
             </div>
@@ -1504,7 +1655,6 @@ function SettingsContent({
               number="04"
               title="Take action"
               description="ReviewAuto generates the appropriate response and next step."
-              last
             />
           </div>
         </section>
