@@ -16,6 +16,9 @@ const serviceRoleKey =
     "SUPABASE_SERVICE_ROLE_KEY"
   );
 
+const reviewAutomationKey =
+  Deno.env.get("REVIEW_AUTOMATION_KEY");
+
 const groqApiKey =
   Deno.env.get("GROQ_API_KEY");
 
@@ -80,7 +83,7 @@ Deno.serve(async (req) => {
     const isAutomationRequest =
       !!automationKey &&
       automationKey ===
-        serviceRoleKey;
+        reviewAutomationKey;
 
     let authenticatedUser = null;
 
