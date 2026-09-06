@@ -9,9 +9,14 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const reviewAutomationKey = Deno.env.get("REVIEW_AUTOMATION_KEY");
 
 if (!supabaseUrl || !serviceRoleKey) {
   throw new Error("Missing Supabase environment variables.");
+}
+
+if (!reviewAutomationKey) {
+  throw new Error("REVIEW_AUTOMATION_KEY is not configured.");
 }
 
 const supabase = createClient(
@@ -21,16 +26,11 @@ const supabase = createClient(
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: corsHeaders,
-    });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   if (req.method !== "POST") {
-    return json(
-      { error: "Only POST requests are supported." },
-      405
-    );
+    return json({ error: "Only POST requests are supported." }, 405);
   }
 
   try {
@@ -53,74 +53,41 @@ Deno.serve(async (req) => {
 
     const rating = Number(body?.rating);
 
-    // -----------------------------
-    // Validate input
-    // -----------------------------
-
     if (!slug) {
-      return json(
-        { error: "Feedback link is invalid." },
-        400
-      );
+      return json({ error: "Feedback link is invalid." }, 400);
     }
 
-    if (
-      !Number.isInteger(rating) ||
-      rating < 1 ||
-      rating > 5
-    ) {
-      return json(
-        { error: "Rating must be between 1 and 5." },
-        400
-      );
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return json({ error: "Rating must be between 1 and 5." }, 400);
     }
 
     if (!reviewText) {
       return json(
-        {
-          error:
-            "Please tell us about your experience.",
-        },
+        { error: "Please tell us about your experience." },
         400
       );
     }
 
     if (reviewText.length > 5000) {
-      return json(
-        { error: "Your feedback is too long." },
-        400
-      );
+      return json({ error: "Your feedback is too long." }, 400);
     }
 
     if (customerName.length > 200) {
-      return json(
-        { error: "Name is too long." },
-        400
-      );
+      return json({ error: "Name is too long." }, 400);
     }
-
-    // -----------------------------
-    // Find business
-    // -----------------------------
 
     const {
       data: business,
       error: businessError,
     } = await supabase
       .from("businesses")
-      .select(
-        "id, name, feedback_slug, feedback_enabled"
-      )
+      .select("id, name, feedback_slug, feedback_enabled")
       .eq("feedback_slug", slug)
       .eq("feedback_enabled", true)
       .maybeSingle();
 
     if (businessError) {
-      console.error(
-        "Business lookup failed:",
-        businessError
-      );
-
+      console.error("Business lookup failed:", businessError);
       return json(
         { error: "Unable to load feedback page." },
         500
@@ -129,17 +96,10 @@ Deno.serve(async (req) => {
 
     if (!business) {
       return json(
-        {
-          error:
-            "This feedback page is unavailable.",
-        },
+        { error: "This feedback page is unavailable." },
         404
       );
     }
-
-    // -----------------------------
-    // Check automation setting
-    // -----------------------------
 
     const {
       data: automationSettings,
@@ -156,20 +116,14 @@ Deno.serve(async (req) => {
         automationSettingsError
       );
 
-      // IMPORTANT:
-      // Feedback collection must still work even if
-      // automation settings cannot be read.
-      // Treat automation as disabled.
+      // Feedback collection must still work even if automation
+      // settings cannot be read. Treat automation as disabled.
     }
 
     const automationEnabled =
       automationSettingsError
         ? false
         : automationSettings?.enabled === true;
-
-    // -----------------------------
-    // Save feedback FIRST
-    // -----------------------------
 
     const now = new Date().toISOString();
 
@@ -182,8 +136,7 @@ Deno.serve(async (req) => {
         business_id: business.id,
         source: "reviewauto",
         source_review_id: crypto.randomUUID(),
-        customer_name:
-          customerName || "Anonymous",
+        customer_name: customerName || "Anonymous",
         rating,
         review_text: reviewText,
         automation_status: "pending",
@@ -195,28 +148,12 @@ Deno.serve(async (req) => {
       .single();
 
     if (reviewError) {
-      console.error(
-        "Review insertion failed:",
-        reviewError
-      );
-
+      console.error("Review insertion failed:", reviewError);
       return json(
         { error: "Unable to submit feedback." },
         500
       );
     }
-
-    // ==================================================
-    // AUTOMATION OFF
-    // ==================================================
-    //
-    // The review has already been successfully saved.
-    //
-    // DO NOT call process-review-automation.
-    //
-    // This guarantees that disabling automation cannot
-    // break customer feedback submission.
-    //
 
     if (!automationEnabled) {
       return json({
@@ -228,35 +165,22 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ==================================================
-    // AUTOMATION ON
-    // ==================================================
-    //
-    // Only now do we call the automation engine.
-    //
-
     const automationUrl =
       `${supabaseUrl}/functions/v1/process-review-automation`;
 
     try {
       const automationResponse =
-        await fetch(
-          automationUrl,
-          {
-            method: "POST",
-            headers: {
-              Authorization:
-                `Bearer ${serviceRoleKey}`,
-              "Content-Type":
-                "application/json",
-              "x-automation-key":
-                serviceRoleKey,
-            },
-            body: JSON.stringify({
-              review_id: review.id,
-            }),
-          }
-        );
+        await fetch(automationUrl, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${serviceRoleKey}`,
+            "Content-Type": "application/json",
+            "x-automation-key": reviewAutomationKey,
+          },
+          body: JSON.stringify({
+            review_id: review.id,
+          }),
+        });
 
       if (!automationResponse.ok) {
         const automationError =
@@ -268,9 +192,7 @@ Deno.serve(async (req) => {
           automationError
         );
 
-        // IMPORTANT:
-        // Do NOT fail the customer's feedback submission.
-        // The review is already safely stored.
+        // Do NOT fail customer's feedback submission.
       }
     } catch (automationError) {
       console.error(
@@ -278,14 +200,8 @@ Deno.serve(async (req) => {
         automationError
       );
 
-      // IMPORTANT:
-      // Do NOT return an error to the customer.
-      // Feedback was already saved successfully.
+      // Do NOT return error to customer.
     }
-
-    // -----------------------------
-    // Final success response
-    // -----------------------------
 
     return json({
       success: true,
@@ -312,19 +228,12 @@ Deno.serve(async (req) => {
   }
 });
 
-function json(
-  body: unknown,
-  status = 200
-) {
-  return new Response(
-    JSON.stringify(body),
-    {
-      status,
-      headers: {
-        ...corsHeaders,
-        "Content-Type":
-          "application/json",
-      },
-    }
-  );
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "application/json",
+    },
+  });
 }
