@@ -3,7 +3,7 @@ import { supabase } from "./lib/supabaseClient";
 import Auth from "./components/Auth";
 import FeedbackPage from "./components/FeedbackPage";
 import WebsiteWidget from "./components/WebsiteWidget";
-import Analytics from "./components/Analytics";
+import AutomationPage from "./components/AutomationPage";
 
 const navigation = [
   { name: "Dashboard", icon: "⌂" },
@@ -521,6 +521,15 @@ function Dashboard({ session }) {
           "Website Widget" ? (
           <WebsiteWidget
             workspace={workspace}
+          />
+        ) : activePage ===
+          "Automation" ? (
+          <AutomationPage
+            automation={automation}
+            reviews={reviews}
+            onToggleAutomation={
+              toggleAutomation
+            }
           />
         ) : activePage ===
           "Settings" ? (
