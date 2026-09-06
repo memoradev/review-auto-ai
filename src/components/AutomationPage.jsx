@@ -3,37 +3,81 @@ export default function AutomationPage({
   reviews,
   onToggleAutomation,
 }) {
-  const enabled = automation?.enabled === true;
+  const enabled =
+    automation?.enabled === true;
 
   const total = reviews.length;
 
-  const awaitingApproval = reviews.filter(
-    (review) =>
-      review.automation_status === "awaiting_approval"
-  ).length;
+  const awaitingApproval =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "awaiting_approval"
+    ).length;
 
-  const analyzed = reviews.filter(
-    (review) =>
-      review.ai_sentiment ||
-      review.ai_risk_level ||
-      review.ai_generated_reply
-  ).length;
+  const analyzed =
+    reviews.filter(
+      (review) =>
+        review.ai_sentiment ||
+        review.ai_risk_level ||
+        review.ai_generated_reply
+    ).length;
 
-  const highRisk = reviews.filter(
-    (review) =>
-      review.ai_risk_level === "high" ||
-      review.ai_risk_level === "critical"
-  ).length;
+  const highRisk =
+    reviews.filter(
+      (review) =>
+        review.ai_risk_level === "high" ||
+        review.ai_risk_level === "critical"
+    ).length;
 
-  const approved = reviews.filter(
-    (review) =>
-      review.automation_status === "approved"
-  ).length;
+  const approved =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "approved"
+    ).length;
 
-  const skipped = reviews.filter(
-    (review) =>
-      review.automation_status === "skipped"
-  ).length;
+  const skipped =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "skipped"
+    ).length;
+
+  const openActions =
+    reviews.filter((review) => {
+      if (!hasAnalyzedData(review)) {
+        return false;
+      }
+
+      const actionType =
+        getActionType(review);
+
+      if (actionType === "no_action") {
+        return false;
+      }
+
+      return (
+        review.action_status !==
+          "completed" &&
+        review.action_status !==
+          "dismissed"
+      );
+    }).length;
+
+  const completedActions =
+    reviews.filter(
+      (review) =>
+        review.action_status ===
+        "completed"
+    ).length;
+
+  const dismissedActions =
+    reviews.filter(
+      (review) =>
+        review.action_status ===
+        "dismissed"
+    ).length;
 
   return (
     <div>
@@ -56,7 +100,9 @@ export default function AutomationPage({
                 : "status-pill paused"
             }
           >
-            {enabled ? "ACTIVE" : "PAUSED"}
+            {enabled
+              ? "ACTIVE"
+              : "PAUSED"}
           </span>
         </div>
 
@@ -65,7 +111,8 @@ export default function AutomationPage({
             marginTop: "20px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent:
+              "space-between",
             gap: "20px",
           }}
         >
@@ -109,7 +156,9 @@ export default function AutomationPage({
                 : "Enable automation"
             }
             aria-pressed={enabled}
-            onClick={onToggleAutomation}
+            onClick={
+              onToggleAutomation
+            }
           >
             <span />
           </button>
@@ -136,7 +185,9 @@ export default function AutomationPage({
 
         <StatCard
           label="APPROVAL"
-          value={awaitingApproval}
+          value={
+            awaitingApproval
+          }
           detail="Waiting for human review"
         />
 
@@ -147,7 +198,135 @@ export default function AutomationPage({
         />
       </section>
 
-      <section className="content-grid">
+      <section
+        className="stats-grid"
+        style={{
+          marginTop: "16px",
+        }}
+      >
+        <StatCard
+          label="OPEN ACTIONS"
+          value={openActions}
+          detail="Business actions requiring attention"
+        />
+
+        <StatCard
+          label="COMPLETED"
+          value={
+            completedActions
+          }
+          detail="Actions completed"
+        />
+
+        <StatCard
+          label="DISMISSED"
+          value={
+            dismissedActions
+          }
+          detail="Actions dismissed"
+        />
+
+        <StatCard
+          label="APPROVED"
+          value={approved}
+          detail="Approved responses"
+        />
+      </section>
+
+      <section
+        className="panel"
+        style={{
+          marginTop: "16px",
+        }}
+      >
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">
+              ACTION ENGINE
+            </div>
+
+            <h2>
+              What should you do next?
+            </h2>
+          </div>
+
+          <span
+            style={{
+              color: "#aaa",
+              fontSize: "8px",
+            }}
+          >
+            {openActions > 0
+              ? `${openActions} OPEN`
+              : "NO OPEN ACTIONS"}
+          </span>
+        </div>
+
+        <p
+          style={{
+            marginTop: "10px",
+            color: "#777",
+            fontSize: "11px",
+            lineHeight: 1.6,
+            maxWidth: "680px",
+          }}
+        >
+          ReviewAuto turns customer feedback
+          into a recommended business action.
+          This is separate from the customer
+          response workflow.
+        </p>
+
+        <div
+          style={{
+            marginTop: "18px",
+          }}
+        >
+          {reviews.filter(
+            (review) =>
+              hasAnalyzedData(review) &&
+              getActionType(review) !==
+                "no_action"
+          ).length === 0 ? (
+            <div className="empty-state">
+              <strong>
+                No business actions yet
+              </strong>
+
+              <span>
+                Once customer feedback is
+                analyzed, ReviewAuto will
+                identify issues that may
+                require action.
+              </span>
+            </div>
+          ) : (
+            reviews
+              .filter(
+                (review) =>
+                  hasAnalyzedData(
+                    review
+                  ) &&
+                  getActionType(
+                    review
+                  ) !== "no_action"
+              )
+              .map((review) => (
+                <ActionRow
+                  key={review.id}
+                  review={review}
+                />
+              ))
+          )}
+        </div>
+      </section>
+
+      <section
+        className="content-grid"
+        style={{
+          marginTop: "16px",
+        }}
+      >
         <section className="panel">
           <div className="panel-header">
             <div>
@@ -176,8 +355,8 @@ export default function AutomationPage({
 
             <WorkflowStep
               number="03"
-              title="Safety decision"
-              description="The automation engine decides whether the feedback can continue automatically or requires human attention."
+              title="Action identified"
+              description="The Action Engine determines what the business should do about the feedback."
             />
 
             <WorkflowStep
@@ -188,8 +367,8 @@ export default function AutomationPage({
 
             <WorkflowStep
               number="05"
-              title="Human approval"
-              description="Higher-risk feedback is held for review before any response can move forward."
+              title="Owner takes action"
+              description="The business can complete or dismiss the recommended action."
               last
             />
           </div>
@@ -220,7 +399,28 @@ export default function AutomationPage({
 
             <ActivityRow
               label="Awaiting approval"
-              value={awaitingApproval}
+              value={
+                awaitingApproval
+              }
+            />
+
+            <ActivityRow
+              label="Open actions"
+              value={openActions}
+            />
+
+            <ActivityRow
+              label="Completed actions"
+              value={
+                completedActions
+              }
+            />
+
+            <ActivityRow
+              label="Dismissed actions"
+              value={
+                dismissedActions
+              }
             />
 
             <ActivityRow
@@ -286,12 +486,452 @@ export default function AutomationPage({
           lineHeight: 1.6,
         }}
       >
-        Automation currently controls ReviewAuto feedback
-        processing. External publishing integrations such as
-        Google Business Profile will be added separately.
+        Automation currently controls ReviewAuto
+        feedback processing. External publishing
+        integrations such as Google Business Profile
+        will be added separately.
       </div>
     </div>
   );
+}
+
+function ActionRow({
+  review,
+}) {
+  return (
+    <ActionRowContent
+      review={review}
+    />
+  );
+}
+
+function ActionRowContent({
+  review,
+}) {
+  const actionType =
+    getActionType(review);
+
+  const storedStatus =
+    review.action_status;
+
+  const status =
+    storedStatus ===
+      "completed" ||
+    storedStatus ===
+      "dismissed"
+      ? storedStatus
+      : actionType ===
+        "no_action"
+      ? "completed"
+      : "open";
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  async function updateAction(
+    nextStatus
+  ) {
+    setSaving(true);
+    setError("");
+
+    try {
+      const updates = {
+        ai_action_type:
+          actionType,
+
+        ai_action_reason:
+          getActionReason(
+            review,
+            actionType
+          ),
+
+        action_status:
+          nextStatus,
+
+        action_completed_at:
+          nextStatus ===
+            "completed" ||
+          nextStatus ===
+            "dismissed"
+            ? new Date().toISOString()
+            : null,
+      };
+
+      const {
+        data,
+        error:
+          updateError,
+      } = await supabase
+        .from("reviews")
+        .update({
+          ...updates,
+          updated_at:
+            new Date().toISOString(),
+        })
+        .eq(
+          "id",
+          review.id
+        )
+        .select()
+        .single();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "reviewauto:review-updated",
+          {
+            detail: data,
+          }
+        )
+      );
+
+      window.location.reload();
+    } catch (err) {
+      console.error(
+        "Action update failed:",
+        err
+      );
+
+      setError(
+        err?.message ||
+          "Unable to update action."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <article
+      style={{
+        padding: "14px 0",
+        borderBottom:
+          "1px solid #eeeeea",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          alignItems:
+            "flex-start",
+          gap: "18px",
+        }}
+      >
+        <div
+          style={{
+            minWidth: 0,
+            flex: 1,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems:
+                "center",
+              gap: "6px",
+              flexWrap:
+                "wrap",
+            }}
+          >
+            <strong
+              style={{
+                fontSize: "12px",
+              }}
+            >
+              {getActionLabel(
+                actionType
+              )}
+            </strong>
+
+            <span
+              className={
+                status ===
+                "completed"
+                  ? "status-pill active"
+                  : status ===
+                    "dismissed"
+                  ? "status-pill"
+                  : "status-pill paused"
+              }
+            >
+              {status.toUpperCase()}
+            </span>
+
+            {review.ai_risk_level && (
+              <span
+                className={
+                  review.ai_risk_level ===
+                    "high" ||
+                  review.ai_risk_level ===
+                    "critical"
+                    ? "status-pill paused"
+                    : "status-pill"
+                }
+              >
+                RISK:{" "}
+                {review.ai_risk_level.toUpperCase()}
+              </span>
+            )}
+          </div>
+
+          <div
+            style={{
+              marginTop: "7px",
+              fontSize: "11px",
+              lineHeight: 1.6,
+              color: "#444",
+            }}
+          >
+            {getActionReason(
+              review,
+              actionType
+            )}
+          </div>
+
+          <div
+            style={{
+              marginTop: "7px",
+              fontSize: "10px",
+              lineHeight: 1.5,
+              color: "#888",
+            }}
+          >
+            Customer:{" "}
+            {review.customer_name ||
+              "Anonymous customer"}
+          </div>
+
+          <div
+            style={{
+              marginTop: "4px",
+              fontSize: "10px",
+              lineHeight: 1.5,
+              color: "#888",
+            }}
+          >
+            {review.review_text ||
+              "No review text provided."}
+          </div>
+
+          {error && (
+            <div
+              style={{
+                marginTop: "8px",
+                color: "#b42318",
+                fontSize: "10px",
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {status !==
+            "completed" &&
+            status !==
+              "dismissed" && (
+              <div
+                style={{
+                  display: "flex",
+                  gap: "6px",
+                  flexWrap:
+                    "wrap",
+                  marginTop:
+                    "10px",
+                }}
+              >
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() =>
+                    updateAction(
+                      "completed"
+                    )
+                  }
+                  disabled={
+                    saving
+                  }
+                >
+                  {saving
+                    ? "Saving..."
+                    : "Mark complete"}
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() =>
+                    updateAction(
+                      "dismissed"
+                    )
+                  }
+                  disabled={
+                    saving
+                  }
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function hasAnalyzedData(
+  review
+) {
+  return Boolean(
+    review?.ai_sentiment ||
+      review?.ai_risk_level ||
+      review?.ai_generated_reply
+  );
+}
+
+function getActionType(
+  review
+) {
+  if (
+    review?.ai_action_type &&
+    [
+      "reply_customer",
+      "fix_issue",
+      "follow_up",
+      "review_internally",
+      "no_action",
+    ].includes(
+      review.ai_action_type
+    )
+  ) {
+    return review.ai_action_type;
+  }
+
+  const risk =
+    review?.ai_risk_level;
+
+  const intent =
+    review?.ai_intent ||
+    review?.intent;
+
+  const sentiment =
+    review?.ai_sentiment;
+
+  if (
+    risk === "critical" ||
+    risk === "high"
+  ) {
+    return "review_internally";
+  }
+
+  if (
+    intent === "refund_request"
+  ) {
+    return "review_internally";
+  }
+
+  if (
+    intent === "service_issue" ||
+    intent === "complaint"
+  ) {
+    return "fix_issue";
+  }
+
+  if (
+    intent === "question"
+  ) {
+    return "reply_customer";
+  }
+
+  if (
+    intent === "suggestion"
+  ) {
+    return "review_internally";
+  }
+
+  if (
+    intent === "praise" &&
+    sentiment === "positive"
+  ) {
+    return "no_action";
+  }
+
+  if (
+    sentiment === "negative" ||
+    sentiment === "mixed"
+  ) {
+    return "follow_up";
+  }
+
+  return "reply_customer";
+}
+
+function getActionLabel(
+  actionType
+) {
+  switch (actionType) {
+    case "reply_customer":
+      return "Reply to customer";
+
+    case "fix_issue":
+      return "Fix service issue";
+
+    case "follow_up":
+      return "Follow up with customer";
+
+    case "review_internally":
+      return "Review internally";
+
+    case "no_action":
+      return "No action needed";
+
+    default:
+      return "Review feedback";
+  }
+}
+
+function getActionReason(
+  review,
+  actionType
+) {
+  if (
+    review?.ai_action_reason
+  ) {
+    return review.ai_action_reason;
+  }
+
+  if (
+    review?.ai_reason
+  ) {
+    return review.ai_reason;
+  }
+
+  switch (actionType) {
+    case "reply_customer":
+      return "The feedback appears to need a direct customer response.";
+
+    case "fix_issue":
+      return "The feedback indicates a service or experience problem that may require a business-side fix.";
+
+    case "follow_up":
+      return "The feedback indicates an unresolved customer concern that may benefit from follow-up.";
+
+    case "review_internally":
+      return "The feedback should be reviewed by the business before deciding on the appropriate response or internal action.";
+
+    case "no_action":
+      return "No business-side action appears necessary beyond the normal customer response workflow.";
+
+    default:
+      return "Review the feedback and determine the appropriate next step.";
+  }
 }
 
 function StatCard({
@@ -335,9 +975,13 @@ function WorkflowStep({
       </div>
 
       <div className="step-content">
-        <strong>{title}</strong>
+        <strong>
+          {title}
+        </strong>
 
-        <p>{description}</p>
+        <p>
+          {description}
+        </p>
       </div>
     </div>
   );
@@ -351,8 +995,10 @@ function ActivityRow({
     <div
       style={{
         display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
+        alignItems:
+          "center",
+        justifyContent:
+          "space-between",
         padding: "12px 0",
         borderBottom:
           "1px solid #eeeeea",
@@ -385,7 +1031,8 @@ function SafetyItem({
     <div
       style={{
         display: "flex",
-        alignItems: "flex-start",
+        alignItems:
+          "flex-start",
         gap: "10px",
         fontSize: "11px",
         lineHeight: 1.6,
@@ -401,7 +1048,9 @@ function SafetyItem({
         ✓
       </span>
 
-      <span>{text}</span>
+      <span>
+        {text}
+      </span>
     </div>
   );
 }
