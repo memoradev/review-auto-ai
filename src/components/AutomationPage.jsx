@@ -562,27 +562,24 @@ function ActionRowContent({
             : null,
       };
 
-      const {
-        data,
-        error:
-          updateError,
-      } = await supabase
-        .from("reviews")
-        .update({
-          ...updates,
-          updated_at:
-            new Date().toISOString(),
-        })
-        .eq(
-          "id",
-          review.id
-        )
-        .select()
-        .single();
+      const { data, error } = await supabase
+  .from("reviews")
+  .update({
+    action_status: "completed",
+    action_completed_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  })
+  .eq("id", review.id)
+  .select()
+  .single();
 
-      if (updateError) {
-        throw updateError;
-      }
+if (error) {
+  console.error(
+    "Failed to mark action complete:",
+    error
+  );
+  throw error;
+}
 
       window.dispatchEvent(
         new CustomEvent(
