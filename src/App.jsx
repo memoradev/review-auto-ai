@@ -15,6 +15,318 @@ const navigation = [
   { name: "Settings", icon: "⚙" },
 ];
 
+/*
+ * Dashboard / Reviews UI compatibility styles.
+ *
+ * The existing ReviewAuto stylesheet already contains the
+ * original application design. These styles only cover the
+ * Dashboard/Reviews classes introduced by the current workflow
+ * UI so they do not appear as unstyled browser-default elements.
+ */
+function DashboardReviewsStyles() {
+  return (
+    <style>{`
+      /* ---------------------------------------------
+         DASHBOARD AUTOMATION BANNER
+      --------------------------------------------- */
+
+      .automation-banner {
+        position: relative;
+        min-height: 80px;
+        margin-bottom: 14px;
+        padding: 16px 19px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border: 1px solid #dcdcd5;
+        border-radius: 13px;
+        background: #ffffff;
+      }
+
+      .automation-banner > div:first-child {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .automation-banner h2 {
+        margin: 0;
+        font-size: 17px;
+        letter-spacing: -0.035em;
+      }
+
+      .automation-banner p {
+        margin: 5px 0 0;
+        color: #85857e;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .toggle-button {
+        width: 58px;
+        min-width: 58px;
+        height: 28px;
+        padding: 0 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: 1px solid #deded7;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #55554f;
+        font-size: 8px;
+        font-weight: 800;
+      }
+
+      .toggle-button.active {
+        border-color: #111111;
+        background: #111111;
+        color: #ffffff;
+      }
+
+      .toggle-button span {
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        border-radius: 50%;
+        background: #aaa9a2;
+      }
+
+      .toggle-button.active span {
+        background: #ffffff;
+      }
+
+
+      /* ---------------------------------------------
+         DASHBOARD REVIEW ROW
+      --------------------------------------------- */
+
+      .review-row {
+        min-width: 0;
+      }
+
+      .review-row .review-content {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .review-row .review-text {
+        max-width: 650px;
+        margin: 5px 0 0;
+        color: #72726b;
+        font-size: 10px;
+        line-height: 1.55;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .review-ai-meta {
+        margin-top: 7px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: #999992;
+        font-size: 8px;
+      }
+
+      .review-ai-meta span {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .review-ai-meta span + span::before {
+        content: "·";
+        margin-right: 8px;
+        color: #c1c1ba;
+      }
+
+
+      /* ---------------------------------------------
+         FULL REVIEWS WORKFLOW
+      --------------------------------------------- */
+
+      .review-workflow-row {
+        min-width: 0;
+        padding: 18px 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+        gap: 24px;
+        border-top: 1px solid #eeeeea;
+      }
+
+      .review-workflow-row:first-child {
+        padding-top: 0;
+        border-top: 0;
+      }
+
+      .review-main {
+        min-width: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .review-main .review-content {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .review-rating {
+        width: 25px;
+        min-width: 25px;
+        padding-top: 1px;
+        color: #1d1d1b;
+        font-size: 10px;
+        text-align: center;
+      }
+
+      .review-workflow-row .review-meta {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .review-workflow-row .review-meta strong {
+        font-size: 11px;
+      }
+
+      .review-workflow-row .review-meta span {
+        color: #aaa9a1;
+        font-size: 8px;
+      }
+
+      .review-workflow-row .review-text {
+        margin: 8px 0 0;
+        color: #55554f;
+        font-size: 10px;
+        line-height: 1.65;
+      }
+
+      .review-workflow-row .review-ai-meta {
+        margin-top: 10px;
+      }
+
+      .review-workflow {
+        min-width: 0;
+        padding: 0;
+      }
+
+      .workflow-status {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+      }
+
+      .workflow-status span {
+        padding: 5px 7px;
+        border-radius: 5px;
+        background: #ededeb;
+        color: #777770;
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .workflow-status span[data-status="awaiting_approval"] {
+        background: #f5f0df;
+        color: #917733;
+      }
+
+      .ai-reply {
+        padding: 12px;
+        border: 1px solid #e5e5df;
+        border-radius: 8px;
+        background: #fafaf8;
+      }
+
+      .ai-reply p {
+        margin: 6px 0 0;
+        color: #5f5f58;
+        font-size: 10px;
+        line-height: 1.6;
+      }
+
+      .workflow-actions {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .workflow-actions .secondary-button,
+      .workflow-actions .primary-button,
+      .workflow-actions .danger-button {
+        width: 100%;
+        min-height: 32px;
+      }
+
+      .danger-button {
+        border: 1px solid #e1caca;
+        border-radius: 8px;
+        padding: 9px 12px;
+        background: #ffffff;
+        color: #9a4b4b;
+        font-size: 9px;
+        font-weight: 750;
+      }
+
+      .danger-button:hover {
+        background: #fbf3f3;
+      }
+
+
+      /* ---------------------------------------------
+         RESPONSIVE
+      --------------------------------------------- */
+
+      @media (max-width: 900px) {
+        .review-workflow-row {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .workflow-status {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .automation-banner {
+          align-items: flex-start;
+        }
+
+        .review-workflow-row {
+          padding: 16px 0;
+        }
+
+        .review-main {
+          gap: 10px;
+        }
+
+        .review-ai-meta {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .review-ai-meta span + span::before {
+          display: none;
+        }
+
+        .workflow-actions {
+          grid-template-columns: 1fr;
+        }
+      }
+    `}</style>
+  );
+}
+
 function App() {
   const feedbackMatch =
     window.location.pathname.match(
@@ -153,13 +465,6 @@ function Dashboard({ session }) {
           throw businessError;
         }
 
-        /*
-         * BRAND-NEW ACCOUNT
-         *
-         * Do not show a workspace error when the
-         * authenticated user simply has no business yet.
-         * Send them through workspace onboarding instead.
-         */
         if (!business) {
           if (mounted) {
             setNeedsOnboarding(true);
@@ -170,12 +475,6 @@ function Dashboard({ session }) {
 
         let initializedBusiness = business;
 
-        /*
-         * REPAIR EXISTING WORKSPACE
-         *
-         * Older workspaces may exist without a feedback slug.
-         * Only create the missing slug. Existing data is preserved.
-         */
         if (!initializedBusiness.feedback_slug) {
           const baseSlug =
             (
@@ -229,14 +528,6 @@ function Dashboard({ session }) {
             updatedBusiness;
         }
 
-        /*
-         * AUTOMATION INITIALIZATION
-         *
-         * Every workspace must have exactly one
-         * automation_settings row.
-         *
-         * New/missing settings start ENABLED.
-         */
         const {
           data:
             existingAutomationSettings,
@@ -570,12 +861,6 @@ function Dashboard({ session }) {
     return <LoadingScreen />;
   }
 
-  /*
-   * NEW ACCOUNT ONBOARDING
-   *
-   * This is intentionally before WorkspaceError.
-   * A user without a business is not an error.
-   */
   if (needsOnboarding) {
     return (
       <WorkspaceOnboarding
@@ -626,6 +911,8 @@ function Dashboard({ session }) {
       />
 
       <main className="main">
+        <DashboardReviewsStyles />
+
         <Header
           activePage={activePage}
           businessName={
@@ -800,11 +1087,6 @@ function WorkspaceOnboarding({
         .single();
 
       if (automationError) {
-        /*
-         * Best-effort rollback.
-         * If automation initialization fails,
-         * do not leave an incomplete workspace.
-         */
         await supabase
           .from("businesses")
           .delete()
@@ -1291,7 +1573,7 @@ function StatCard({
  * PHASE 2D
  * Analytics page
  *
- * Uses the existing reviews state.
+ * Existing analytics implementation.
  * No new database query.
  * No new backend.
  * No new analytics table.
@@ -2078,6 +2360,11 @@ function AutomationBanner({
         onClick={
           setEnabled
         }
+        aria-label={
+          enabled
+            ? "Turn automation off"
+            : "Turn automation on"
+        }
       >
         <span />
         {enabled
@@ -2475,6 +2762,10 @@ function ReviewWorkflowRow({
     }
   }
 
+  const status =
+    review.automation_status ||
+    "pending";
+
   return (
     <article className="review-workflow-row">
       <div className="review-main">
@@ -2532,9 +2823,12 @@ function ReviewWorkflowRow({
 
       <div className="review-workflow">
         <div className="workflow-status">
-          <span>
-            {review.automation_status ||
-              "pending"}
+          <span
+            data-status={
+              status
+            }
+          >
+            {status}
           </span>
         </div>
 
@@ -2551,17 +2845,27 @@ function ReviewWorkflowRow({
               width:
                 "100%",
               marginTop:
-                "10px",
+                "0",
               resize:
                 "vertical",
               border:
                 "1px solid #ddd",
+              borderRadius:
+                "8px",
               padding:
                 "10px",
               fontSize:
-                "11px",
+                "10px",
+              lineHeight:
+                1.6,
               fontFamily:
                 "inherit",
+              color:
+                "#333",
+              background:
+                "#ffffff",
+              boxSizing:
+                "border-box",
             }}
           />
         ) : (
@@ -2654,6 +2958,21 @@ function ReviewWorkflowRow({
 function ReviewRow({
   review,
 }) {
+  const status =
+    review.automation_status ||
+    "pending";
+
+  const statusClass =
+    status ===
+      "approved" ||
+    status ===
+      "published"
+      ? "review-status replied"
+      : status ===
+        "awaiting_approval"
+      ? "review-status approval"
+      : "review-status";
+
   return (
     <article className="review-row">
       <div className="review-rating">
@@ -2673,6 +2992,12 @@ function ReviewRow({
                 review.created_at
             )}
           </span>
+
+          {review.source && (
+            <span>
+              {review.source}
+            </span>
+          )}
         </div>
 
         <p className="review-text">
@@ -2694,9 +3019,13 @@ function ReviewRow({
         </div>
       </div>
 
-      <div className="review-status">
-        {review.automation_status ||
-          "pending"}
+      <div
+        className={
+          statusClass
+        }
+      >
+        <span />
+        {status}
       </div>
     </article>
   );
