@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+
 export default function AutomationPage({
   automation,
   reviews,
@@ -513,25 +514,34 @@ function ActionRowContent({
   const actionType =
     getActionType(review);
 
-  const storedStatus =
-    review.action_status;
+  const [actionStatus, setActionStatus] =
+    useState(
+      review?.action_status ||
+        null
+    );
 
-  const status =
-    storedStatus ===
-      "completed" ||
-    storedStatus ===
-      "dismissed"
-      ? storedStatus
-      : actionType ===
-        "no_action"
-      ? "completed"
-      : "open";
+  const [completedAt, setCompletedAt] =
+    useState(
+      review?.action_completed_at ||
+        null
+    );
 
   const [saving, setSaving] =
     useState(false);
 
   const [error, setError] =
     useState("");
+
+  const status =
+    actionStatus ===
+      "completed" ||
+    actionStatus ===
+      "dismissed"
+      ? actionStatus
+      : actionType ===
+        "no_action"
+      ? "completed"
+      : "open";
 
   async function updateAction(
     nextStatus
@@ -540,47 +550,68 @@ function ActionRowContent({
     setError("");
 
     try {
-      const updates = {
-        ai_action_type:
-          actionType,
+      const completedTimestamp =
+        nextStatus ===
+          "completed" ||
+        nextStatus ===
+          "dismissed"
+          ? new Date().toISOString()
+          : null;
 
-        ai_action_reason:
-          getActionReason(
-            review,
-            actionType
-          ),
+      /*
+       * IMPORTANT:
+       * Only update the action fields here.
+       *
+       * Do NOT update ai_action_type.
+       * The AI action type is already validated
+       * and stored by analyze-review.
+       *
+       * This prevents the reviews_ai_action_type_check
+       * constraint from being triggered by the
+       * completion button.
+       */
+      const { data, error } =
+        await supabase
+          .from("reviews")
+          .update({
+            action_status:
+              nextStatus,
 
-        action_status:
-          nextStatus,
+            action_completed_at:
+              completedTimestamp,
 
-        action_completed_at:
-          nextStatus ===
-            "completed" ||
-          nextStatus ===
-            "dismissed"
-            ? new Date().toISOString()
-            : null,
-      };
+            updated_at:
+              new Date().toISOString(),
+          })
+          .eq("id", review.id)
+          .select()
+          .single();
 
-      const { data, error } = await supabase
-  .from("reviews")
-  .update({
-    action_status: "completed",
-    action_completed_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  })
-  .eq("id", review.id)
-  .select()
-  .single();
+      if (error) {
+        console.error(
+          "Failed to update action:",
+          error
+        );
 
-if (error) {
-  console.error(
-    "Failed to mark action complete:",
-    error
-  );
-  throw error;
-}
+        throw error;
+      }
 
+      /*
+       * Update this row immediately.
+       * No page reload.
+       */
+      setActionStatus(
+        nextStatus
+      );
+
+      setCompletedAt(
+        completedTimestamp
+      );
+
+      /*
+       * Keep the rest of ReviewAuto informed
+       * without leaving the Automation page.
+       */
       window.dispatchEvent(
         new CustomEvent(
           "reviewauto:review-updated",
@@ -589,8 +620,6 @@ if (error) {
           }
         )
       );
-
-      window.location.reload();
     } catch (err) {
       console.error(
         "Action update failed:",
@@ -719,6 +748,20 @@ if (error) {
             {review.review_text ||
               "No review text provided."}
           </div>
+
+          {completedAt &&
+            status ===
+              "completed" && (
+              <div
+                style={{
+                  marginTop: "6px",
+                  fontSize: "9px",
+                  color: "#999",
+                }}
+              >
+                Completed
+              </div>
+            )}
 
           {error && (
             <div
