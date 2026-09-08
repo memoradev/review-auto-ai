@@ -16,9 +16,6 @@ const serviceRoleKey =
     "SUPABASE_SERVICE_ROLE_KEY"
   );
 
-const reviewAutomationKey =
-  Deno.env.get("REVIEW_AUTOMATION_KEY");
-
 const groqApiKey =
   Deno.env.get("GROQ_API_KEY");
 
@@ -83,7 +80,7 @@ Deno.serve(async (req) => {
     const isAutomationRequest =
       !!automationKey &&
       automationKey ===
-        reviewAutomationKey;
+        serviceRoleKey;
 
     let authenticatedUser = null;
 
@@ -387,6 +384,12 @@ Rules:
 12. Match the customer's general tone
     while remaining professional.
 
+13. A one-star review must always use
+    "human_review". It may receive an
+    AI-generated draft, but it must never
+    be eligible for automatic approval or
+    automatic publishing.
+
 13. Also determine the single most useful
     business-side action.
 
@@ -659,9 +662,13 @@ ${review.review_text || "(No written review.)"}
      * require human review.
      */
 
+    const isOneStarReview =
+      Number(review.rating || 0) === 1;
+
     if (
       riskLevel === "high" ||
-      riskLevel === "critical"
+      riskLevel === "critical" ||
+      isOneStarReview
     ) {
       recommendedAction =
         "human_review";
@@ -697,7 +704,8 @@ ${review.review_text || "(No written review.)"}
 
     if (
       riskLevel === "high" ||
-      riskLevel === "critical"
+      riskLevel === "critical" ||
+      isOneStarReview
     ) {
       actionType =
         "review_internally";
