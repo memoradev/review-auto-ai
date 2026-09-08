@@ -99,6 +99,210 @@ function DashboardReviewsStyles() {
 
 
       /* ---------------------------------------------
+         DASHBOARD ACTIVATION
+      --------------------------------------------- */
+
+      .dashboard-activation {
+        margin-bottom: 14px;
+        padding: 22px;
+        border: 1px solid #e2e2dc;
+        border-radius: 13px;
+        background: #ffffff;
+      }
+
+      .dashboard-activation-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+
+      .dashboard-activation-header > div:first-child {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .dashboard-activation h2 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 1.15;
+        letter-spacing: -0.045em;
+      }
+
+      .dashboard-activation-header p {
+        max-width: 680px;
+        margin: 8px 0 0;
+        color: #77776f;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .dashboard-activation-progress {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-width: 430px;
+        color: #77776f;
+        font-size: 8px;
+        font-weight: 700;
+        line-height: 1.4;
+      }
+
+      .activation-check,
+      .activation-pending {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 50%;
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      .activation-check {
+        background: #111111;
+        color: #ffffff;
+      }
+
+      .activation-pending {
+        border: 1px solid #d8d8d1;
+        background: #ffffff;
+        color: #aaa9a2;
+      }
+
+      .activation-divider {
+        color: #c0c0b9;
+        margin: 0 2px;
+      }
+
+      .dashboard-activation-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .activation-option {
+        min-width: 0;
+        min-height: 150px;
+        padding: 17px;
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        border: 1px solid #e5e5df;
+        border-radius: 11px;
+        background: #fafaf8;
+        box-sizing: border-box;
+      }
+
+      .activation-option.disabled {
+        background: #f7f7f4;
+        opacity: 0.72;
+      }
+
+      .activation-option-icon {
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #dfdfd8;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #44443f;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .activation-option-content {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .activation-option h3 {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.3;
+        letter-spacing: -0.025em;
+      }
+
+      .activation-option p {
+        min-height: 34px;
+        margin: 6px 0 13px;
+        color: #85857e;
+        font-size: 9px;
+        line-height: 1.55;
+      }
+
+      .activation-button {
+        min-height: 30px;
+        padding: 7px 10px;
+        border: 1px solid #111111;
+        border-radius: 7px;
+        background: #111111;
+        color: #ffffff;
+        font: inherit;
+        font-size: 9px;
+        font-weight: 750;
+        cursor: pointer;
+      }
+
+      .activation-button.secondary {
+        border-color: #deded7;
+        background: #ffffff;
+        color: #55554f;
+      }
+
+      .activation-button:hover:not(:disabled) {
+        opacity: 0.88;
+      }
+
+      .activation-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+
+      .activation-option-title-row {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .activation-coming-soon {
+        display: inline-flex;
+        align-items: center;
+        min-height: 17px;
+        padding: 2px 6px;
+        border: 1px solid #deded7;
+        border-radius: 5px;
+        background: #ffffff;
+        color: #999992;
+        font-size: 6px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+      }
+
+      @media (max-width: 800px) {
+        .dashboard-activation-header {
+          flex-direction: column;
+        }
+
+        .dashboard-activation-progress {
+          justify-content: flex-start;
+          max-width: none;
+        }
+
+        .dashboard-activation-options {
+          grid-template-columns: 1fr;
+        }
+      }
+
+
+      /* ---------------------------------------------
          DASHBOARD REVIEW ROW
       --------------------------------------------- */
 
