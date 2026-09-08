@@ -933,6 +933,11 @@ function Dashboard({ session }) {
             onToggleAutomation={
               toggleAutomation
             }
+            onOpenWebsiteWidget={() =>
+              setActivePage(
+                "Website Widget"
+              )
+            }
           />
         ) : activePage ===
           "Reviews" ? (
@@ -1424,6 +1429,225 @@ function Header({
   );
 }
 
+function DashboardActivationCard({
+  workspace,
+  onOpenWebsiteWidget,
+}) {
+  const [activated, setActivated] =
+    useState(false);
+
+  const feedbackUrl =
+    workspace?.feedback_slug
+      ? `${window.location.origin}/f/${workspace.feedback_slug}`
+      : "";
+
+  async function handleCopyLink() {
+    if (!feedbackUrl) {
+      return;
+    }
+
+    try {
+      if (
+        navigator.clipboard &&
+        window.isSecureContext
+      ) {
+        await navigator.clipboard.writeText(
+          feedbackUrl
+        );
+      } else {
+        const textArea =
+          document.createElement(
+            "textarea"
+          );
+
+        textArea.value = feedbackUrl;
+        textArea.setAttribute(
+          "readonly",
+          ""
+        );
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        textArea.style.opacity = "0";
+
+        document.body.appendChild(
+          textArea
+        );
+        textArea.focus();
+        textArea.select();
+        textArea.setSelectionRange(
+          0,
+          textArea.value.length
+        );
+
+        const successful =
+          document.execCommand("copy");
+
+        document.body.removeChild(
+          textArea
+        );
+
+        if (!successful) {
+          throw new Error(
+            "Browser blocked clipboard access."
+          );
+        }
+      }
+
+      setActivated(true);
+    } catch (error) {
+      console.error(
+        "Feedback link copy failed:",
+        error
+      );
+
+      window.prompt(
+        "Copy your feedback link:",
+        feedbackUrl
+      );
+      setActivated(true);
+    }
+  }
+
+  function handleWebsiteWidget() {
+    setActivated(true);
+
+    if (
+      typeof onOpenWebsiteWidget ===
+      "function"
+    ) {
+      onOpenWebsiteWidget();
+    }
+  }
+
+  return (
+    <section className="dashboard-activation">
+      <div className="dashboard-activation-header">
+        <div>
+          <div className="eyebrow">
+            GET REVIEWAUTO WORKING
+          </div>
+
+          <h2>
+            {activated
+              ? "You're ready to collect feedback."
+              : "Start collecting customer feedback."}
+          </h2>
+
+          <p>
+            {activated
+              ? "Share your feedback link or add the widget to your website."
+              : "Your ReviewAuto workspace is ready. Choose how customers will give you feedback."}
+          </p>
+        </div>
+
+        <div className="dashboard-activation-progress">
+          <span className="activation-check">
+            ✓
+          </span>
+          <span>Workspace</span>
+          <span className="activation-divider">
+            →
+          </span>
+          <span className="activation-check">
+            ✓
+          </span>
+          <span>Feedback link</span>
+          <span className="activation-divider">
+            →
+          </span>
+          <span
+            className={
+              activated
+                ? "activation-check"
+                : "activation-pending"
+            }
+          >
+            {activated ? "✓" : "○"}
+          </span>
+          <span>Collection method</span>
+        </div>
+      </div>
+
+      <div className="dashboard-activation-options">
+        <div className="activation-option">
+          <div className="activation-option-icon">↗</div>
+          <div className="activation-option-content">
+            <h3>Share Link</h3>
+            <p>
+              Send your feedback link through SMS, WhatsApp, email, or anywhere else.
+            </p>
+            <button
+              type="button"
+              className="activation-button"
+              onClick={handleCopyLink}
+              disabled={!feedbackUrl}
+            >
+              Copy feedback link
+            </button>
+          </div>
+        </div>
+
+        <div className="activation-option">
+          <div className="activation-option-icon">#</div>
+          <div className="activation-option-content">
+            <h3>QR Code</h3>
+            <p>
+              Put a QR code on tables, receipts, counters, packaging, or printed materials.
+            </p>
+            <button
+              type="button"
+              className="activation-button secondary"
+              disabled
+            >
+              QR code coming next
+            </button>
+          </div>
+        </div>
+
+        <div className="activation-option">
+          <div className="activation-option-icon">▣</div>
+          <div className="activation-option-content">
+            <h3>Website Widget</h3>
+            <p>
+              Add ReviewAuto directly to your website using the existing widget.
+            </p>
+            <button
+              type="button"
+              className="activation-button"
+              onClick={handleWebsiteWidget}
+            >
+              Set up widget
+            </button>
+          </div>
+        </div>
+
+        <div className="activation-option disabled">
+          <div className="activation-option-icon">⌖</div>
+          <div className="activation-option-content">
+            <div className="activation-option-title-row">
+              <h3>Google Business Profile</h3>
+              <span className="activation-coming-soon">
+                COMING SOON
+              </span>
+            </div>
+            <p>
+              Connect your Google Business Profile to manage Google reviews.
+            </p>
+            <button
+              type="button"
+              className="activation-button secondary"
+              disabled
+            >
+              Not available yet
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function DashboardContent({
   workspace,
   automation,
@@ -1431,6 +1655,7 @@ function DashboardContent({
   setReviews,
   reviewsLoading,
   onToggleAutomation,
+  onOpenWebsiteWidget,
 }) {
   const totalReviews =
     reviews.length;
@@ -1471,6 +1696,13 @@ function DashboardContent({
 
   return (
     <>
+      <DashboardActivationCard
+        workspace={workspace}
+        onOpenWebsiteWidget={
+          onOpenWebsiteWidget
+        }
+      />
+
       <section className="stats-grid">
         <StatCard
           label="Total reviews"
