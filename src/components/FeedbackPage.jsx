@@ -302,7 +302,7 @@ export default function FeedbackPage({
             placeholder="Your name (optional)"
             maxLength={120}
             style={{
-              width: "81%",
+              width: "100%",
               boxSizing: "border-box",
               marginBottom: "12px",
             }}
