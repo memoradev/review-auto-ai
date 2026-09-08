@@ -289,21 +289,7 @@ export default function FeedbackPage({
             }}
           />
 
-          <input
-            value={customerName}
-            onChange={(event) =>
-              setCustomerName(
-                event.target.value
-              )
-            }
-            placeholder="Your name (optional)"
-            maxLength={200}
-            style={{
-              width: "100%",
-              boxSizing: "border-box",
-              marginBottom: "14px",
-            }}
-          />
+
 
           {error && (
             <p
