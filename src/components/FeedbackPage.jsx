@@ -291,6 +291,23 @@ export default function FeedbackPage({
 
 
 
+          <input
+            type="text"
+            value={customerName}
+            onChange={(event) =>
+              setCustomerName(
+                event.target.value
+              )
+            }
+            placeholder="Your name (optional)"
+            maxLength={120}
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              marginBottom: "12px",
+            }}
+          />
+
           {error && (
             <p
               style={{
