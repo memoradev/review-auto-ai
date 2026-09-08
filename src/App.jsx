@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import QRCode from "qrcode";
 import { supabase } from "./lib/supabaseClient";
 import Auth from "./components/Auth";
 import FeedbackPage from "./components/FeedbackPage";
@@ -265,6 +266,81 @@ function DashboardReviewsStyles() {
         opacity: 0.5;
       }
 
+      .activation-error {
+        margin-top: 8px;
+        color: #9a4a3d;
+        font-size: 8px;
+        line-height: 1.45;
+      }
+
+      .activation-qr-panel {
+        margin-top: 10px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        border: 1px solid #e5e5df;
+        border-radius: 11px;
+        background: #ffffff;
+      }
+
+      .activation-qr-preview {
+        width: 156px;
+        height: 156px;
+        flex: 0 0 156px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #e5e5df;
+        border-radius: 8px;
+        background: #ffffff;
+      }
+
+      .activation-qr-preview img {
+        display: block;
+        width: 138px;
+        height: 138px;
+        image-rendering: pixelated;
+      }
+
+      .activation-qr-details {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .activation-qr-eyebrow {
+        margin-bottom: 6px;
+        color: #8a8a82;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+      }
+
+      .activation-qr-details h3 {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.3;
+        letter-spacing: -0.025em;
+      }
+
+      .activation-qr-details p {
+        max-width: 570px;
+        margin: 7px 0 0;
+        color: #85857e;
+        font-size: 9px;
+        line-height: 1.55;
+      }
+
+      .activation-qr-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 7px;
+      }
+
       .activation-option-title-row {
         display: flex;
         align-items: center;
@@ -298,6 +374,21 @@ function DashboardReviewsStyles() {
 
         .dashboard-activation-options {
           grid-template-columns: 1fr;
+        }
+
+        .activation-qr-panel {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .activation-qr-details {
+          width: 100%;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .activation-qr-actions {
+          justify-content: flex-start;
         }
       }
 
@@ -1639,6 +1730,9 @@ function DashboardActivationCard({
 }) {
   const [activated, setActivated] =
     useState(false);
+  const [qrCode, setQrCode] = useState("");
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState("");
 
   const feedbackUrl =
     workspace?.feedback_slug
@@ -1711,6 +1805,76 @@ function DashboardActivationCard({
       );
       setActivated(true);
     }
+  }
+
+  async function handleGenerateQr() {
+    if (!feedbackUrl || qrLoading) return;
+
+    setQrLoading(true);
+    setQrError("");
+
+    try {
+      const dataUrl = await QRCode.toDataURL(feedbackUrl, {
+        width: 320,
+        margin: 2,
+        errorCorrectionLevel: "M",
+      });
+
+      setQrCode(dataUrl);
+      setActivated(true);
+    } catch (error) {
+      console.error("QR code generation failed:", error);
+      setQrError(
+        "Couldn't generate the QR code. Your feedback link is still available."
+      );
+    } finally {
+      setQrLoading(false);
+    }
+  }
+
+  function handleDownloadQr() {
+    if (!qrCode) return;
+
+    const link = document.createElement("a");
+    link.href = qrCode;
+    link.download = `${workspace?.name || "reviewauto"}-feedback-qr.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
+  function handlePrintQr() {
+    if (!qrCode) return;
+
+    const printWindow = window.open("", "_blank", "width=700,height=800");
+    if (!printWindow) return;
+
+    const businessName = workspace?.name || "Your business";
+
+    printWindow.document.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <title>ReviewAuto Feedback QR Code</title>
+          <style>
+            body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, sans-serif; color: #111; }
+            .sheet { text-align: center; padding: 40px; }
+            img { width: 320px; height: 320px; image-rendering: pixelated; }
+            h1 { margin: 20px 0 8px; font-size: 24px; }
+            p { margin: 0; color: #666; font-size: 13px; }
+          </style>
+        </head>
+        <body>
+          <div class="sheet">
+            <img src="${qrCode}" alt="ReviewAuto feedback QR code" />
+            <h1>${businessName}</h1>
+            <p>Scan to send us your feedback</p>
+          </div>
+          <script>window.onload = function () { window.print(); };<\/script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
 
   function handleWebsiteWidget() {
@@ -1801,11 +1965,21 @@ function DashboardActivationCard({
             </p>
             <button
               type="button"
-              className="activation-button secondary"
-              disabled
+              className="activation-button"
+              onClick={handleGenerateQr}
+              disabled={!feedbackUrl || qrLoading}
             >
-              QR code coming next
+              {qrLoading
+                ? "Generating QR code…"
+                : qrCode
+                ? "Regenerate QR code"
+                : "Generate QR code"}
             </button>
+            {qrError ? (
+              <div className="activation-error">
+                {qrError}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -1848,6 +2022,31 @@ function DashboardActivationCard({
           </div>
         </div>
       </div>
+
+      {qrCode ? (
+        <div className="activation-qr-panel">
+          <div className="activation-qr-preview">
+            <img src={qrCode} alt="ReviewAuto feedback QR code" />
+          </div>
+          <div className="activation-qr-details">
+            <div>
+              <div className="activation-qr-eyebrow">FEEDBACK QR CODE READY</div>
+              <h3>Customers can scan and send feedback.</h3>
+              <p>
+                This QR code points to your existing ReviewAuto feedback link.
+              </p>
+            </div>
+            <div className="activation-qr-actions">
+              <button type="button" className="activation-button" onClick={handleDownloadQr}>
+                Download QR
+              </button>
+              <button type="button" className="activation-button secondary" onClick={handlePrintQr}>
+                Print QR
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
