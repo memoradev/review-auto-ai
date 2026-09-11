@@ -618,6 +618,337 @@ function DashboardReviewsStyles() {
           grid-template-columns: 1fr;
         }
       }
+      /* ---------------------------------------------
+         REVIEWAUTO MOBILE PRESENTATION LAYER
+         Desktop styles remain untouched.
+      --------------------------------------------- */
+      .mobile-app {
+        min-height: 100dvh;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        background: #f7f7f3;
+      }
+
+      .mobile-header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        min-height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 14px;
+        border-bottom: 1px solid #e3e3dc;
+        background: rgba(255,255,255,.96);
+        backdrop-filter: blur(10px);
+      }
+
+      .mobile-header-left {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mobile-menu-button,
+      .mobile-header-action {
+        width: 42px;
+        min-width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #deded7;
+        border-radius: 10px;
+        background: #fff;
+        color: #171715;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .mobile-brand {
+        min-width: 0;
+      }
+
+      .mobile-brand strong {
+        display: block;
+        font-size: 14px;
+        letter-spacing: -.03em;
+      }
+
+      .mobile-brand span {
+        display: block;
+        margin-top: 2px;
+        color: #8b8b84;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .mobile-page-title {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #777770;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      .mobile-main {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 16px 14px 32px;
+      }
+
+      .mobile-main > * {
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      .mobile-drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        background: rgba(0,0,0,.28);
+      }
+
+      .mobile-drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+        width: min(82vw, 320px);
+        max-width: 100vw;
+        box-sizing: border-box;
+        padding: 18px 14px;
+        overflow-y: auto;
+        background: #fff;
+        border-right: 1px solid #deded7;
+        box-shadow: 14px 0 40px rgba(0,0,0,.08);
+      }
+
+      .mobile-drawer-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .mobile-drawer-title {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -.04em;
+      }
+
+      .mobile-nav {
+        display: grid;
+        gap: 6px;
+      }
+
+      .mobile-nav-button {
+        width: 100%;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: #44443f;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .mobile-nav-button.active {
+        border-color: #deded7;
+        background: #f4f4ef;
+        color: #111;
+      }
+
+      .mobile-nav-icon {
+        width: 24px;
+        min-width: 24px;
+        text-align: center;
+        font-size: 16px;
+      }
+
+      .mobile-drawer-footer {
+        margin-top: 28px;
+        padding-top: 16px;
+        border-top: 1px solid #eeeeea;
+      }
+
+      .mobile-signout {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid #deded7;
+        border-radius: 10px;
+        background: #fff;
+        color: #55554f;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .mobile-main .dashboard-activation,
+      .mobile-main .panel,
+      .mobile-main .stat-card,
+      .mobile-main .automation-banner,
+      .mobile-main .placeholder-page {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .mobile-main .dashboard-activation,
+      .mobile-main .panel {
+        padding: 16px;
+        border-radius: 12px;
+      }
+
+      .mobile-main .dashboard-activation-header,
+      .mobile-main .panel-header {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .mobile-main .dashboard-activation-header h2,
+      .mobile-main .panel-header h2 {
+        font-size: 17px;
+        line-height: 1.25;
+      }
+
+      .mobile-main .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .mobile-main .stat-card {
+        min-height: 112px;
+        padding: 14px;
+      }
+
+      .mobile-main .stat-value {
+        font-size: 25px;
+      }
+
+      .mobile-main .content-grid,
+      .mobile-main .right-column {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-main .dashboard-activation-options {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-main .activation-qr-panel,
+      .mobile-main .activation-qr-details {
+        width: 100%;
+        box-sizing: border-box;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .mobile-main .activation-qr-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .mobile-main .activation-button,
+      .mobile-main .primary-button,
+      .mobile-main .secondary-button,
+      .mobile-main .danger-button {
+        min-height: 44px;
+      }
+
+      .mobile-main .review-row,
+      .mobile-main .review-workflow-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid #e4e4de;
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      .mobile-main .review-row + .review-row,
+      .mobile-main .review-workflow-row + .review-workflow-row {
+        margin-top: 10px;
+      }
+
+      .mobile-main .review-main {
+        gap: 10px;
+      }
+
+      .mobile-main .review-rating {
+        width: 28px;
+        min-width: 28px;
+      }
+
+      .mobile-main .review-text,
+      .mobile-main .review-workflow-row .review-text {
+        max-width: none;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+      }
+
+      .mobile-main .review-status {
+        justify-self: start;
+      }
+
+      .mobile-main .workflow-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-main input,
+      .mobile-main textarea,
+      .mobile-main select {
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .mobile-main textarea {
+        min-height: 130px;
+      }
+
+      .mobile-main pre,
+      .mobile-main code {
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: auto;
+      }
+
+      .mobile-main img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      @media (max-width: 380px) {
+        .mobile-main {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+
+        .mobile-main .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     `}</style>
   );
 }
@@ -644,10 +975,6 @@ function App() {
 function AuthenticatedApp() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [recoveryMode, setRecoveryMode] = useState(
-    () =>
-      window.location.pathname === "/reset-password"
-  );
 
   useEffect(() => {
     let mounted = true;
@@ -665,25 +992,10 @@ function AuthenticatedApp() {
         );
       }
 
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setSession(data.session);
+        setLoading(false);
       }
-
-      const currentSession = data?.session || null;
-      const isResetRoute =
-        window.location.pathname ===
-        "/reset-password";
-
-      setSession(currentSession);
-
-      if (
-        isResetRoute &&
-        currentSession
-      ) {
-        setRecoveryMode(true);
-      }
-
-      setLoading(false);
     }
 
     loadSession();
@@ -692,34 +1004,8 @@ function AuthenticatedApp() {
       data: authListener,
     } =
       supabase.auth.onAuthStateChange(
-        (event, newSession) => {
-          if (!mounted) {
-            return;
-          }
-
-          if (event === "PASSWORD_RECOVERY") {
-            setRecoveryMode(true);
-            setSession(newSession);
-            return;
-          }
-
-          if (event === "SIGNED_OUT") {
-            setRecoveryMode(false);
-            setSession(null);
-            return;
-          }
-
+        (_event, newSession) => {
           setSession(newSession);
-
-          if (event === "SIGNED_IN") {
-            const isResetRoute =
-              window.location.pathname ===
-              "/reset-password";
-
-            if (!isResetRoute) {
-              setRecoveryMode(false);
-            }
-          }
         }
       );
 
@@ -731,10 +1017,6 @@ function AuthenticatedApp() {
 
   if (loading) {
     return <LoadingScreen />;
-  }
-
-  if (recoveryMode) {
-    return <Auth recoveryMode={true} />;
   }
 
   if (!session) {
@@ -756,7 +1038,174 @@ function LoadingScreen() {
   );
 }
 
+function useIsMobile() {
+  const getValue = () =>
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 1023px)").matches;
+
+  const [isMobile, setIsMobile] = useState(getValue);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const handleChange = (event) => setIsMobile(event.matches);
+
+    setIsMobile(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return isMobile;
+}
+
+function MobileDashboard({
+  activePage,
+  setActivePage,
+  workspace,
+  automation,
+  reviews,
+  setReviews,
+  reviewsLoading,
+  onToggleAutomation,
+  onOpenWebsiteWidget,
+  onToggleFeedback,
+  onCopyFeedbackLink,
+  onSignOut,
+}) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  function navigate(page) {
+    setActivePage(page);
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const pageTitle =
+    activePage === "Dashboard"
+      ? workspace?.name || "Dashboard"
+      : activePage;
+
+  return (
+    <div className="mobile-app">
+      <header className="mobile-header">
+        <div className="mobile-header-left">
+          <button
+            type="button"
+            className="mobile-menu-button"
+            aria-label="Open navigation"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(true)}
+          >
+            ☰
+          </button>
+          <div className="mobile-brand">
+            <strong>ReviewAuto</strong>
+            <span>{pageTitle}</span>
+          </div>
+        </div>
+      </header>
+
+      {menuOpen ? (
+        <>
+          <button
+            type="button"
+            className="mobile-drawer-backdrop"
+            aria-label="Close navigation"
+            onClick={() => setMenuOpen(false)}
+          />
+          <aside className="mobile-drawer" aria-label="Mobile navigation">
+            <div className="mobile-drawer-top">
+              <div className="mobile-drawer-title">ReviewAuto</div>
+              <button
+                type="button"
+                className="mobile-menu-button"
+                aria-label="Close navigation"
+                onClick={() => setMenuOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <nav className="mobile-nav">
+              {navigation.map((item) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  className={`mobile-nav-button ${
+                    activePage === item.name ? "active" : ""
+                  }`}
+                  onClick={() => navigate(item.name)}
+                >
+                  <span className="mobile-nav-icon">{item.icon}</span>
+                  <span>{item.name}</span>
+                </button>
+              ))}
+            </nav>
+
+            <div className="mobile-drawer-footer">
+              <button
+                type="button"
+                className="mobile-signout"
+                onClick={onSignOut}
+              >
+                Sign out
+              </button>
+            </div>
+          </aside>
+        </>
+      ) : null}
+
+      <main className="mobile-main">
+        <DashboardReviewsStyles />
+
+        {activePage === "Dashboard" ? (
+          <DashboardContent
+            workspace={workspace}
+            automation={automation}
+            reviews={reviews}
+            setReviews={setReviews}
+            reviewsLoading={reviewsLoading}
+            onToggleAutomation={onToggleAutomation}
+            onOpenWebsiteWidget={onOpenWebsiteWidget}
+          />
+        ) : activePage === "Reviews" ? (
+          <ReviewsPage
+            reviews={reviews}
+            setReviews={setReviews}
+            loading={reviewsLoading}
+          />
+        ) : activePage === "Analytics" ? (
+          <AnalyticsPage reviews={reviews} loading={reviewsLoading} />
+        ) : activePage === "Website Widget" ? (
+          <WebsiteWidget workspace={workspace} />
+        ) : activePage === "Automation" ? (
+          <AutomationPage
+            automation={automation}
+            reviews={reviews}
+            onToggleAutomation={onToggleAutomation}
+          />
+        ) : activePage === "Settings" ? (
+          <SettingsContent
+            workspace={workspace}
+            onToggleFeedback={onToggleFeedback}
+            onCopyFeedbackLink={onCopyFeedbackLink}
+          />
+        ) : activePage === "Locations" ? (
+          <LocationsPage />
+        ) : (
+          <PlaceholderPage
+            page={activePage}
+            onBack={() => navigate("Dashboard")}
+          />
+        )}
+      </main>
+    </div>
+  );
+}
+
 function Dashboard({ session }) {
+  const isMobile = useIsMobile();
+
   const [activePage, setActivePage] =
     useState("Dashboard");
 
@@ -1233,6 +1682,25 @@ function Dashboard({ session }) {
     return (
       <WorkspaceError
         message={workspaceError}
+        onSignOut={handleSignOut}
+      />
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <MobileDashboard
+        activePage={activePage}
+        setActivePage={setActivePage}
+        workspace={workspace}
+        automation={automation}
+        reviews={reviews}
+        setReviews={setReviews}
+        reviewsLoading={reviewsLoading}
+        onToggleAutomation={toggleAutomation}
+        onOpenWebsiteWidget={() => setActivePage("Website Widget")}
+        onToggleFeedback={updateFeedbackEnabled}
+        onCopyFeedbackLink={copyFeedbackLink}
         onSignOut={handleSignOut}
       />
     );
