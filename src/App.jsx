@@ -620,51 +620,50 @@ function DashboardReviewsStyles() {
       }
       /* ---------------------------------------------
          REVIEWAUTO MOBILE PRESENTATION LAYER
+         Dashboard-first visual refinement.
          Desktop styles remain untouched.
       --------------------------------------------- */
+
       .mobile-app {
         min-height: 100dvh;
         width: 100%;
         max-width: 100%;
         overflow-x: hidden;
-        background: #f7f7f3;
+        background: #f6f6f2;
       }
 
       .mobile-header {
         position: sticky;
         top: 0;
         z-index: 40;
-        min-height: 58px;
+        min-height: 56px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 10px 14px;
-        border-bottom: 1px solid #e3e3dc;
-        background: rgba(255,255,255,.96);
-        backdrop-filter: blur(10px);
+        padding: 8px 12px;
+        border-bottom: 1px solid #e5e5df;
+        background: rgba(255,255,255,.97);
+        backdrop-filter: blur(12px);
       }
 
       .mobile-header-left {
         min-width: 0;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 9px;
       }
 
-      .mobile-menu-button,
-      .mobile-header-action {
-        width: 42px;
-        min-width: 42px;
-        height: 42px;
+      .mobile-menu-button {
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid #deded7;
+        border: 1px solid #dfdfd8;
         border-radius: 10px;
         background: #fff;
-        color: #171715;
-        font-size: 18px;
+        color: #151513;
+        font-size: 17px;
         cursor: pointer;
       }
 
@@ -675,28 +674,20 @@ function DashboardReviewsStyles() {
       .mobile-brand strong {
         display: block;
         font-size: 14px;
-        letter-spacing: -.03em;
+        line-height: 1.1;
+        letter-spacing: -.035em;
       }
 
       .mobile-brand span {
         display: block;
-        margin-top: 2px;
-        color: #8b8b84;
-        font-size: 8px;
-        font-weight: 700;
-        letter-spacing: .12em;
-        text-transform: uppercase;
-      }
-
-      .mobile-page-title {
-        min-width: 0;
+        margin-top: 3px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        color: #777770;
-        font-size: 10px;
+        color: #8a8a83;
+        font-size: 8px;
         font-weight: 700;
-        letter-spacing: .08em;
+        letter-spacing: .1em;
         text-transform: uppercase;
       }
 
@@ -704,7 +695,7 @@ function DashboardReviewsStyles() {
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
-        padding: 16px 14px 32px;
+        padding: 12px 12px 34px;
       }
 
       .mobile-main > * {
@@ -728,7 +719,7 @@ function DashboardReviewsStyles() {
         width: min(82vw, 320px);
         max-width: 100vw;
         box-sizing: border-box;
-        padding: 18px 14px;
+        padding: 16px 13px;
         overflow-y: auto;
         background: #fff;
         border-right: 1px solid #deded7;
@@ -740,7 +731,7 @@ function DashboardReviewsStyles() {
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
       }
 
       .mobile-drawer-title {
@@ -751,16 +742,16 @@ function DashboardReviewsStyles() {
 
       .mobile-nav {
         display: grid;
-        gap: 6px;
+        gap: 5px;
       }
 
       .mobile-nav-button {
         width: 100%;
-        min-height: 48px;
+        min-height: 46px;
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
+        gap: 11px;
+        padding: 9px 11px;
         border: 1px solid transparent;
         border-radius: 10px;
         background: transparent;
@@ -785,14 +776,14 @@ function DashboardReviewsStyles() {
       }
 
       .mobile-drawer-footer {
-        margin-top: 28px;
-        padding-top: 16px;
+        margin-top: 24px;
+        padding-top: 14px;
         border-top: 1px solid #eeeeea;
       }
 
       .mobile-signout {
         width: 100%;
-        min-height: 46px;
+        min-height: 44px;
         border: 1px solid #deded7;
         border-radius: 10px;
         background: #fff;
@@ -801,6 +792,8 @@ function DashboardReviewsStyles() {
         font-weight: 700;
         cursor: pointer;
       }
+
+      /* ---------- shared mobile surfaces ---------- */
 
       .mobile-main .dashboard-activation,
       .mobile-main .panel,
@@ -814,92 +807,385 @@ function DashboardReviewsStyles() {
 
       .mobile-main .dashboard-activation,
       .mobile-main .panel {
-        padding: 16px;
-        border-radius: 12px;
+        padding: 15px;
+        border-radius: 15px;
       }
 
-      .mobile-main .dashboard-activation-header,
-      .mobile-main .panel-header {
-        flex-wrap: wrap;
-        gap: 12px;
+      .mobile-main .dashboard-activation {
+        margin-bottom: 10px;
+        border-color: #e1e1da;
+        box-shadow: 0 2px 10px rgba(20,20,15,.035);
       }
 
-      .mobile-main .dashboard-activation-header h2,
-      .mobile-main .panel-header h2 {
-        font-size: 17px;
-        line-height: 1.25;
+      /* ---------- dashboard activation ---------- */
+
+      .mobile-main .dashboard-activation-header {
+        display: block;
+        margin-bottom: 14px;
       }
 
-      .mobile-main .stats-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
+      .mobile-main .dashboard-activation-header h2 {
+        margin-top: 5px;
+        font-size: 20px;
+        line-height: 1.18;
+        letter-spacing: -.045em;
       }
 
-      .mobile-main .stat-card {
-        min-height: 112px;
-        padding: 14px;
+      .mobile-main .dashboard-activation-header p {
+        margin-top: 7px;
+        max-width: 100%;
+        font-size: 10px;
+        line-height: 1.55;
       }
 
-      .mobile-main .stat-value {
-        font-size: 25px;
+      .mobile-main .dashboard-activation-progress {
+        width: 100%;
+        max-width: none;
+        box-sizing: border-box;
+        justify-content: flex-start;
+        margin-top: 12px;
+        padding: 9px 10px;
+        gap: 5px;
+        border: 1px solid #e9e9e3;
+        border-radius: 10px;
+        background: #fafaf7;
+        font-size: 8px;
       }
 
-      .mobile-main .content-grid,
-      .mobile-main .right-column {
-        grid-template-columns: 1fr;
+      .mobile-main .activation-check,
+      .mobile-main .activation-pending {
+        width: 16px;
+        height: 16px;
+        flex-basis: 16px;
+        font-size: 8px;
       }
 
       .mobile-main .dashboard-activation-options {
         grid-template-columns: 1fr;
+        gap: 8px;
       }
 
-      .mobile-main .activation-qr-panel,
+      .mobile-main .activation-option {
+        min-height: 0;
+        padding: 12px;
+        gap: 10px;
+        border-radius: 12px;
+        background: #fbfbf9;
+      }
+
+      .mobile-main .activation-option-icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        border-radius: 9px;
+        font-size: 11px;
+      }
+
+      .mobile-main .activation-option h3 {
+        font-size: 12px;
+        line-height: 1.3;
+      }
+
+      .mobile-main .activation-option p {
+        min-height: 0;
+        margin: 4px 0 9px;
+        font-size: 8.5px;
+        line-height: 1.5;
+      }
+
+      .mobile-main .activation-button {
+        min-height: 38px;
+        padding: 8px 11px;
+        border-radius: 8px;
+        font-size: 8.5px;
+      }
+
+      .mobile-main .activation-option-title-row {
+        gap: 5px;
+      }
+
+      .mobile-main .activation-coming-soon {
+        min-height: 15px;
+        padding: 2px 5px;
+        font-size: 5.5px;
+      }
+
+      .mobile-main .activation-qr-panel {
+        margin-top: 8px;
+        padding: 12px;
+        gap: 12px;
+        border-radius: 12px;
+      }
+
+      .mobile-main .activation-qr-preview {
+        width: 132px;
+        height: 132px;
+        flex-basis: 132px;
+      }
+
+      .mobile-main .activation-qr-preview img {
+        width: 116px;
+        height: 116px;
+      }
+
       .mobile-main .activation-qr-details {
         width: 100%;
         box-sizing: border-box;
         align-items: flex-start;
         flex-direction: column;
+        gap: 10px;
       }
 
       .mobile-main .activation-qr-actions {
         width: 100%;
         display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      /* ---------- dashboard stats ---------- */
+
+      .mobile-main .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .mobile-main .stat-card {
+        min-height: 96px;
+        padding: 12px;
+        border-radius: 13px;
+      }
+
+      .mobile-main .stat-label {
+        font-size: 8px;
+      }
+
+      .mobile-main .stat-value {
+        margin-top: 5px;
+        font-size: 25px;
+        line-height: 1;
+      }
+
+      .mobile-main .stat-detail {
+        margin-top: 6px;
+        font-size: 7px;
+        line-height: 1.35;
+      }
+
+      /* ---------- dashboard automation ---------- */
+
+      .mobile-main .automation-banner {
+        min-height: 0;
+        margin-bottom: 10px;
+        padding: 13px 14px;
+        gap: 10px;
+        border-radius: 13px;
+        box-shadow: 0 2px 10px rgba(20,20,15,.03);
+      }
+
+      .mobile-main .automation-banner h2 {
+        font-size: 15px;
+        line-height: 1.2;
+      }
+
+      .mobile-main .automation-banner p {
+        margin-top: 4px;
+        font-size: 8px;
+        line-height: 1.45;
+      }
+
+      .mobile-main .toggle-button {
+        width: 58px;
+        min-width: 58px;
+        height: 32px;
+        border-radius: 9px;
+        font-size: 8px;
+      }
+
+      /* ---------- dashboard content ---------- */
+
+      .mobile-main .content-grid,
+      .mobile-main .right-column {
         grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .mobile-main .content-grid {
+        display: grid;
+      }
+
+      .mobile-main .panel-header {
+        align-items: center;
         gap: 8px;
       }
 
-      .mobile-main .activation-button,
-      .mobile-main .primary-button,
-      .mobile-main .secondary-button,
-      .mobile-main .danger-button {
-        min-height: 44px;
+      .mobile-main .panel-header h2 {
+        font-size: 17px;
+        line-height: 1.2;
       }
 
-      .mobile-main .review-row,
+      .mobile-main .panel-count {
+        min-width: 24px;
+        height: 24px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 7px;
+        background: #f3f3ee;
+        font-size: 8px;
+      }
+
+      /* ---------- recent feedback cards ---------- */
+
+      .mobile-main .review-list {
+        margin-top: 12px;
+      }
+
+      .mobile-main .review-row {
+        display: grid;
+        grid-template-columns: 26px minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 9px;
+        padding: 11px;
+        border: 1px solid #e5e5df;
+        border-radius: 12px;
+        background: #fff;
+        box-sizing: border-box;
+      }
+
+      .mobile-main .review-row + .review-row {
+        margin-top: 7px;
+      }
+
+      .mobile-main .review-row .review-content {
+        min-width: 0;
+      }
+
+      .mobile-main .review-rating {
+        width: 26px;
+        min-width: 26px;
+        padding-top: 1px;
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      .mobile-main .review-row .review-meta {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .mobile-main .review-row .review-meta strong {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 9px;
+      }
+
+      .mobile-main .review-row .review-meta span {
+        font-size: 7px;
+      }
+
+      .mobile-main .review-row .review-text {
+        display: -webkit-box;
+        max-width: 100%;
+        margin: 5px 0 0;
+        overflow: hidden;
+        color: #5f5f58;
+        font-size: 8px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+      }
+
+      .mobile-main .review-row .review-ai-meta {
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px 7px;
+        color: #999992;
+        font-size: 7px;
+      }
+
+      .mobile-main .review-row .review-ai-meta span + span::before {
+        margin-right: 7px;
+      }
+
+      .mobile-main .review-status {
+        justify-self: end;
+        align-self: start;
+        white-space: nowrap;
+        font-size: 6px;
+      }
+
+      /* ---------- dashboard workflow/location ---------- */
+
+      .mobile-main .workflow {
+        margin-top: 12px;
+      }
+
+      .mobile-main .workflow-step {
+        padding: 10px 0;
+        gap: 9px;
+      }
+
+      .mobile-main .step-number {
+        width: 24px;
+        height: 24px;
+        flex-basis: 24px;
+        font-size: 7px;
+      }
+
+      .mobile-main .step-content strong {
+        font-size: 9px;
+      }
+
+      .mobile-main .step-content p {
+        margin-top: 3px;
+        font-size: 7.5px;
+        line-height: 1.45;
+      }
+
+      .mobile-main .location-top {
+        gap: 8px;
+      }
+
+      .mobile-main .location-description {
+        margin-top: 9px;
+        font-size: 8px;
+        line-height: 1.5;
+      }
+
+      .mobile-main .location-panel .secondary-button {
+        width: 100%;
+        min-height: 38px;
+        margin-top: 9px;
+      }
+
+      /* ---------- other mobile pages: layout only ---------- */
+
       .mobile-main .review-workflow-row {
         grid-template-columns: 1fr;
         gap: 12px;
-        padding: 14px;
+        padding: 13px;
         border: 1px solid #e4e4de;
         border-radius: 12px;
         background: #fff;
       }
 
-      .mobile-main .review-row + .review-row,
       .mobile-main .review-workflow-row + .review-workflow-row {
-        margin-top: 10px;
+        margin-top: 9px;
       }
 
       .mobile-main .review-main {
-        gap: 10px;
+        gap: 9px;
       }
 
-      .mobile-main .review-rating {
-        width: 28px;
-        min-width: 28px;
-      }
-
-      .mobile-main .review-text,
       .mobile-main .review-workflow-row .review-text {
         max-width: none;
         white-space: normal;
@@ -908,12 +1194,14 @@ function DashboardReviewsStyles() {
         overflow-wrap: anywhere;
       }
 
-      .mobile-main .review-status {
-        justify-self: start;
-      }
-
       .mobile-main .workflow-actions {
         grid-template-columns: 1fr;
+      }
+
+      .mobile-main .primary-button,
+      .mobile-main .secondary-button,
+      .mobile-main .danger-button {
+        min-height: 42px;
       }
 
       .mobile-main input,
@@ -939,6 +1227,20 @@ function DashboardReviewsStyles() {
         height: auto;
       }
 
+      @media (min-width: 400px) and (max-width: 1023px) {
+        .mobile-main .dashboard-activation-options {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .mobile-main .activation-option {
+          min-height: 148px;
+        }
+
+        .mobile-main .activation-option p {
+          min-height: 39px;
+        }
+      }
+
       @media (max-width: 380px) {
         .mobile-main {
           padding-left: 10px;
@@ -946,7 +1248,31 @@ function DashboardReviewsStyles() {
         }
 
         .mobile-main .stats-grid {
-          grid-template-columns: 1fr;
+          gap: 7px;
+        }
+
+        .mobile-main .stat-card {
+          min-height: 92px;
+          padding: 11px;
+        }
+
+        .mobile-main .dashboard-activation,
+        .mobile-main .panel {
+          padding: 13px;
+        }
+
+        .mobile-main .dashboard-activation-header h2 {
+          font-size: 18px;
+        }
+
+        .mobile-main .review-row {
+          grid-template-columns: 24px minmax(0, 1fr);
+        }
+
+        .mobile-main .review-status {
+          grid-column: 2;
+          justify-self: start;
+          margin-top: 2px;
         }
       }
     `}</style>
