@@ -644,6 +644,10 @@ function App() {
 function AuthenticatedApp() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recoveryMode, setRecoveryMode] = useState(
+    () =>
+      window.location.pathname === "/reset-password"
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -661,10 +665,25 @@ function AuthenticatedApp() {
         );
       }
 
-      if (mounted) {
-        setSession(data.session);
-        setLoading(false);
+      if (!mounted) {
+        return;
       }
+
+      const currentSession = data?.session || null;
+      const isResetRoute =
+        window.location.pathname ===
+        "/reset-password";
+
+      setSession(currentSession);
+
+      if (
+        isResetRoute &&
+        currentSession
+      ) {
+        setRecoveryMode(true);
+      }
+
+      setLoading(false);
     }
 
     loadSession();
@@ -673,8 +692,34 @@ function AuthenticatedApp() {
       data: authListener,
     } =
       supabase.auth.onAuthStateChange(
-        (_event, newSession) => {
+        (event, newSession) => {
+          if (!mounted) {
+            return;
+          }
+
+          if (event === "PASSWORD_RECOVERY") {
+            setRecoveryMode(true);
+            setSession(newSession);
+            return;
+          }
+
+          if (event === "SIGNED_OUT") {
+            setRecoveryMode(false);
+            setSession(null);
+            return;
+          }
+
           setSession(newSession);
+
+          if (event === "SIGNED_IN") {
+            const isResetRoute =
+              window.location.pathname ===
+              "/reset-password";
+
+            if (!isResetRoute) {
+              setRecoveryMode(false);
+            }
+          }
         }
       );
 
@@ -686,6 +731,10 @@ function AuthenticatedApp() {
 
   if (loading) {
     return <LoadingScreen />;
+  }
+
+  if (recoveryMode) {
+    return <Auth recoveryMode={true} />;
   }
 
   if (!session) {
