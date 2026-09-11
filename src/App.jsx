@@ -861,16 +861,22 @@ function DashboardReviewsStyles() {
       }
 
       .mobile-main .dashboard-activation-options {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
       }
 
       .mobile-main .activation-option {
-        min-height: 0;
-        padding: 12px;
-        gap: 10px;
+        min-height: 148px;
+        padding: 11px;
+        gap: 8px;
+        flex-direction: column;
         border-radius: 12px;
         background: #fbfbf9;
+      }
+
+      .mobile-main .activation-option-content {
+        width: 100%;
+        min-width: 0;
       }
 
       .mobile-main .activation-option-icon {
@@ -894,10 +900,11 @@ function DashboardReviewsStyles() {
       }
 
       .mobile-main .activation-button {
-        min-height: 38px;
-        padding: 8px 11px;
+        width: 100%;
+        min-height: 34px;
+        padding: 7px 8px;
         border-radius: 8px;
-        font-size: 8.5px;
+        font-size: 8px;
       }
 
       .mobile-main .activation-option-title-row {
@@ -1228,12 +1235,8 @@ function DashboardReviewsStyles() {
       }
 
       @media (min-width: 400px) and (max-width: 1023px) {
-        .mobile-main .dashboard-activation-options {
-          grid-template-columns: 1fr 1fr;
-        }
-
         .mobile-main .activation-option {
-          min-height: 148px;
+          min-height: 154px;
         }
 
         .mobile-main .activation-option p {
