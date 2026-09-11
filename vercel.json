@@ -3,6 +3,10 @@
     {
       "source": "/f/:slug",
       "destination": "/"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/"
     }
   ]
 }
