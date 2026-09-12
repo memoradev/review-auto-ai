@@ -821,7 +821,7 @@ function DashboardReviewsStyles() {
         border-color: var(--border-hover);
       }
 
-      /* REFINED REVIEW RATING (NO STRETCHING) */
+      /* REFINED REVIEW RATING */
       .review-rating-compact {
         display: inline-flex;
         align-items: center;
@@ -985,7 +985,7 @@ function DashboardReviewsStyles() {
 
       .review-main {
         display: flex;
-        align-items: flex-start; /* CRITICAL FIX: PREVENTS VERTICAL STRETCHING */
+        align-items: flex-start;
         gap: 16px;
       }
 
@@ -1369,10 +1369,12 @@ function DashboardReviewsStyles() {
         color: var(--text-muted);
       }
 
-      /* MOBILE PRESENTATION */
+      /* MOBILE PRESENTATION & RESPONSIVE REFINEMENTS */
       .mobile-app {
         min-height: 100vh;
         background: var(--bg-app);
+        width: 100%;
+        overflow-x: hidden;
       }
 
       .mobile-header {
@@ -1386,17 +1388,20 @@ function DashboardReviewsStyles() {
         padding: 0 16px;
         display: flex;
         align-items: center;
+        padding-top: env(safe-area-inset-top, 0);
       }
 
       .mobile-header-left {
         display: flex;
         align-items: center;
         gap: 12px;
+        min-width: 0;
+        flex: 1;
       }
 
       .mobile-menu-button {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border: 1px solid var(--border-color);
         background: #ffffff;
         border-radius: 8px;
@@ -1404,21 +1409,37 @@ function DashboardReviewsStyles() {
         place-items: center;
         font-size: 16px;
         cursor: pointer;
+        flex-shrink: 0;
+        color: var(--text-main);
+      }
+
+      .mobile-brand {
+        display: flex;
+        align-items: baseline;
+        min-width: 0;
+        overflow: hidden;
       }
 
       .mobile-brand strong {
         font-size: 14px;
         font-weight: 700;
+        flex-shrink: 0;
       }
 
       .mobile-brand span {
-        font-size: 10px;
+        font-size: 11px;
         color: var(--text-muted);
         margin-left: 6px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .mobile-main {
         padding: 16px;
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
       }
 
       .mobile-drawer-backdrop {
@@ -1427,6 +1448,7 @@ function DashboardReviewsStyles() {
         background: rgba(15, 23, 42, 0.4);
         z-index: 90;
         border: none;
+        cursor: pointer;
       }
 
       .mobile-drawer {
@@ -1435,12 +1457,16 @@ function DashboardReviewsStyles() {
         left: 0;
         bottom: 0;
         width: 280px;
+        max-width: 85vw;
         background: #ffffff;
         z-index: 100;
         padding: 20px 16px;
         display: flex;
         flex-direction: column;
         box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: max(20px, env(safe-area-inset-bottom, 0));
       }
 
       .mobile-drawer-top {
@@ -1466,7 +1492,7 @@ function DashboardReviewsStyles() {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 10px 12px;
+        padding: 11px 12px;
         border-radius: 8px;
         border: none;
         background: transparent;
@@ -1475,6 +1501,7 @@ function DashboardReviewsStyles() {
         color: var(--text-muted);
         cursor: pointer;
         text-align: left;
+        min-height: 42px;
       }
 
       .mobile-nav-button.active {
@@ -1484,7 +1511,7 @@ function DashboardReviewsStyles() {
 
       .mobile-signout {
         width: 100%;
-        padding: 10px;
+        padding: 11px;
         background: transparent;
         border: 1px solid var(--border-color);
         border-radius: 8px;
@@ -1492,9 +1519,10 @@ function DashboardReviewsStyles() {
         font-size: 12px;
         font-weight: 600;
         cursor: pointer;
+        min-height: 42px;
       }
 
-      /* RESPONSIVE BREAKPOINTS */
+      /* TARGETED MOBILE-ONLY RESPONSIVE BREAKPOINTS (DESKTOP UNTOUCHED) */
       @media (max-width: 1100px) {
         .dashboard-activation-options {
           grid-template-columns: repeat(2, 1fr);
@@ -1511,25 +1539,184 @@ function DashboardReviewsStyles() {
         .dashboard-activation-options {
           grid-template-columns: 1fr;
         }
+        .activation-option p {
+          min-height: auto;
+          margin: 4px 0 12px;
+        }
+        .dashboard-activation-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 14px;
+        }
+        .dashboard-activation-progress {
+          width: 100%;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 6px;
+        }
         .review-workflow-row {
           grid-template-columns: 1fr;
+          padding: 16px;
+          gap: 16px;
         }
         .activation-qr-panel {
           flex-direction: column;
-          align-items: flex-start;
+          align-items: center;
+          text-align: center;
+          gap: 16px;
+          padding: 16px;
         }
         .activation-qr-details {
           flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
+          align-items: center;
+          text-align: center;
+          width: 100%;
+          gap: 14px;
+        }
+        .activation-qr-actions {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .activation-qr-actions button {
+          width: 100%;
         }
         .review-rating-card {
-          width: 50px;
-          min-width: 50px;
-          height: 50px;
+          width: 48px;
+          min-width: 48px;
+          height: 48px;
+          border-radius: 10px;
         }
         .rating-val {
-          font-size: 15px;
+          font-size: 14px;
+        }
+        .rating-max {
+          font-size: 9px;
+        }
+        .rating-stars-row {
+          gap: 1px;
+          margin-top: 3px;
+        }
+        .star-glyph {
+          font-size: 7px;
+        }
+        .auth-form input,
+        textarea {
+          font-size: 16px !important; /* Prevents auto-zoom in iOS Safari */
+        }
+      }
+
+      @media (max-width: 640px) {
+        .mobile-main {
+          padding: 14px 12px;
+        }
+        .panel {
+          padding: 16px 14px;
+          border-radius: 12px;
+        }
+        .panel-header {
+          flex-wrap: wrap;
+          gap: 8px;
+          align-items: flex-start;
+        }
+        .automation-banner {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 14px;
+          padding: 14px 16px;
+        }
+        .automation-banner .toggle-button {
+          align-self: flex-start;
+        }
+        .workflow-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .workflow-actions button {
+          width: 100%;
+          padding: 9px 6px;
+          font-size: 11px;
+        }
+        .review-row {
+          flex-wrap: wrap;
+          gap: 8px 12px;
+          padding: 12px;
+        }
+        .review-rating-compact {
+          order: 1;
+        }
+        .review-status {
+          order: 2;
+          margin-left: auto;
+        }
+        .review-content {
+          order: 3;
+          width: 100%;
+        }
+        .review-meta {
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .review-ai-meta {
+          flex-wrap: wrap;
+          gap: 6px;
+        }
+        .analytics-velocity-chart {
+          gap: 6px !important;
+        }
+        .settings-actions {
+          flex-direction: column !important;
+          gap: 8px !important;
+        }
+        .settings-actions button {
+          width: 100% !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+          margin-bottom: 16px;
+        }
+        .stat-card {
+          padding: 12px;
+          border-radius: 10px;
+        }
+        .stat-label {
+          font-size: 10px;
+        }
+        .stat-value {
+          font-size: 20px;
+          margin: 6px 0 2px;
+        }
+        .stat-detail {
+          font-size: 10px;
+          line-height: 1.3;
+        }
+        .auth-page {
+          padding: 16px 12px;
+        }
+        .auth-card {
+          padding: 20px 16px;
+          border-radius: 12px;
+        }
+        .auth-heading h1 {
+          font-size: 20px;
+        }
+        .placeholder-page {
+          padding: 40px 16px;
+        }
+      }
+
+      @media (max-width: 350px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .workflow-actions {
+          grid-template-columns: 1fr;
         }
       }
     `}</style>
@@ -1655,6 +1842,18 @@ function MobileDashboard({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Prevent background scroll when mobile drawer is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   function navigate(page) {
     setActivePage(page);
     setMenuOpen(false);
@@ -1723,7 +1922,14 @@ function MobileDashboard({
               ))}
             </nav>
 
-            <div style={{ marginTop: "auto", paddingTop: "16px" }}>
+            <div style={{ marginTop: "auto", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div className="connection-card">
+                <span className="connection-indicator" />
+                <div>
+                  <strong>Feedback Status</strong>
+                  <span>{workspace?.feedback_enabled !== false ? "Active & receiving" : "Paused"}</span>
+                </div>
+              </div>
               <button
                 type="button"
                 className="mobile-signout"
@@ -2824,6 +3030,7 @@ function AnalyticsPage({ reviews = [], loading }) {
             </div>
 
             <div
+              className="analytics-velocity-chart"
               style={{
                 display: "flex",
                 alignItems: "flex-end",
@@ -3272,7 +3479,7 @@ function ReviewWorkflowRow({ review, setReviews }) {
   return (
     <article className="review-workflow-row">
       <div className="review-main">
-        {/* COMPACT CLEAN RATING CARD (NEVER STRETCHES) */}
+        {/* COMPACT CLEAN RATING CARD */}
         <div className="review-rating-card" title={`${review.rating || 0} out of 5 stars`}>
           <div className="rating-number-row">
             <span className="rating-val">{review.rating || "—"}</span>
@@ -3486,7 +3693,7 @@ function SettingsContent({ workspace, onToggleFeedback, onCopyFeedbackLink }) {
           {feedbackUrl || "Feedback link unavailable"}
         </div>
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "14px" }}>
+        <div className="settings-actions" style={{ display: "flex", gap: "10px", marginTop: "14px" }}>
           <button
             type="button"
             className="primary-button"
