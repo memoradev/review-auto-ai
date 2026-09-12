@@ -16,1417 +16,698 @@ const navigation = [
   { name: "Settings", icon: "⚙" },
 ];
 
-/* -------------------------------------------------------------
-   REVIEWAUTO MODERN DESIGN SYSTEM & COMPONENT STYLES
-------------------------------------------------------------- */
+/*
+ * Dashboard / Reviews UI compatibility styles.
+ *
+ * The existing ReviewAuto stylesheet already contains the
+ * original application design. These styles only cover the
+ * Dashboard/Reviews classes introduced by the current workflow
+ * UI so they do not appear as unstyled browser-default elements.
+ */
 function DashboardReviewsStyles() {
   return (
     <style>{`
-      /* RESET & BASE */
-      :root {
-        --bg-app: #f8fafc;
-        --bg-surface: #ffffff;
-        --bg-subtle: #f1f5f9;
-        --border-color: #e2e8f0;
-        --border-hover: #cbd5e1;
-        --text-main: #0f172a;
-        --text-muted: #64748b;
-        --text-subtle: #94a3b8;
-        --primary: #0f172a;
-        --primary-hover: #1e293b;
-        --primary-foreground: #ffffff;
-        --accent: #2563eb;
-        --success: #10b981;
-        --warning: #f59e0b;
-        --danger: #ef4444;
-        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      }
+      /* ---------------------------------------------
+         DASHBOARD AUTOMATION BANNER
+      --------------------------------------------- */
 
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        padding: 0;
-        background-color: var(--bg-app);
-        color: var(--text-main);
-        font-family: var(--font-sans);
-        -webkit-font-smoothing: antialiased;
-      }
-
-      /* LAYOUT */
-      .app {
-        display: flex;
-        min-height: 100vh;
-        width: 100%;
-        background-color: var(--bg-app);
-      }
-
-      .sidebar {
-        width: 260px;
-        min-width: 260px;
-        background: #ffffff;
-        border-right: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        padding: 24px 16px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-      }
-
-      .main {
-        flex: 1;
-        min-width: 0;
-        padding: 32px 40px;
-        max-width: 1400px;
-        margin: 0 auto;
-        overflow-y: auto;
-      }
-
-      /* BRAND & SIDEBAR */
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 4px 8px 20px;
-        border-bottom: 1px solid var(--border-color);
-        margin-bottom: 20px;
-      }
-
-      .brand-mark {
-        width: 36px;
-        height: 36px;
-        background: #0f172a;
-        color: #ffffff;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 16px;
-        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
-      }
-
-      .brand-name {
-        display: flex;
-        align-items: baseline;
-        gap: 6px;
-      }
-
-      .brand-name strong {
-        font-size: 16px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--text-main);
-      }
-
-      .brand-name span {
-        font-size: 10px;
-        font-weight: 700;
-        background: var(--bg-subtle);
-        color: var(--text-muted);
-        padding: 2px 6px;
-        border-radius: 4px;
-      }
-
-      .workspace-label {
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--text-subtle);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        padding: 0 10px;
-        margin-bottom: 4px;
-      }
-
-      .workspace-pill {
-        padding: 8px 10px;
-        background: var(--bg-subtle);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        color: var(--text-main);
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .navigation {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        flex: 1;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: none;
-        background: transparent;
-        color: var(--text-muted);
-        font-size: 13px;
-        font-weight: 600;
-        text-align: left;
-        cursor: pointer;
-        transition: all 0.15s ease-in-out;
-      }
-
-      .nav-item:hover {
-        background: var(--bg-subtle);
-        color: var(--text-main);
-      }
-
-      .nav-item.active {
-        background: var(--primary);
-        color: #ffffff;
-      }
-
-      .nav-icon {
-        font-size: 15px;
-        width: 20px;
-        display: inline-grid;
-        place-items: center;
-      }
-
-      .sidebar-bottom {
-        padding-top: 16px;
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .connection-card {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        background: #f8fafc;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-      }
-
-      .connection-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--success);
-        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-      }
-
-      .connection-card strong {
-        display: block;
-        font-size: 11px;
-        color: var(--text-main);
-      }
-
-      .connection-card span {
-        display: block;
-        font-size: 10px;
-        color: var(--text-muted);
-      }
-
-      .account-card {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 6px 4px;
-      }
-
-      .account-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: #e2e8f0;
-        color: #334155;
-        font-size: 12px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .account-details {
-        flex: 1;
-        min-width: 0;
-      }
-
-      .account-details strong {
-        display: block;
-        font-size: 12px;
-        color: var(--text-main);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .account-details span {
-        display: block;
-        font-size: 10px;
-        color: var(--text-muted);
-      }
-
-      .signout-button {
-        background: transparent;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        width: 28px;
-        height: 28px;
-        cursor: pointer;
-        display: grid;
-        place-items: center;
-        color: var(--text-muted);
-        transition: all 0.15s ease;
-      }
-
-      .signout-button:hover {
-        background: #fee2e2;
-        color: #ef4444;
-        border-color: #fecaca;
-      }
-
-      /* HEADER */
-      .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 28px;
-      }
-
-      .header h1 {
-        margin: 4px 0 0;
-        font-size: 26px;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-        color: var(--text-main);
-      }
-
-      .eyebrow {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-subtle);
-      }
-
-      .header-actions {
-        display: flex;
-        gap: 8px;
-      }
-
-      .header-button {
-        width: 36px;
-        height: 36px;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 9px;
-        cursor: pointer;
-        display: grid;
-        place-items: center;
-        color: var(--text-muted);
-        font-weight: 700;
-        transition: all 0.15s ease;
-      }
-
-      .header-button:hover {
-        background: var(--bg-subtle);
-        color: var(--text-main);
-      }
-
-      /* BUTTONS */
-      .primary-button {
-        background: var(--primary);
-        color: var(--primary-foreground);
-        border: 1px solid var(--primary);
-        border-radius: 8px;
-        padding: 9px 15px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-      }
-
-      .primary-button:hover:not(:disabled) {
-        background: var(--primary-hover);
-        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
-      }
-
-      .primary-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .secondary-button {
-        background: #ffffff;
-        color: #334155;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 9px 15px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.15s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-      }
-
-      .secondary-button:hover:not(:disabled) {
-        background: var(--bg-subtle);
-        border-color: var(--border-hover);
-      }
-
-      .secondary-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-
-      .danger-button {
-        background: #ffffff;
-        color: #dc2626;
-        border: 1px solid #fecaca;
-        border-radius: 8px;
-        padding: 9px 15px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.15s ease;
-      }
-
-      .danger-button:hover:not(:disabled) {
-        background: #fef2f2;
-        border-color: #fca5a5;
-      }
-
-      /* CARDS & PANELS */
-      .panel {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 22px 24px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-      }
-
-      .panel-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-      }
-
-      .panel-header h2 {
-        margin: 2px 0 0;
-        font-size: 17px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--text-main);
-      }
-
-      .panel-count {
-        background: var(--bg-subtle);
-        color: var(--text-muted);
-        font-size: 11px;
-        font-weight: 700;
-        padding: 3px 9px;
-        border-radius: 20px;
-      }
-
-      /* STATS GRID */
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        margin-bottom: 24px;
-      }
-
-      .stat-card {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 18px 20px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: transform 0.15s ease;
-      }
-
-      .stat-card:hover {
-        border-color: var(--border-hover);
-      }
-
-      .stat-label {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .stat-value {
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        color: var(--text-main);
-        margin: 10px 0 4px;
-      }
-
-      .stat-detail {
-        font-size: 11px;
-        color: var(--text-subtle);
-      }
-
-      /* AUTOMATION BANNER */
       .automation-banner {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 16px 20px;
-        margin-bottom: 24px;
+        position: relative;
+        min-height: 80px;
+        margin-bottom: 14px;
+        padding: 16px 19px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        gap: 20px;
+        border: 1px solid #dcdcd5;
+        border-radius: 13px;
+        background: #ffffff;
+      }
+
+      .automation-banner > div:first-child {
+        min-width: 0;
+        flex: 1;
       }
 
       .automation-banner h2 {
-        margin: 2px 0 0;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text-main);
+        margin: 0;
+        font-size: 17px;
+        letter-spacing: -0.035em;
       }
 
       .automation-banner p {
-        margin: 3px 0 0;
-        font-size: 12px;
-        color: var(--text-muted);
+        margin: 5px 0 0;
+        color: #85857e;
+        font-size: 10px;
+        line-height: 1.5;
       }
 
       .toggle-button {
-        height: 32px;
-        padding: 0 12px;
-        border-radius: 20px;
-        border: 1px solid var(--border-color);
-        background: var(--bg-subtle);
-        color: var(--text-muted);
-        font-size: 11px;
-        font-weight: 700;
-        cursor: pointer;
+        width: 58px;
+        min-width: 58px;
+        height: 28px;
+        padding: 0 8px;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        transition: all 0.2s ease;
-      }
-
-      .toggle-button span {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #94a3b8;
+        justify-content: center;
+        gap: 5px;
+        border: 1px solid #deded7;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #55554f;
+        font-size: 8px;
+        font-weight: 800;
       }
 
       .toggle-button.active {
-        background: #0f172a;
+        border-color: #111111;
+        background: #111111;
         color: #ffffff;
-        border-color: #0f172a;
+      }
+
+      .toggle-button span {
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        border-radius: 50%;
+        background: #aaa9a2;
       }
 
       .toggle-button.active span {
-        background: #22c55e;
-        box-shadow: 0 0 6px #22c55e;
+        background: #ffffff;
       }
 
-      /* DASHBOARD ACTIVATION CARD */
+
+      /* ---------------------------------------------
+         DASHBOARD ACTIVATION
+      --------------------------------------------- */
+
       .dashboard-activation {
+        margin-bottom: 14px;
+        padding: 22px;
+        border: 1px solid #e2e2dc;
+        border-radius: 13px;
         background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
       }
 
       .dashboard-activation-header {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
-        gap: 20px;
+        gap: 24px;
         margin-bottom: 22px;
       }
 
+      .dashboard-activation-header > div:first-child {
+        min-width: 0;
+        flex: 1;
+      }
+
       .dashboard-activation h2 {
-        margin: 3px 0 0;
+        margin: 0;
         font-size: 20px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--text-main);
+        line-height: 1.15;
+        letter-spacing: -0.045em;
       }
 
       .dashboard-activation-header p {
-        margin: 4px 0 0;
-        font-size: 13px;
-        color: var(--text-muted);
+        max-width: 680px;
+        margin: 8px 0 0;
+        color: #77776f;
+        font-size: 11px;
+        line-height: 1.55;
       }
 
       .dashboard-activation-progress {
         display: flex;
         align-items: center;
-        gap: 8px;
-        background: var(--bg-subtle);
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--text-muted);
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-width: 430px;
+        color: #77776f;
+        font-size: 8px;
+        font-weight: 700;
+        line-height: 1.4;
       }
 
-      .activation-check {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: var(--success);
-        color: #ffffff;
-        display: grid;
+      .activation-check,
+      .activation-pending {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        display: inline-grid;
         place-items: center;
+        border-radius: 50%;
         font-size: 9px;
         font-weight: 800;
       }
 
+      .activation-check {
+        background: #111111;
+        color: #ffffff;
+      }
+
       .activation-pending {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        border: 1px solid var(--border-color);
+        border: 1px solid #d8d8d1;
         background: #ffffff;
-        color: var(--text-subtle);
-        display: grid;
-        place-items: center;
-        font-size: 9px;
+        color: #aaa9a2;
       }
 
       .activation-divider {
-        color: var(--text-subtle);
+        color: #c0c0b9;
+        margin: 0 2px;
       }
 
       .dashboard-activation-options {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
       }
 
       .activation-option {
-        background: var(--bg-subtle);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 16px;
+        min-width: 0;
+        min-height: 150px;
+        padding: 17px;
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: all 0.15s ease;
-      }
-
-      .activation-option:hover {
-        border-color: var(--border-hover);
-        background: #ffffff;
+        align-items: flex-start;
+        gap: 13px;
+        border: 1px solid #e5e5df;
+        border-radius: 11px;
+        background: #fafaf8;
+        box-sizing: border-box;
       }
 
       .activation-option.disabled {
-        opacity: 0.65;
-        background: #f8fafc;
+        background: #f7f7f4;
+        opacity: 0.72;
       }
 
       .activation-option-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
+        width: 30px;
+        height: 30px;
+        flex: 0 0 30px;
         display: grid;
         place-items: center;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--text-main);
-        margin-bottom: 12px;
+        border: 1px solid #dfdfd8;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #44443f;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .activation-option-content {
+        min-width: 0;
+        flex: 1;
       }
 
       .activation-option h3 {
         margin: 0;
         font-size: 13px;
-        font-weight: 700;
-        color: var(--text-main);
+        line-height: 1.3;
+        letter-spacing: -0.025em;
       }
 
       .activation-option p {
-        margin: 6px 0 14px;
-        font-size: 11px;
-        color: var(--text-muted);
-        line-height: 1.45;
-        min-height: 48px;
+        min-height: 34px;
+        margin: 6px 0 13px;
+        color: #85857e;
+        font-size: 9px;
+        line-height: 1.55;
       }
 
       .activation-button {
-        width: 100%;
-        padding: 8px 12px;
-        font-size: 11px;
-        font-weight: 600;
-        border-radius: 6px;
-        cursor: pointer;
-        border: 1px solid var(--primary);
-        background: var(--primary);
+        min-height: 30px;
+        padding: 7px 10px;
+        border: 1px solid #111111;
+        border-radius: 7px;
+        background: #111111;
         color: #ffffff;
-        transition: all 0.15s ease;
-      }
-
-      .activation-button:hover:not(:disabled) {
-        background: var(--primary-hover);
+        font: inherit;
+        font-size: 9px;
+        font-weight: 750;
+        cursor: pointer;
       }
 
       .activation-button.secondary {
+        border-color: #deded7;
         background: #ffffff;
-        color: var(--text-muted);
-        border-color: var(--border-color);
+        color: #55554f;
+      }
+
+      .activation-button:hover:not(:disabled) {
+        opacity: 0.88;
       }
 
       .activation-button:disabled {
-        opacity: 0.5;
         cursor: not-allowed;
+        opacity: 0.5;
       }
 
       .activation-error {
-        font-size: 10px;
-        color: var(--danger);
-        margin-top: 6px;
-      }
-
-      .activation-option-title-row {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .activation-coming-soon {
+        margin-top: 8px;
+        color: #9a4a3d;
         font-size: 8px;
-        font-weight: 700;
-        background: #e2e8f0;
-        color: #475569;
-        padding: 2px 5px;
-        border-radius: 4px;
+        line-height: 1.45;
       }
 
-      /* QR CODE PREVIEW PANEL */
       .activation-qr-panel {
-        margin-top: 16px;
-        padding: 16px 20px;
-        background: #f8fafc;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
+        margin-top: 10px;
+        padding: 16px;
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 18px;
+        border: 1px solid #e5e5df;
+        border-radius: 11px;
+        background: #ffffff;
       }
 
       .activation-qr-preview {
-        width: 120px;
-        height: 120px;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
+        width: 156px;
+        height: 156px;
+        flex: 0 0 156px;
         display: grid;
         place-items: center;
-        padding: 6px;
+        border: 1px solid #e5e5df;
+        border-radius: 8px;
+        background: #ffffff;
       }
 
       .activation-qr-preview img {
-        width: 108px;
-        height: 108px;
+        display: block;
+        width: 138px;
+        height: 138px;
+        image-rendering: pixelated;
       }
 
       .activation-qr-details {
+        min-width: 0;
         flex: 1;
         display: flex;
-        align-items: center;
+        align-items: flex-end;
         justify-content: space-between;
+        gap: 20px;
       }
 
       .activation-qr-eyebrow {
-        font-size: 9px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        color: var(--text-subtle);
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+        color: #8a8a82;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
       }
 
       .activation-qr-details h3 {
         margin: 0;
         font-size: 14px;
-        font-weight: 700;
-        color: var(--text-main);
+        line-height: 1.3;
+        letter-spacing: -0.025em;
       }
 
       .activation-qr-details p {
-        margin: 4px 0 0;
-        font-size: 11px;
-        color: var(--text-muted);
+        max-width: 570px;
+        margin: 7px 0 0;
+        color: #85857e;
+        font-size: 9px;
+        line-height: 1.55;
       }
 
       .activation-qr-actions {
         display: flex;
-        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 7px;
       }
 
-      /* CONTENT GRID */
-      .content-grid {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 24px;
-      }
-
-      .right-column {
+      .activation-option-title-row {
         display: flex;
-        flex-direction: column;
-        gap: 24px;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 7px;
       }
 
-      /* REVIEWS LIST & ROW (DASHBOARD) */
-      .review-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .review-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        padding: 14px;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
-        transition: border-color 0.15s ease;
-      }
-
-      .review-row:hover {
-        border-color: var(--border-hover);
-      }
-
-      /* REFINED REVIEW RATING (NO STRETCHING) */
-      .review-rating-compact {
+      .activation-coming-soon {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        gap: 4px;
-        padding: 5px 9px;
-        border-radius: 8px;
-        background: #fffbeb;
-        border: 1px solid #fde68a;
-        color: #b45309;
-        font-size: 12px;
-        font-weight: 800;
-        flex-shrink: 0;
-        align-self: flex-start;
-      }
-
-      /* MODERN RATING CARD FOR WORKFLOW ROWS */
-      .review-rating-card {
-        width: 56px;
-        min-width: 56px;
-        height: 56px;
+        min-height: 17px;
+        padding: 2px 6px;
+        border: 1px solid #deded7;
+        border-radius: 5px;
         background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        flex-shrink: 0;
-        align-self: flex-start;
-        margin-top: 1px;
-        user-select: none;
-        transition: all 0.15s ease;
-      }
-
-      .review-rating-card:hover {
-        border-color: #cbd5e1;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-      }
-
-      .rating-number-row {
-        display: flex;
-        align-items: baseline;
-        gap: 1px;
-        line-height: 1;
-      }
-
-      .rating-val {
-        font-size: 17px;
+        color: #999992;
+        font-size: 6px;
         font-weight: 800;
-        color: #0f172a;
-        letter-spacing: -0.02em;
+        letter-spacing: 0.1em;
       }
 
-      .rating-max {
-        font-size: 10px;
-        font-weight: 600;
-        color: #94a3b8;
+      @media (max-width: 800px) {
+        .dashboard-activation-header {
+          flex-direction: column;
+        }
+
+        .dashboard-activation-progress {
+          justify-content: flex-start;
+          max-width: none;
+        }
+
+        .dashboard-activation-options {
+          grid-template-columns: 1fr;
+        }
+
+        .activation-qr-panel {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .activation-qr-details {
+          width: 100%;
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .activation-qr-actions {
+          justify-content: flex-start;
+        }
       }
 
-      .rating-stars-row {
-        display: flex;
-        align-items: center;
-        gap: 2px;
-        margin-top: 5px;
-        line-height: 1;
-      }
 
-      .star-glyph {
-        font-size: 8px;
-        line-height: 1;
-      }
+      /* ---------------------------------------------
+         DASHBOARD REVIEW ROW
+      --------------------------------------------- */
 
-      .star-glyph.filled {
-        color: #f59e0b;
-      }
-
-      .star-glyph.empty {
-        color: #e2e8f0;
-      }
-
-      .review-content {
-        flex: 1;
+      .review-row {
         min-width: 0;
       }
 
-      .review-meta {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+      .review-row .review-content {
+        min-width: 0;
+        flex: 1;
       }
 
-      .review-meta strong {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--text-main);
-      }
-
-      .review-meta span {
-        font-size: 11px;
-        color: var(--text-muted);
-      }
-
-      .review-text {
-        margin: 6px 0;
-        font-size: 12px;
-        color: #334155;
-        line-height: 1.5;
+      .review-row .review-text {
+        max-width: 650px;
+        margin: 5px 0 0;
+        color: #72726b;
+        font-size: 10px;
+        line-height: 1.55;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .review-ai-meta {
+        margin-top: 7px;
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
-        font-size: 10px;
-        color: var(--text-muted);
+        color: #999992;
+        font-size: 8px;
       }
 
       .review-ai-meta span {
-        background: var(--bg-subtle);
-        padding: 2px 7px;
-        border-radius: 4px;
-        font-weight: 600;
-      }
-
-      .review-status {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        padding: 4px 8px;
-        border-radius: 6px;
-        background: var(--bg-subtle);
-        color: var(--text-muted);
         display: inline-flex;
         align-items: center;
-        gap: 5px;
       }
 
-      .review-status.replied {
-        background: #ecfdf5;
-        color: #047857;
+      .review-ai-meta span + span::before {
+        content: "·";
+        margin-right: 8px;
+        color: #c1c1ba;
       }
 
-      .review-status.approval {
-        background: #fef3c7;
-        color: #b45309;
-      }
 
-      /* WORKFLOW ROWS (FULL REVIEWS PAGE) */
+      /* ---------------------------------------------
+         FULL REVIEWS WORKFLOW
+      --------------------------------------------- */
+
       .review-workflow-row {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 14px;
+        min-width: 0;
+        padding: 18px 0;
         display: grid;
-        grid-template-columns: 1.2fr 1fr;
+        grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
         gap: 24px;
+        border-top: 1px solid #eeeeea;
+      }
+
+      .review-workflow-row:first-child {
+        padding-top: 0;
+        border-top: 0;
       }
 
       .review-main {
+        min-width: 0;
         display: flex;
-        align-items: flex-start; /* CRITICAL FIX: PREVENTS VERTICAL STRETCHING */
-        gap: 16px;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .review-main .review-content {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .review-rating {
+        width: 25px;
+        min-width: 25px;
+        padding-top: 1px;
+        color: #1d1d1b;
+        font-size: 10px;
+        text-align: center;
+      }
+
+      .review-workflow-row .review-meta {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .review-workflow-row .review-meta strong {
+        font-size: 11px;
+      }
+
+      .review-workflow-row .review-meta span {
+        color: #aaa9a1;
+        font-size: 8px;
+      }
+
+      .review-workflow-row .review-text {
+        margin: 8px 0 0;
+        color: #55554f;
+        font-size: 10px;
+        line-height: 1.65;
+      }
+
+      .review-workflow-row .review-ai-meta {
+        margin-top: 10px;
       }
 
       .review-workflow {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        min-width: 0;
+        padding: 0;
       }
 
       .workflow-status {
         display: flex;
         justify-content: flex-end;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
       }
 
       .workflow-status span {
-        font-size: 10px;
-        font-weight: 700;
+        padding: 5px 7px;
+        border-radius: 5px;
+        background: #ededeb;
+        color: #777770;
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
-        padding: 3px 8px;
-        border-radius: 6px;
-        background: var(--bg-subtle);
-        color: var(--text-muted);
       }
 
       .workflow-status span[data-status="awaiting_approval"] {
-        background: #fef3c7;
-        color: #b45309;
-      }
-
-      .workflow-status span[data-status="approved"] {
-        background: #ecfdf5;
-        color: #047857;
+        background: #f5f0df;
+        color: #917733;
       }
 
       .ai-reply {
-        background: #f8fafc;
-        border: 1px solid var(--border-color);
+        padding: 12px;
+        border: 1px solid #e5e5df;
         border-radius: 8px;
-        padding: 12px 14px;
+        background: #fafaf8;
       }
 
       .ai-reply p {
         margin: 6px 0 0;
-        font-size: 12px;
-        color: #334155;
-        line-height: 1.55;
+        color: #5f5f58;
+        font-size: 10px;
+        line-height: 1.6;
       }
 
       .workflow-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 14px;
-      }
-
-      .workflow-actions button {
-        flex: 1;
-      }
-
-      /* EMPTY STATE */
-      .empty-state {
-        text-align: center;
-        padding: 48px 20px;
-        color: var(--text-muted);
-      }
-
-      .empty-state-icon {
-        font-size: 32px;
-        color: var(--text-subtle);
-        margin-bottom: 12px;
-      }
-
-      .empty-state h3 {
-        margin: 0;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text-main);
-      }
-
-      .empty-state p {
-        margin: 6px 0 0;
-        font-size: 12px;
-        color: var(--text-muted);
-      }
-
-      /* WORKFLOW PANEL */
-      .workflow {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .workflow-step {
-        display: flex;
-        gap: 12px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      .workflow-step.last {
-        border-bottom: none;
-        padding-bottom: 0;
-      }
-
-      .step-number {
-        width: 24px;
-        height: 24px;
-        border-radius: 6px;
-        background: var(--bg-subtle);
-        color: var(--text-main);
-        font-size: 10px;
-        font-weight: 800;
+        margin-top: 10px;
         display: grid;
-        place-items: center;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
       }
 
-      .step-content strong {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--text-main);
+      .workflow-actions .secondary-button,
+      .workflow-actions .primary-button,
+      .workflow-actions .danger-button {
+        width: 100%;
+        min-height: 32px;
       }
 
-      .step-content p {
-        margin: 2px 0 0;
-        font-size: 11px;
-        color: var(--text-muted);
-        line-height: 1.4;
-      }
-
-      /* LOCATION PANEL */
-      .location-panel {
-        background: #ffffff;
-      }
-
-      .location-top {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .google-mark {
-        width: 32px;
-        height: 32px;
+      .danger-button {
+        border: 1px solid #e1caca;
         border-radius: 8px;
-        background: #ea4335;
-        color: #ffffff;
-        font-weight: 800;
-        display: grid;
-        place-items: center;
-        font-size: 15px;
-      }
-
-      .location-title {
-        flex: 1;
-      }
-
-      .location-title h3 {
-        margin: 0;
-        font-size: 13px;
-        font-weight: 700;
-      }
-
-      .connected-badge {
+        padding: 9px 12px;
+        background: #ffffff;
+        color: #9a4b4b;
         font-size: 9px;
-        font-weight: 700;
-        padding: 3px 7px;
-        border-radius: 4px;
-        background: #f1f5f9;
-        color: #64748b;
+        font-weight: 750;
       }
 
-      .location-description {
-        margin: 12px 0;
-        font-size: 11px;
-        color: var(--text-muted);
-        line-height: 1.5;
+      .danger-button:hover {
+        background: #fbf3f3;
       }
 
-      /* SETTINGS / STATUS PILL */
-      .status-pill {
-        font-size: 10px;
-        font-weight: 700;
-        padding: 3px 8px;
-        border-radius: 20px;
+
+      /* ---------------------------------------------
+         RESPONSIVE
+      --------------------------------------------- */
+
+      @media (max-width: 900px) {
+        .review-workflow-row {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .workflow-status {
+          justify-content: flex-start;
+        }
       }
 
-      .status-pill.active {
-        background: #dcfce7;
-        color: #15803d;
-      }
+      @media (max-width: 520px) {
+        .automation-banner {
+          align-items: flex-start;
+        }
 
-      .status-pill.paused {
-        background: #f1f5f9;
-        color: #64748b;
-      }
+        .review-workflow-row {
+          padding: 16px 0;
+        }
 
-      /* ONBOARDING & AUTH PAGES */
-      .auth-page {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--bg-app);
-        padding: 24px;
-      }
+        .review-main {
+          gap: 10px;
+        }
 
-      .auth-card {
-        width: 100%;
-        max-width: 420px;
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 32px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-      }
+        .review-ai-meta {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 4px;
+        }
 
-      .auth-brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 24px;
-      }
+        .review-ai-meta span + span::before {
+          display: none;
+        }
 
-      .auth-brand-mark {
-        width: 36px;
-        height: 36px;
-        background: #0f172a;
-        color: #ffffff;
-        border-radius: 8px;
-        font-weight: 800;
-        display: grid;
-        place-items: center;
+        .workflow-actions {
+          grid-template-columns: 1fr;
+        }
       }
+      /* ---------------------------------------------
+         REVIEWAUTO MOBILE PRESENTATION LAYER
+         Dashboard-first visual refinement.
+         Desktop styles remain untouched.
+      --------------------------------------------- */
 
-      .auth-heading h1 {
-        margin: 4px 0 0;
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-
-      .auth-heading p {
-        margin: 6px 0 20px;
-        font-size: 13px;
-        color: var(--text-muted);
-      }
-
-      .auth-form label {
-        display: block;
-        margin-bottom: 16px;
-      }
-
-      .auth-form label span {
-        display: block;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--text-main);
-        margin-bottom: 6px;
-      }
-
-      .auth-form input {
-        width: 100%;
-        padding: 10px 14px;
-        font-size: 13px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        outline: none;
-        transition: border 0.15s ease;
-      }
-
-      .auth-form input:focus {
-        border-color: #0f172a;
-      }
-
-      .auth-submit {
-        width: 100%;
-        padding: 10px;
-        background: #0f172a;
-        color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.15s ease;
-      }
-
-      .auth-submit:hover:not(:disabled) {
-        background: #1e293b;
-      }
-
-      .auth-submit:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
-      .auth-message {
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-size: 12px;
-        margin-bottom: 14px;
-      }
-
-      .auth-message.error {
-        background: #fee2e2;
-        color: #dc2626;
-      }
-
-      .auth-note {
-        margin-top: 16px;
-        font-size: 11px;
-        color: var(--text-subtle);
-        text-align: center;
-      }
-
-      /* LOADING PAGE */
-      .loading-page {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: var(--bg-app);
-      }
-
-      .loading-mark {
-        width: 44px;
-        height: 44px;
-        background: #0f172a;
-        color: #ffffff;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 20px;
-        display: grid;
-        place-items: center;
-        margin-bottom: 20px;
-      }
-
-      .loading-spinner {
-        width: 24px;
-        height: 24px;
-        border: 3px solid #e2e8f0;
-        border-top-color: #0f172a;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: 12px;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
-      .loading-page p {
-        font-size: 12px;
-        color: var(--text-muted);
-      }
-
-      /* PLACEHOLDER PAGE */
-      .placeholder-page {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 14px;
-        padding: 60px 24px;
-        text-align: center;
-      }
-
-      .placeholder-icon {
-        font-size: 32px;
-        margin-bottom: 12px;
-      }
-
-      .placeholder-page h2 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-      }
-
-      .placeholder-page p {
-        margin: 6px 0 20px;
-        font-size: 12px;
-        color: var(--text-muted);
-      }
-
-      /* MOBILE PRESENTATION */
       .mobile-app {
-        min-height: 100vh;
-        background: var(--bg-app);
+        min-height: 100dvh;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        background: #f6f6f2;
       }
 
       .mobile-header {
         position: sticky;
         top: 0;
         z-index: 40;
-        height: 58px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(8px);
-        border-bottom: 1px solid var(--border-color);
-        padding: 0 16px;
+        min-height: 56px;
         display: flex;
         align-items: center;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e5e5df;
+        background: rgba(255,255,255,.97);
+        backdrop-filter: blur(12px);
       }
 
       .mobile-header-left {
+        min-width: 0;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 9px;
       }
 
       .mobile-menu-button {
-        width: 36px;
-        height: 36px;
-        border: 1px solid var(--border-color);
-        background: #ffffff;
-        border-radius: 8px;
-        display: grid;
-        place-items: center;
-        font-size: 16px;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dfdfd8;
+        border-radius: 10px;
+        background: #fff;
+        color: #151513;
+        font-size: 17px;
         cursor: pointer;
       }
 
+      .mobile-brand {
+        min-width: 0;
+      }
+
       .mobile-brand strong {
+        display: block;
         font-size: 14px;
-        font-weight: 700;
+        line-height: 1.1;
+        letter-spacing: -.035em;
       }
 
       .mobile-brand span {
-        font-size: 10px;
-        color: var(--text-muted);
-        margin-left: 6px;
+        display: block;
+        margin-top: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #8a8a83;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
       }
 
       .mobile-main {
-        padding: 16px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 12px 12px 34px;
+      }
+
+      .mobile-main > * {
+        min-width: 0;
+        max-width: 100%;
       }
 
       .mobile-drawer-backdrop {
         position: fixed;
         inset: 0;
-        background: rgba(15, 23, 42, 0.4);
         z-index: 90;
-        border: none;
+        background: rgba(0,0,0,.28);
       }
 
       .mobile-drawer {
@@ -1434,105 +715,1198 @@ function DashboardReviewsStyles() {
         top: 0;
         left: 0;
         bottom: 0;
-        width: 280px;
-        background: #ffffff;
         z-index: 100;
-        padding: 20px 16px;
-        display: flex;
-        flex-direction: column;
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
+        width: min(82vw, 320px);
+        max-width: 100vw;
+        box-sizing: border-box;
+        padding: 16px 13px;
+        overflow-y: auto;
+        background: #fff;
+        border-right: 1px solid #deded7;
+        box-shadow: 14px 0 40px rgba(0,0,0,.08);
       }
 
       .mobile-drawer-top {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
       }
 
       .mobile-drawer-title {
         font-size: 16px;
-        font-weight: 700;
+        font-weight: 800;
+        letter-spacing: -.04em;
       }
 
       .mobile-nav {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        flex: 1;
+        display: grid;
+        gap: 5px;
       }
 
       .mobile-nav-button {
+        width: 100%;
+        min-height: 46px;
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: none;
+        gap: 11px;
+        padding: 9px 11px;
+        border: 1px solid transparent;
+        border-radius: 10px;
         background: transparent;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-muted);
-        cursor: pointer;
+        color: #44443f;
         text-align: left;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
       }
 
       .mobile-nav-button.active {
-        background: #0f172a;
-        color: #ffffff;
+        border-color: #deded7;
+        background: #f4f4ef;
+        color: #111;
+      }
+
+      .mobile-nav-icon {
+        width: 24px;
+        min-width: 24px;
+        text-align: center;
+        font-size: 16px;
+      }
+
+      .mobile-drawer-footer {
+        margin-top: 24px;
+        padding-top: 14px;
+        border-top: 1px solid #eeeeea;
       }
 
       .mobile-signout {
         width: 100%;
-        padding: 10px;
-        background: transparent;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        color: var(--text-muted);
+        min-height: 44px;
+        border: 1px solid #deded7;
+        border-radius: 10px;
+        background: #fff;
+        color: #55554f;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
       }
 
-      /* RESPONSIVE BREAKPOINTS */
-      @media (max-width: 1100px) {
-        .dashboard-activation-options {
-          grid-template-columns: repeat(2, 1fr);
+      /* ---------- shared mobile surfaces ---------- */
+
+      .mobile-main .dashboard-activation,
+      .mobile-main .panel,
+      .mobile-main .stat-card,
+      .mobile-main .automation-banner,
+      .mobile-main .placeholder-page {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .mobile-main .dashboard-activation,
+      .mobile-main .panel {
+        padding: 15px;
+        border-radius: 15px;
+      }
+
+      .mobile-main .dashboard-activation {
+        margin-bottom: 10px;
+        border-color: #e1e1da;
+        box-shadow: 0 2px 10px rgba(20,20,15,.035);
+      }
+
+      /* ---------- dashboard activation ---------- */
+
+      .mobile-main .dashboard-activation-header {
+        display: block;
+        margin-bottom: 14px;
+      }
+
+      .mobile-main .dashboard-activation-header h2 {
+        margin-top: 5px;
+        font-size: 20px;
+        line-height: 1.18;
+        letter-spacing: -.045em;
+      }
+
+      .mobile-main .dashboard-activation-header p {
+        margin-top: 7px;
+        max-width: 100%;
+        font-size: 10px;
+        line-height: 1.55;
+      }
+
+      .mobile-main .dashboard-activation-progress {
+        width: 100%;
+        max-width: none;
+        box-sizing: border-box;
+        justify-content: flex-start;
+        margin-top: 12px;
+        padding: 9px 10px;
+        gap: 5px;
+        border: 1px solid #e9e9e3;
+        border-radius: 10px;
+        background: #fafaf7;
+        font-size: 8px;
+      }
+
+      .mobile-main .activation-check,
+      .mobile-main .activation-pending {
+        width: 16px;
+        height: 16px;
+        flex-basis: 16px;
+        font-size: 8px;
+      }
+
+      .mobile-main .dashboard-activation-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .mobile-main .activation-option {
+        min-height: 148px;
+        padding: 11px;
+        gap: 8px;
+        flex-direction: column;
+        border-radius: 12px;
+        background: #fbfbf9;
+      }
+
+      .mobile-main .activation-option-content {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .mobile-main .activation-option-icon {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+        border-radius: 9px;
+        font-size: 11px;
+      }
+
+      .mobile-main .activation-option h3 {
+        font-size: 12px;
+        line-height: 1.3;
+      }
+
+      .mobile-main .activation-option p {
+        min-height: 0;
+        margin: 4px 0 9px;
+        font-size: 8.5px;
+        line-height: 1.5;
+      }
+
+      .mobile-main .activation-button {
+        width: 100%;
+        min-height: 34px;
+        padding: 7px 8px;
+        border-radius: 8px;
+        font-size: 8px;
+      }
+
+      .mobile-main .activation-option-title-row {
+        gap: 5px;
+      }
+
+      .mobile-main .activation-coming-soon {
+        min-height: 15px;
+        padding: 2px 5px;
+        font-size: 5.5px;
+      }
+
+      .mobile-main .activation-qr-panel {
+        margin-top: 8px;
+        padding: 12px;
+        gap: 12px;
+        border-radius: 12px;
+      }
+
+      .mobile-main .activation-qr-preview {
+        width: 132px;
+        height: 132px;
+        flex-basis: 132px;
+      }
+
+      .mobile-main .activation-qr-preview img {
+        width: 116px;
+        height: 116px;
+      }
+
+      .mobile-main .activation-qr-details {
+        width: 100%;
+        box-sizing: border-box;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .mobile-main .activation-qr-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      /* ---------- dashboard stats ---------- */
+
+      .mobile-main .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .mobile-main .stat-card {
+        min-height: 96px;
+        padding: 12px;
+        border-radius: 13px;
+      }
+
+      .mobile-main .stat-label {
+        font-size: 8px;
+      }
+
+      .mobile-main .stat-value {
+        margin-top: 5px;
+        font-size: 25px;
+        line-height: 1;
+      }
+
+      .mobile-main .stat-detail {
+        margin-top: 6px;
+        font-size: 7px;
+        line-height: 1.35;
+      }
+
+      /* ---------- dashboard automation ---------- */
+
+      .mobile-main .automation-banner {
+        min-height: 0;
+        margin-bottom: 10px;
+        padding: 13px 14px;
+        gap: 10px;
+        border-radius: 13px;
+        box-shadow: 0 2px 10px rgba(20,20,15,.03);
+      }
+
+      .mobile-main .automation-banner h2 {
+        font-size: 15px;
+        line-height: 1.2;
+      }
+
+      .mobile-main .automation-banner p {
+        margin-top: 4px;
+        font-size: 8px;
+        line-height: 1.45;
+      }
+
+      .mobile-main .toggle-button {
+        width: 58px;
+        min-width: 58px;
+        height: 32px;
+        border-radius: 9px;
+        font-size: 8px;
+      }
+
+      /* ---------- dashboard content ---------- */
+
+      .mobile-main .content-grid,
+      .mobile-main .right-column {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .mobile-main .content-grid {
+        display: grid;
+      }
+
+      .mobile-main .panel-header {
+        align-items: center;
+        gap: 8px;
+      }
+
+      .mobile-main .panel-header h2 {
+        font-size: 17px;
+        line-height: 1.2;
+      }
+
+      .mobile-main .panel-count {
+        min-width: 24px;
+        height: 24px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 7px;
+        background: #f3f3ee;
+        font-size: 8px;
+      }
+
+      /* ---------- recent feedback cards ---------- */
+
+      .mobile-main .review-list {
+        margin-top: 12px;
+      }
+
+      .mobile-main .review-row {
+        display: grid;
+        grid-template-columns: 26px minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 9px;
+        padding: 11px;
+        border: 1px solid #e5e5df;
+        border-radius: 12px;
+        background: #fff;
+        box-sizing: border-box;
+      }
+
+      .mobile-main .review-row + .review-row {
+        margin-top: 7px;
+      }
+
+      .mobile-main .review-row .review-content {
+        min-width: 0;
+      }
+
+      .mobile-main .review-rating {
+        width: 26px;
+        min-width: 26px;
+        padding-top: 1px;
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      .mobile-main .review-row .review-meta {
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      .mobile-main .review-row .review-meta strong {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 9px;
+      }
+
+      .mobile-main .review-row .review-meta span {
+        font-size: 7px;
+      }
+
+      .mobile-main .review-row .review-text {
+        display: -webkit-box;
+        max-width: 100%;
+        margin: 5px 0 0;
+        overflow: hidden;
+        color: #5f5f58;
+        font-size: 8px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+      }
+
+      .mobile-main .review-row .review-ai-meta {
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px 7px;
+        color: #999992;
+        font-size: 7px;
+      }
+
+      .mobile-main .review-row .review-ai-meta span + span::before {
+        margin-right: 7px;
+      }
+
+      .mobile-main .review-status {
+        justify-self: end;
+        align-self: start;
+        white-space: nowrap;
+        font-size: 6px;
+      }
+
+      /* ---------- dashboard workflow/location ---------- */
+
+      .mobile-main .workflow {
+        margin-top: 12px;
+      }
+
+      .mobile-main .workflow-step {
+        padding: 10px 0;
+        gap: 9px;
+      }
+
+      .mobile-main .step-number {
+        width: 24px;
+        height: 24px;
+        flex-basis: 24px;
+        font-size: 7px;
+      }
+
+      .mobile-main .step-content strong {
+        font-size: 9px;
+      }
+
+      .mobile-main .step-content p {
+        margin-top: 3px;
+        font-size: 7.5px;
+        line-height: 1.45;
+      }
+
+      .mobile-main .location-top {
+        gap: 8px;
+      }
+
+      .mobile-main .location-description {
+        margin-top: 9px;
+        font-size: 8px;
+        line-height: 1.5;
+      }
+
+      .mobile-main .location-panel .secondary-button {
+        width: 100%;
+        min-height: 38px;
+        margin-top: 9px;
+      }
+
+      /* ---------- other mobile pages: layout only ---------- */
+
+      .mobile-main .review-workflow-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 13px;
+        border: 1px solid #e4e4de;
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      .mobile-main .review-workflow-row + .review-workflow-row {
+        margin-top: 9px;
+      }
+
+      .mobile-main .review-main {
+        gap: 9px;
+      }
+
+      .mobile-main .review-workflow-row .review-text {
+        max-width: none;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        overflow-wrap: anywhere;
+      }
+
+      .mobile-main .workflow-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-main .primary-button,
+      .mobile-main .secondary-button,
+      .mobile-main .danger-button {
+        min-height: 42px;
+      }
+
+      .mobile-main input,
+      .mobile-main textarea,
+      .mobile-main select {
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .mobile-main textarea {
+        min-height: 130px;
+      }
+
+      .mobile-main pre,
+      .mobile-main code {
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: auto;
+      }
+
+      .mobile-main img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      @media (min-width: 400px) and (max-width: 1023px) {
+        .mobile-main .activation-option {
+          min-height: 154px;
         }
-        .stats-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        .content-grid {
-          grid-template-columns: 1fr;
+
+        .mobile-main .activation-option p {
+          min-height: 39px;
         }
       }
 
-      @media (max-width: 768px) {
-        .dashboard-activation-options {
-          grid-template-columns: 1fr;
+      @media (max-width: 380px) {
+        .mobile-main {
+          padding-left: 10px;
+          padding-right: 10px;
         }
-        .review-workflow-row {
-          grid-template-columns: 1fr;
+
+        .mobile-main .stats-grid {
+          gap: 7px;
         }
-        .activation-qr-panel {
-          flex-direction: column;
-          align-items: flex-start;
+
+        .mobile-main .stat-card {
+          min-height: 92px;
+          padding: 11px;
         }
-        .activation-qr-details {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 12px;
+
+        .mobile-main .dashboard-activation,
+        .mobile-main .panel {
+          padding: 13px;
         }
-        .review-rating-card {
-          width: 50px;
-          min-width: 50px;
-          height: 50px;
+
+        .mobile-main .dashboard-activation-header h2 {
+          font-size: 18px;
         }
-        .rating-val {
-          font-size: 15px;
+
+        .mobile-main .review-row {
+          grid-template-columns: 24px minmax(0, 1fr);
+        }
+
+        .mobile-main .review-status {
+          grid-column: 2;
+          justify-self: start;
+          margin-top: 2px;
         }
       }
     `}</style>
+  );
+}
+
+function SlateUiStyles() {
+  return (
+    <style>{`
+/* ============================================================
+   REVIEWAUTO — SLATE UI OVERHAUL (visual layer only)
+   Palette: #f8fafc bg · #0f172a primary dark · #e2e8f0 borders
+   Injected after legacy styles; overrides by cascade only.
+   ============================================================ */
+
+:root {
+  --sl-bg:          #f8fafc;
+  --sl-card:        #ffffff;
+  --sl-ink:         #0f172a;
+  --sl-text:        #334155;
+  --sl-muted:       #64748b;
+  --sl-border:      #e2e8f0;
+  --sl-soft:        #f1f5f9;
+  --sl-green:       #16a34a;
+  --sl-green-soft:  #dcfce7;
+  --sl-red:         #dc2626;
+  --sl-red-soft:    #fee2e2;
+  --sl-amber:       #d97706;
+  --sl-amber-soft:  #fef3c7;
+  --sl-radius:      16px;
+  --sl-radius-sm:   10px;
+  --sl-shadow:      0 1px 2px rgba(15,23,42,.05), 0 4px 18px rgba(15,23,42,.05);
+  --sl-shadow-hover:0 8px 24px rgba(15,23,42,.10);
+  --sl-font:        "Inter","SF Pro Text",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+::selection { background: rgba(15,23,42,.12); }
+
+.app, .mobile-app {
+  font-family: var(--sl-font);
+  background: var(--sl-bg);
+  color: var(--sl-text);
+}
+
+.app button, .mobile-app button { font-family: var(--sl-font); }
+
+/* ---------------- SIDEBAR (dark slate) ---------------- */
+
+.sidebar {
+  background: linear-gradient(180deg, #111a2e 0%, var(--sl-ink) 45%, #0b1120 100%);
+  border-right: none;
+}
+
+.brand-mark {
+  background: #ffffff;
+  color: var(--sl-ink);
+  border-radius: 10px;
+  font-weight: 800;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
+.brand-name strong { color: #f8fafc; letter-spacing: -.02em; }
+.brand-name span   { color: #94a3b8; font-weight: 800; }
+.workspace-label   { color: #475569; letter-spacing: .14em; }
+
+/* workspace chip */
+.sidebar div[title] {
+  margin: 0 12px 14px !important;
+  padding: 8px 12px !important;
+  background: rgba(255,255,255,.07) !important;
+  border: 1px solid rgba(255,255,255,.09) !important;
+  border-radius: 10px !important;
+  color: #e2e8f0 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  transition: background .15s ease;
+}
+.sidebar div[title]:hover { background: rgba(255,255,255,.11) !important; }
+
+.navigation .nav-item {
+  color: #94a3b8;
+  border-radius: 10px;
+  transition: background .15s ease, color .15s ease;
+}
+
+.navigation .nav-item:hover { color: #f1f5f9; background: rgba(255,255,255,.06); }
+
+.navigation .nav-item.active {
+  background: rgba(255,255,255,.10);
+  color: #ffffff;
+  box-shadow: inset 3px 0 0 #ffffff;
+}
+
+.navigation .nav-icon { color: inherit; }
+
+/* refined profile / connection cards */
+.connection-card, .account-card {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+}
+
+.connection-card strong { color: #e2e8f0; }
+.connection-card span   { color: #7c8aa5; }
+.connection-indicator   { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.25); }
+
+.account-avatar {
+  background: #1e293b;
+  color: #f8fafc;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.14);
+}
+
+.account-details strong { color: #e2e8f0; }
+.account-details span   { color: #7c8aa5; }
+
+.signout-button { color: #7c8aa5; border-radius: 8px; transition: .15s ease; }
+.signout-button:hover { color: #fff; background: rgba(255,255,255,.10); }
+
+/* ---------------- HEADER ---------------- */
+
+.header { border-bottom: 1px solid var(--sl-border); background: rgba(248,250,252,.85); }
+.header h1 { color: var(--sl-ink); letter-spacing: -.03em; }
+
+.eyebrow { color: #475569; letter-spacing: .14em; font-weight: 800; }
+
+.header-button {
+  border: 1px solid var(--sl-border);
+  background: #fff;
+  color: var(--sl-muted);
+  border-radius: 10px;
+  transition: .15s ease;
+}
+
+.header-button:hover {
+  color: var(--sl-ink);
+  border-color: #cbd5e1;
+  background: var(--sl-soft);
+}
+
+/* ---------------- SURFACES ---------------- */
+
+.panel, .dashboard-activation, .stat-card, .automation-banner,
+.auth-card, .placeholder-page {
+  background: var(--sl-card);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius);
+  box-shadow: var(--sl-shadow);
+}
+
+.panel { padding: 22px; }
+
+.panel-header h2 { color: var(--sl-ink); letter-spacing: -.025em; }
+
+.panel-count {
+  background: var(--sl-soft);
+  color: var(--sl-ink);
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+/* ---------------- KPI / METRIC CARDS ---------------- */
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--sl-shadow-hover); }
+
+.stat-label {
+  color: var(--sl-muted);
+  letter-spacing: .09em;
+  font-weight: 800;
+  font-size: 8px;
+}
+
+.stat-value {
+  color: var(--sl-ink);
+  font-weight: 800;
+  letter-spacing: -.04em;
+}
+
+/* subtle rating star on the average-rating KPI */
+.stats-grid .stat-card:nth-child(2) .stat-value::after {
+  content: " \2605";
+  color: #f59e0b;
+  font-size: .55em;
+  vertical-align: .35em;
+  margin-left: 2px;
+}
+
+.stat-detail { color: var(--sl-muted); }
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sl-ink), #334155);
+}
+
+.stats-grid .stat-card:nth-child(4)::before {
+  background: linear-gradient(90deg, var(--sl-amber), #f59e0b);
+}
+
+/* ---------------- BUTTONS (primary / outline / danger) ---------------- */
+
+.primary-button {
+  background: var(--sl-ink);
+  border: 1px solid var(--sl-ink);
+  color: #ffffff;
+  border-radius: var(--sl-radius-sm);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(15,23,42,.22);
+  transition: background .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+
+.primary-button:hover:not(:disabled) {
+  background: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15,23,42,.28);
+}
+
+.primary-button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+.secondary-button {
+  background: #ffffff;
+  border: 1px solid var(--sl-border);
+  color: var(--sl-text);
+  border-radius: var(--sl-radius-sm);
+  font-weight: 600;
+  transition: .15s ease;
+}
+
+.secondary-button:hover:not(:disabled) {
+  border-color: #94a3b8;
+  color: var(--sl-ink);
+  background: var(--sl-soft);
+}
+
+.danger-button {
+  background: #ffffff;
+  border: 1px solid #fecaca;
+  color: var(--sl-red);
+  border-radius: 9px;
+  font-weight: 700;
+  transition: .15s ease;
+}
+
+.danger-button:hover:not(:disabled) {
+  background: var(--sl-red-soft);
+  border-color: #fca5a5;
+}
+
+/* ---------------- REVIEW STREAM ---------------- */
+
+.review-row {
+  border: 1px solid var(--sl-border);
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.review-row:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 14px rgba(15,23,42,.06);
+}
+
+.review-rating {
+  background: var(--sl-soft);
+  color: var(--sl-ink);
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.review-meta strong { color: var(--sl-ink); }
+.review-meta span   { color: var(--sl-muted); }
+.review-text        { color: var(--sl-text); }
+.review-ai-meta     { color: var(--sl-muted); }
+
+/* sentiment / risk pills */
+.review-ai-meta .sentiment-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  background: var(--sl-soft);
+  color: var(--sl-muted);
+}
+
+.review-ai-meta .sentiment-positive { background: var(--sl-green-soft); color: var(--sl-green); }
+.review-ai-meta .sentiment-negative { background: var(--sl-red-soft);   color: var(--sl-red); }
+.review-ai-meta .sentiment-high,
+.review-ai-meta .sentiment-critical { background: var(--sl-amber-soft); color: var(--sl-amber); }
+
+.review-status {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  background: var(--sl-amber-soft);
+  color: var(--sl-amber);
+  border: 1px solid #fde68a;
+}
+
+.review-status.replied {
+  background: var(--sl-green-soft);
+  color: var(--sl-green);
+  border-color: #bbf7d0;
+}
+
+.review-status.approval {
+  background: var(--sl-amber-soft);
+  color: var(--sl-amber);
+  border-color: #fde68a;
+}
+
+.review-status span { display: none; }
+
+/* ---------------- AI DRAFT BOX ---------------- */
+
+.ai-reply {
+  border: 1px solid var(--sl-border);
+  background: var(--sl-soft);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.ai-reply .eyebrow { color: var(--sl-muted); }
+.ai-reply p { color: var(--sl-text); }
+
+.workflow-status span {
+  background: var(--sl-soft);
+  color: var(--sl-muted);
+  border-radius: 999px;
+}
+
+.workflow-status span[data-status="awaiting_approval"] {
+  background: var(--sl-amber-soft);
+  color: var(--sl-amber);
+}
+
+.workflow-step .step-number {
+  background: var(--sl-soft);
+  color: var(--sl-ink);
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.step-content strong { color: var(--sl-ink); }
+.step-content p      { color: var(--sl-muted); }
+
+/* ---------------- ACTIVATION / LAUNCHPAD ---------------- */
+
+.activation-check   { background: var(--sl-ink); }
+.activation-pending { border-color: var(--sl-border); color: var(--sl-muted); }
+.activation-divider { color: var(--sl-border); }
+
+.activation-option {
+  background: #ffffff;
+  border: 1px solid var(--sl-border);
+  border-radius: 14px;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.activation-option:not(.disabled):hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: var(--sl-shadow-hover);
+}
+
+.activation-option-icon {
+  background: var(--sl-soft);
+  color: var(--sl-ink);
+  border: none;
+}
+
+.activation-option h3 { color: var(--sl-ink); }
+.activation-option p  { color: var(--sl-muted); }
+
+.activation-button {
+  background: var(--sl-ink);
+  border-color: var(--sl-ink);
+  border-radius: 9px;
+  box-shadow: 0 2px 8px rgba(15,23,42,.20);
+}
+
+.activation-button:hover:not(:disabled) { background: #1e293b; opacity: 1; }
+
+.activation-button.secondary {
+  background: #fff;
+  border-color: var(--sl-border);
+  color: var(--sl-text);
+  box-shadow: none;
+}
+
+.activation-button.secondary:hover:not(:disabled) {
+  border-color: #94a3b8;
+  color: var(--sl-ink);
+}
+
+.activation-coming-soon {
+  background: var(--sl-amber-soft);
+  color: var(--sl-amber);
+  border-color: #fde68a;
+}
+
+.activation-qr-panel {
+  border: 1px solid var(--sl-border);
+  background: linear-gradient(135deg, #ffffff 0%, var(--sl-soft) 100%);
+  border-radius: 14px;
+}
+
+.activation-qr-preview {
+  border: 1px solid var(--sl-border);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: var(--sl-shadow);
+}
+
+.activation-qr-details h3 { color: var(--sl-ink); }
+.activation-qr-details p,
+.activation-qr-eyebrow     { color: var(--sl-muted); }
+.activation-error { color: var(--sl-red); }
+
+/* ---------------- AUTOMATION TOGGLE ---------------- */
+
+.toggle-button {
+  background: #e2e8f0;
+  border: none;
+  color: #64748b;
+  border-radius: 999px;
+  transition: .15s ease;
+}
+
+.toggle-button span { background: currentColor; opacity: .55; }
+
+.toggle-button.active {
+  background: var(--sl-ink);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(15,23,42,.35);
+}
+
+.toggle-button.active span { background: #ffffff; opacity: 1; }
+
+.automation-banner h2 { color: var(--sl-ink); letter-spacing: -.03em; }
+.automation-banner p  { color: var(--sl-muted); }
+
+/* ---------------- STATUS / LOCATION ---------------- */
+
+.status-pill { border-radius: 999px; font-weight: 800; }
+.status-pill.active { background: var(--sl-green-soft); color: var(--sl-green); }
+.status-pill.paused { background: var(--sl-soft); color: var(--sl-muted); }
+
+.connected-badge { border-radius: 999px; }
+.connected-badge.disconnected { background: var(--sl-soft); color: var(--sl-muted); }
+
+.google-mark { background: var(--sl-soft); color: var(--sl-ink); border-radius: 10px; }
+.location-title h3    { color: var(--sl-ink); }
+.location-description { color: var(--sl-muted); }
+
+/* ---------------- ANALYTICS (rounded bars + progress) ---------------- */
+
+/* 7-day velocity chart: bars are inline-styled; reskin via structure */
+div[style*="height: 150px"] > div > div {
+  background: linear-gradient(180deg, #475569 0%, var(--sl-ink) 100%) !important;
+  border-radius: 6px 6px 0 0 !important;
+  min-height: 8px;
+}
+
+div[style*="height: 150px"] > div > span:first-child {
+  color: var(--sl-ink) !important;
+  font-weight: 800;
+}
+
+div[style*="height: 150px"] > div > span:last-child {
+  color: #94a3b8 !important;
+  font-weight: 600;
+}
+
+/* sentiment progress tracks + fills */
+div[style*="height: 5px"] {
+  background: var(--sl-border) !important;
+  border-radius: 999px;
+}
+
+div[style*="height: 5px"] > div {
+  background: linear-gradient(90deg, #475569 0%, var(--sl-ink) 100%) !important;
+  border-radius: 999px;
+}
+
+/* ---------------- FORMS / AUTH ---------------- */
+
+input, textarea, select {
+  border: 1px solid var(--sl-border);
+  border-radius: 10px;
+  font-family: inherit;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--sl-ink);
+  box-shadow: 0 0 0 3px rgba(15,23,42,.12);
+}
+
+.auth-page {
+  background:
+    radial-gradient(600px 320px at 15% 0%, rgba(15,23,42,.07), transparent 60%),
+    radial-gradient(500px 280px at 90% 100%, rgba(51,65,85,.09), transparent 60%),
+    var(--sl-bg);
+}
+
+.auth-card { border-radius: 18px; padding: 34px; }
+
+.auth-brand-mark {
+  background: var(--sl-ink);
+  color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15,23,42,.30);
+}
+
+.auth-heading h1 { color: var(--sl-ink); letter-spacing: -.035em; }
+.auth-heading p  { color: var(--sl-muted); }
+.auth-form label span { color: var(--sl-text); font-weight: 600; }
+
+.auth-submit {
+  background: var(--sl-ink);
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(15,23,42,.28);
+  transition: .15s ease;
+}
+
+.auth-submit:hover:not(:disabled) { background: #1e293b; }
+.auth-submit:disabled { opacity: .55; cursor: not-allowed; }
+
+.auth-message.error {
+  background: var(--sl-red-soft);
+  color: var(--sl-red);
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+}
+
+.auth-note { color: var(--sl-muted); }
+
+/* ---------------- LOADING / EMPTY ---------------- */
+
+.loading-page { background: var(--sl-bg); }
+
+.loading-mark {
+  background: var(--sl-ink);
+  color: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15,23,42,.30);
+}
+
+.loading-spinner {
+  border-color: var(--sl-border);
+  border-top-color: var(--sl-ink);
+}
+
+.loading-page p { color: var(--sl-muted); }
+
+.empty-state-icon {
+  background: var(--sl-soft);
+  color: var(--sl-ink);
+  border-radius: 14px;
+}
+
+.empty-state h3 { color: var(--sl-ink); letter-spacing: -.02em; }
+.empty-state p  { color: var(--sl-muted); }
+
+.placeholder-icon { color: var(--sl-ink); }
+.placeholder-page h2 { color: var(--sl-ink); letter-spacing: -.02em; }
+.placeholder-page p  { color: var(--sl-muted); }
+
+/* ---------------- MOBILE (blur bar + drawer) ---------------- */
+
+.mobile-header {
+  border-bottom: 1px solid var(--sl-border);
+  background: rgba(255,255,255,.80);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.mobile-brand strong { color: var(--sl-ink); }
+.mobile-brand span   { color: var(--sl-muted); }
+
+.mobile-menu-button {
+  border: 1px solid var(--sl-border);
+  border-radius: 10px;
+  color: var(--sl-ink);
+  background: #ffffff;
+}
+
+.mobile-drawer {
+  border-right: none;
+  box-shadow: 14px 0 40px rgba(15,23,42,.14);
+}
+
+.mobile-nav-button { color: var(--sl-text); border-radius: 10px; }
+.mobile-nav-button.active {
+  background: var(--sl-soft);
+  border-color: var(--sl-border);
+  color: var(--sl-ink);
+  font-weight: 800;
+}
+
+.mobile-drawer-footer { border-top-color: var(--sl-border); }
+.mobile-signout { border-color: var(--sl-border); color: var(--sl-text); border-radius: 10px; }
+.mobile-signout:hover { border-color: #94a3b8; color: var(--sl-ink); }
+
+.mobile-main .activation-button,
+.mobile-main .primary-button,
+.mobile-main .secondary-button,
+.mobile-main .danger-button { border-radius: 10px; }
+
+/* ---------------- SCROLLBAR ---------------- */
+
+.app ::-webkit-scrollbar, .mobile-app ::-webkit-scrollbar { width: 8px; height: 8px; }
+.app ::-webkit-scrollbar-thumb, .mobile-app ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+.app ::-webkit-scrollbar-thumb:hover, .mobile-app ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+`}</style>
   );
 }
 
@@ -1614,7 +1988,9 @@ function LoadingScreen() {
     <main className="loading-page">
       <div className="loading-mark">R</div>
       <div className="loading-spinner" />
-      <p>Loading your workspace...</p>
+      <p>
+        Loading your workspace...
+      </p>
     </main>
   );
 }
@@ -1717,13 +2093,13 @@ function MobileDashboard({
                   }`}
                   onClick={() => navigate(item.name)}
                 >
-                  <span>{item.icon}</span>
+                  <span className="mobile-nav-icon">{item.icon}</span>
                   <span>{item.name}</span>
                 </button>
               ))}
             </nav>
 
-            <div style={{ marginTop: "auto", paddingTop: "16px" }}>
+            <div className="mobile-drawer-footer">
               <button
                 type="button"
                 className="mobile-signout"
@@ -1738,6 +2114,7 @@ function MobileDashboard({
 
       <main className="mobile-main">
         <DashboardReviewsStyles />
+        <SlateUiStyles />
 
         {activePage === "Dashboard" ? (
           <DashboardContent
@@ -1787,14 +2164,29 @@ function MobileDashboard({
 function Dashboard({ session }) {
   const isMobile = useIsMobile();
 
-  const [activePage, setActivePage] = useState("Dashboard");
-  const [workspace, setWorkspace] = useState(null);
-  const [automation, setAutomation] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [workspaceLoading, setWorkspaceLoading] = useState(true);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
-  const [workspaceError, setWorkspaceError] = useState("");
-  const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [activePage, setActivePage] =
+    useState("Dashboard");
+
+  const [workspace, setWorkspace] =
+    useState(null);
+
+  const [automation, setAutomation] =
+    useState(null);
+
+  const [reviews, setReviews] =
+    useState([]);
+
+  const [workspaceLoading, setWorkspaceLoading] =
+    useState(true);
+
+  const [reviewsLoading, setReviewsLoading] =
+    useState(false);
+
+  const [workspaceError, setWorkspaceError] =
+    useState("");
+
+  const [needsOnboarding, setNeedsOnboarding] =
+    useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -1810,15 +2202,25 @@ function Dashboard({ session }) {
         } = await supabase
           .from("businesses")
           .select("*")
-          .eq("owner_id", session.user.id)
-          .order("created_at", { ascending: true })
+          .eq(
+            "owner_id",
+            session.user.id
+          )
+          .order("created_at", {
+            ascending: true,
+          })
           .limit(1)
           .maybeSingle();
 
-        if (businessError) throw businessError;
+        if (businessError) {
+          throw businessError;
+        }
 
         if (!business) {
-          if (mounted) setNeedsOnboarding(true);
+          if (mounted) {
+            setNeedsOnboarding(true);
+          }
+
           return;
         }
 
@@ -1826,18 +2228,27 @@ function Dashboard({ session }) {
 
         if (!initializedBusiness.feedback_slug) {
           const baseSlug =
-            (initializedBusiness.name || "business")
+            (
+              initializedBusiness.name ||
+              "business"
+            )
               .toLowerCase()
               .replace(/[^a-z0-9]+/g, "-")
               .replace(/^-+|-+$/g, "")
-              .slice(0, 50) || "business";
+              .slice(0, 50) ||
+            "business";
 
           const uniqueSuffix =
-            typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-              ? crypto.randomUUID().slice(0, 8)
+            typeof crypto !== "undefined" &&
+            typeof crypto.randomUUID ===
+              "function"
+              ? crypto
+                  .randomUUID()
+                  .slice(0, 8)
               : `${Date.now()}`.slice(-8);
 
-          const feedbackSlug = `${baseSlug}-${uniqueSuffix}`;
+          const feedbackSlug =
+            `${baseSlug}-${uniqueSuffix}`;
 
           const {
             data: updatedBusiness,
@@ -1845,63 +2256,106 @@ function Dashboard({ session }) {
           } = await supabase
             .from("businesses")
             .update({
-              feedback_slug: feedbackSlug,
+              feedback_slug:
+                feedbackSlug,
               feedback_enabled: true,
             })
-            .eq("id", initializedBusiness.id)
-            .eq("owner_id", session.user.id)
+            .eq(
+              "id",
+              initializedBusiness.id
+            )
+            .eq(
+              "owner_id",
+              session.user.id
+            )
             .select("*")
             .single();
 
-          if (feedbackSlugError) throw feedbackSlugError;
-          initializedBusiness = updatedBusiness;
+          if (feedbackSlugError) {
+            throw feedbackSlugError;
+          }
+
+          initializedBusiness =
+            updatedBusiness;
         }
 
         const {
-          data: existingAutomationSettings,
-          error: automationLookupError,
+          data:
+            existingAutomationSettings,
+          error:
+            automationLookupError,
         } = await supabase
           .from("automation_settings")
           .select("*")
-          .eq("business_id", initializedBusiness.id)
+          .eq(
+            "business_id",
+            initializedBusiness.id
+          )
           .maybeSingle();
 
-        if (automationLookupError) throw automationLookupError;
+        if (automationLookupError) {
+          throw automationLookupError;
+        }
 
-        let automationSettings = existingAutomationSettings;
+        let automationSettings =
+          existingAutomationSettings;
 
         if (!automationSettings) {
           const {
-            data: createdAutomationSettings,
-            error: automationCreateError,
+            data:
+              createdAutomationSettings,
+            error:
+              automationCreateError,
           } = await supabase
             .from("automation_settings")
             .insert({
-              business_id: initializedBusiness.id,
+              business_id:
+                initializedBusiness.id,
               enabled: true,
-              updated_at: new Date().toISOString(),
+              updated_at:
+                new Date().toISOString(),
             })
             .select("*")
             .single();
 
-          if (automationCreateError) throw automationCreateError;
-          automationSettings = createdAutomationSettings;
+          if (automationCreateError) {
+            throw automationCreateError;
+          }
+
+          automationSettings =
+            createdAutomationSettings;
         }
 
         if (mounted) {
           setNeedsOnboarding(false);
-          setWorkspace(initializedBusiness);
-          setAutomation(automationSettings);
+          setWorkspace(
+            initializedBusiness
+          );
+          setAutomation(
+            automationSettings
+          );
         }
 
-        await loadReviews(initializedBusiness.id, mounted);
+        await loadReviews(
+          initializedBusiness.id,
+          mounted
+        );
       } catch (error) {
-        console.error("Workspace loading error:", error);
+        console.error(
+          "Workspace loading error:",
+          error
+        );
+
         if (mounted) {
-          setWorkspaceError(error?.message || "Unable to load your workspace.");
+          setWorkspaceError(
+            error?.message ||
+              "Unable to load your workspace."
+          );
         }
       } finally {
-        if (mounted) setWorkspaceLoading(false);
+        if (mounted) {
+          setWorkspaceLoading(false);
+        }
       }
     }
 
@@ -1912,49 +2366,87 @@ function Dashboard({ session }) {
     };
   }, [session.user.id]);
 
-  async function loadReviews(businessId, mounted = true) {
+  async function loadReviews(
+    businessId,
+    mounted = true
+  ) {
     setReviewsLoading(true);
 
-    const { data, error } = await supabase
+    const {
+      data,
+      error,
+    } = await supabase
       .from("reviews")
       .select("*")
-      .eq("business_id", businessId)
-      .order("created_at", { ascending: false });
+      .eq(
+        "business_id",
+        businessId
+      )
+      .order("created_at", {
+        ascending: false,
+      });
 
     if (error) {
-      console.error("Review loading error:", error);
-      if (mounted) setReviews([]);
+      console.error(
+        "Review loading error:",
+        error
+      );
+
+      if (mounted) {
+        setReviews([]);
+      }
     } else if (mounted) {
       setReviews(data || []);
     }
 
-    if (mounted) setReviewsLoading(false);
+    if (mounted) {
+      setReviewsLoading(false);
+    }
   }
 
   async function handleSignOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) console.error("Sign out failed:", error);
+    const { error } =
+      await supabase.auth.signOut();
+
+    if (error) {
+      console.error(
+        "Sign out failed:",
+        error
+      );
+    }
   }
 
   async function toggleAutomation() {
-    if (!workspace) return;
+    if (!workspace) {
+      return;
+    }
 
-    const currentValue = automation?.enabled || false;
+    const currentValue =
+      automation?.enabled || false;
+
     const newValue = !currentValue;
 
     if (!automation) {
-      const { data, error } = await supabase
+      const {
+        data,
+        error,
+      } = await supabase
         .from("automation_settings")
         .insert({
-          business_id: workspace.id,
+          business_id:
+            workspace.id,
           enabled: newValue,
-          updated_at: new Date().toISOString(),
+          updated_at:
+            new Date().toISOString(),
         })
         .select()
         .single();
 
       if (error) {
-        console.error("Automation creation failed:", error);
+        console.error(
+          "Automation creation failed:",
+          error
+        );
         return;
       }
 
@@ -1962,18 +2454,28 @@ function Dashboard({ session }) {
       return;
     }
 
-    const { data, error } = await supabase
+    const {
+      data,
+      error,
+    } = await supabase
       .from("automation_settings")
       .update({
         enabled: newValue,
-        updated_at: new Date().toISOString(),
+        updated_at:
+          new Date().toISOString(),
       })
-      .eq("business_id", workspace.id)
+      .eq(
+        "business_id",
+        workspace.id
+      )
       .select()
       .single();
 
     if (error) {
-      console.error("Automation update failed:", error);
+      console.error(
+        "Automation update failed:",
+        error
+      );
       return;
     }
 
@@ -1981,19 +2483,34 @@ function Dashboard({ session }) {
   }
 
   async function updateFeedbackEnabled() {
-    if (!workspace) return;
+    if (!workspace) {
+      return;
+    }
 
-    const nextValue = workspace.feedback_enabled === false;
+    const nextValue =
+      workspace.feedback_enabled === false;
 
-    const { data, error } = await supabase
+    const {
+      data,
+      error,
+    } = await supabase
       .from("businesses")
-      .update({ feedback_enabled: nextValue })
-      .eq("id", workspace.id)
+      .update({
+        feedback_enabled:
+          nextValue,
+      })
+      .eq(
+        "id",
+        workspace.id
+      )
       .select()
       .single();
 
     if (error) {
-      console.error("Feedback link update failed:", error);
+      console.error(
+        "Feedback link update failed:",
+        error
+      );
       return;
     }
 
@@ -2001,55 +2518,119 @@ function Dashboard({ session }) {
   }
 
   async function copyFeedbackLink() {
-    if (!workspace?.feedback_slug) return false;
-    const feedbackUrl = `${window.location.origin}/f/${workspace.feedback_slug}`;
-    return copyText(feedbackUrl, "feedback link");
+    if (!workspace?.feedback_slug) {
+      return false;
+    }
+
+    const feedbackUrl =
+      `${window.location.origin}/f/${workspace.feedback_slug}`;
+
+    return copyText(
+      feedbackUrl,
+      "feedback link"
+    );
   }
 
-  async function copyText(text, label = "text") {
+  async function copyText(
+    text,
+    label = "text"
+  ) {
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
+      if (
+        navigator.clipboard &&
+        window.isSecureContext
+      ) {
+        await navigator.clipboard.writeText(
+          text
+        );
+
         return true;
       }
 
-      const textArea = document.createElement("textarea");
+      const textArea =
+        document.createElement(
+          "textarea"
+        );
+
       textArea.value = text;
-      textArea.setAttribute("readonly", "");
-      textArea.style.position = "fixed";
-      textArea.style.left = "-9999px";
+
+      textArea.setAttribute(
+        "readonly",
+        ""
+      );
+
+      textArea.style.position =
+        "fixed";
+      textArea.style.left =
+        "-9999px";
       textArea.style.top = "0";
       textArea.style.opacity = "0";
 
-      document.body.appendChild(textArea);
+      document.body.appendChild(
+        textArea
+      );
+
       textArea.focus();
       textArea.select();
-      textArea.setSelectionRange(0, textArea.value.length);
+      textArea.setSelectionRange(
+        0,
+        textArea.value.length
+      );
 
-      const successful = document.execCommand("copy");
-      document.body.removeChild(textArea);
+      const successful =
+        document.execCommand(
+          "copy"
+        );
 
-      if (successful) return true;
-      throw new Error("Browser blocked clipboard access.");
+      document.body.removeChild(
+        textArea
+      );
+
+      if (successful) {
+        return true;
+      }
+
+      throw new Error(
+        "Browser blocked clipboard access."
+      );
     } catch (error) {
-      console.error(`Failed to copy ${label}:`, error);
-      window.prompt(`Copy your ${label}:`, text);
+      console.error(
+        `Failed to copy ${label}:`,
+        error
+      );
+
+      window.prompt(
+        `Copy your ${label}:`,
+        text
+      );
+
       return false;
     }
   }
 
-  if (workspaceLoading) return <LoadingScreen />;
+  if (workspaceLoading) {
+    return <LoadingScreen />;
+  }
 
   if (needsOnboarding) {
     return (
       <WorkspaceOnboarding
         session={session}
-        onCreated={async (business, automationSettings) => {
+        onCreated={async (
+          business,
+          automationSettings
+        ) => {
           setNeedsOnboarding(false);
           setWorkspaceError("");
           setWorkspace(business);
-          setAutomation(automationSettings);
-          await loadReviews(business.id, true);
+          setAutomation(
+            automationSettings
+          );
+
+          await loadReviews(
+            business.id,
+            true
+          );
         }}
       />
     );
@@ -2057,7 +2638,10 @@ function Dashboard({ session }) {
 
   if (workspaceError) {
     return (
-      <WorkspaceError message={workspaceError} onSignOut={handleSignOut} />
+      <WorkspaceError
+        message={workspaceError}
+        onSignOut={handleSignOut}
+      />
     );
   }
 
@@ -2086,54 +2670,97 @@ function Dashboard({ session }) {
         activePage={activePage}
         setActivePage={setActivePage}
         email={session.user.email}
-        businessName={workspace?.name}
+        businessName={
+          workspace?.name
+        }
         onSignOut={handleSignOut}
-        feedbackEnabled={workspace?.feedback_enabled !== false}
+        feedbackEnabled={
+          workspace?.feedback_enabled !==
+          false
+        }
       />
 
       <main className="main">
         <DashboardReviewsStyles />
+        <SlateUiStyles />
 
-        <Header activePage={activePage} businessName={workspace?.name} />
+        <Header
+          activePage={activePage}
+          businessName={
+            workspace?.name
+          }
+        />
 
-        {activePage === "Dashboard" ? (
+        {activePage ===
+        "Dashboard" ? (
           <DashboardContent
             workspace={workspace}
             automation={automation}
             reviews={reviews}
             setReviews={setReviews}
-            reviewsLoading={reviewsLoading}
-            onToggleAutomation={toggleAutomation}
-            onOpenWebsiteWidget={() => setActivePage("Website Widget")}
+            reviewsLoading={
+              reviewsLoading
+            }
+            onToggleAutomation={
+              toggleAutomation
+            }
+            onOpenWebsiteWidget={() =>
+              setActivePage(
+                "Website Widget"
+              )
+            }
           />
-        ) : activePage === "Reviews" ? (
+        ) : activePage ===
+          "Reviews" ? (
           <ReviewsPage
             reviews={reviews}
             setReviews={setReviews}
+            loading={
+              reviewsLoading
+            }
+          />
+        ) : activePage ===
+          "Analytics" ? (
+          <AnalyticsPage
+            reviews={reviews}
             loading={reviewsLoading}
           />
-        ) : activePage === "Analytics" ? (
-          <AnalyticsPage reviews={reviews} loading={reviewsLoading} />
-        ) : activePage === "Website Widget" ? (
-          <WebsiteWidget workspace={workspace} />
-        ) : activePage === "Automation" ? (
+        ) : activePage ===
+          "Website Widget" ? (
+          <WebsiteWidget
+            workspace={workspace}
+          />
+        ) : activePage ===
+          "Automation" ? (
           <AutomationPage
             automation={automation}
             reviews={reviews}
-            onToggleAutomation={toggleAutomation}
+            onToggleAutomation={
+              toggleAutomation
+            }
           />
-        ) : activePage === "Settings" ? (
+        ) : activePage ===
+          "Settings" ? (
           <SettingsContent
             workspace={workspace}
-            onToggleFeedback={updateFeedbackEnabled}
-            onCopyFeedbackLink={copyFeedbackLink}
+            onToggleFeedback={
+              updateFeedbackEnabled
+            }
+            onCopyFeedbackLink={
+              copyFeedbackLink
+            }
           />
-        ) : activePage === "Locations" ? (
+        ) : activePage ===
+          "Locations" ? (
           <LocationsPage />
         ) : (
           <PlaceholderPage
             page={activePage}
-            onBack={() => setActivePage("Dashboard")}
+            onBack={() =>
+              setActivePage(
+                "Dashboard"
+              )
+            }
           />
         )}
       </main>
@@ -2141,22 +2768,38 @@ function Dashboard({ session }) {
   );
 }
 
-function WorkspaceOnboarding({ session, onCreated }) {
-  const [businessName, setBusinessName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+function WorkspaceOnboarding({
+  session,
+  onCreated,
+}) {
+  const [businessName, setBusinessName] =
+    useState("");
 
-  async function handleCreateWorkspace(event) {
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  async function handleCreateWorkspace(
+    event
+  ) {
     event.preventDefault();
-    const name = businessName.trim();
+
+    const name =
+      businessName.trim();
 
     if (!name) {
-      setError("Please enter your business name.");
+      setError(
+        "Please enter your business name."
+      );
       return;
     }
 
     if (name.length > 120) {
-      setError("Business name must be 120 characters or less.");
+      setError(
+        "Business name must be 120 characters or less."
+      );
       return;
     }
 
@@ -2169,34 +2812,52 @@ function WorkspaceOnboarding({ session, onCreated }) {
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "")
-          .slice(0, 50) || "business";
+          .slice(0, 50) ||
+        "business";
 
       const uniqueSuffix =
-        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID().slice(0, 8)
+        typeof crypto !== "undefined" &&
+        typeof crypto.randomUUID ===
+          "function"
+          ? crypto
+              .randomUUID()
+              .slice(0, 8)
           : `${Date.now()}`.slice(-8);
 
-      const uniqueSlug = `${baseSlug}-${uniqueSuffix}`;
+      const uniqueSlug =
+        `${baseSlug}-${uniqueSuffix}`;
 
-      const { data: business, error: businessError } = await supabase
+      const {
+        data: business,
+        error: businessError,
+      } = await supabase
         .from("businesses")
         .insert({
-          owner_id: session.user.id,
+          owner_id:
+            session.user.id,
           name,
-          feedback_slug: uniqueSlug,
+          feedback_slug:
+            uniqueSlug,
           feedback_enabled: true,
         })
         .select("*")
         .single();
 
-      if (businessError) throw businessError;
+      if (businessError) {
+        throw businessError;
+      }
 
-      const { data: automationSettings, error: automationError } = await supabase
+      const {
+        data: automationSettings,
+        error: automationError,
+      } = await supabase
         .from("automation_settings")
         .insert({
-          business_id: business.id,
+          business_id:
+            business.id,
           enabled: true,
-          updated_at: new Date().toISOString(),
+          updated_at:
+            new Date().toISOString(),
         })
         .select("*")
         .single();
@@ -2205,14 +2866,28 @@ function WorkspaceOnboarding({ session, onCreated }) {
         await supabase
           .from("businesses")
           .delete()
-          .eq("id", business.id)
-          .eq("owner_id", session.user.id);
+          .eq(
+            "id",
+            business.id
+          )
+          .eq(
+            "owner_id",
+            session.user.id
+          );
+
         throw automationError;
       }
 
-      onCreated(business, automationSettings);
+      onCreated(
+        business,
+        automationSettings
+      );
     } catch (createError) {
-      console.error("Workspace creation failed:", createError);
+      console.error(
+        "Workspace creation failed:",
+        createError
+      );
+
       setError(
         createError?.message ||
           "Unable to create your workspace. Please try again."
@@ -2226,29 +2901,57 @@ function WorkspaceOnboarding({ session, onCreated }) {
     <main className="auth-page">
       <section className="auth-card">
         <div className="auth-brand">
-          <div className="auth-brand-mark">R</div>
+          <div className="auth-brand-mark">
+            R
+          </div>
+
           <div>
-            <strong>ReviewAuto</strong>
-            <span style={{ fontSize: "10px", color: "#64748b", marginLeft: "4px" }}>AI</span>
+            <strong>
+              ReviewAuto
+            </strong>
+
+            <span>AI</span>
           </div>
         </div>
 
         <div className="auth-heading">
-          <div className="eyebrow">GET STARTED</div>
-          <h1>Create your workspace.</h1>
+          <div className="eyebrow">
+            GET STARTED
+          </div>
+
+          <h1>
+            Create your workspace.
+          </h1>
+
           <p>
             Start collecting customer feedback and let ReviewAuto handle the rest.
           </p>
         </div>
 
-        <form className="auth-form" onSubmit={handleCreateWorkspace}>
+        <form
+          className="auth-form"
+          onSubmit={
+            handleCreateWorkspace
+          }
+        >
           <label>
-            <span>Business name</span>
+            <span>
+              Business name
+            </span>
+
             <input
               type="text"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              placeholder="e.g. Acme Coffee Roasters"
+              value={
+                businessName
+              }
+              onChange={(
+                event
+              ) =>
+                setBusinessName(
+                  event.target.value
+                )
+              }
+              placeholder="Your Business"
               autoComplete="organization"
               maxLength={120}
               required
@@ -2256,10 +2959,20 @@ function WorkspaceOnboarding({ session, onCreated }) {
             />
           </label>
 
-          {error && <div className="auth-message error">{error}</div>}
+          {error && (
+            <div className="auth-message error">
+              {error}
+            </div>
+          )}
 
-          <button className="auth-submit" type="submit" disabled={loading}>
-            {loading ? "Creating workspace..." : "Create workspace"}
+          <button
+            className="auth-submit"
+            type="submit"
+            disabled={loading}
+          >
+            {loading
+              ? "Creating workspace..."
+              : "Create workspace"}
           </button>
         </form>
 
@@ -2271,16 +2984,36 @@ function WorkspaceOnboarding({ session, onCreated }) {
   );
 }
 
-function WorkspaceError({ message, onSignOut }) {
+function WorkspaceError({
+  message,
+  onSignOut,
+}) {
   return (
     <main className="loading-page">
       <div className="auth-card">
-        <div className="eyebrow">WORKSPACE ERROR</div>
-        <h1 style={{ fontSize: "18px", margin: "8px 0" }}>We couldn't load your workspace.</h1>
-        <p style={{ color: "#64748b", fontSize: "12px", lineHeight: 1.6, marginBottom: "16px" }}>
+        <div className="eyebrow">
+          WORKSPACE ERROR
+        </div>
+
+        <h1>
+          We couldn't load your workspace.
+        </h1>
+
+        <p
+          style={{
+            color: "#777",
+            fontSize: "11px",
+            lineHeight: 1.6,
+          }}
+        >
           {message}
         </p>
-        <button type="button" className="auth-submit" onClick={onSignOut}>
+
+        <button
+          type="button"
+          className="auth-submit"
+          onClick={onSignOut}
+        >
           Sign out
         </button>
       </div>
@@ -2299,47 +3032,105 @@ function Sidebar({
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">R</div>
+        <div className="brand-mark">
+          R
+        </div>
+
         <div className="brand-name">
-          <strong>ReviewAuto</strong>
+          <strong>
+            ReviewAuto
+          </strong>
+
           <span>AI</span>
         </div>
       </div>
 
-      <div className="workspace-label">Workspace</div>
-      <div className="workspace-pill" title={businessName}>
-        {businessName || "My Workspace"}
+      <div className="workspace-label">
+        WORKSPACE
+      </div>
+
+      <div
+        style={{
+          padding:
+            "0 11px 12px",
+          color: "#d8d8d2",
+          fontSize: "10px",
+          fontWeight: 700,
+          overflow: "hidden",
+          textOverflow:
+            "ellipsis",
+          whiteSpace:
+            "nowrap",
+        }}
+        title={businessName}
+      >
+        {businessName}
       </div>
 
       <nav className="navigation">
-        {navigation.map((item) => (
-          <button
-            key={item.name}
-            type="button"
-            className={activePage === item.name ? "nav-item active" : "nav-item"}
-            onClick={() => setActivePage(item.name)}
-          >
-            <span className="nav-icon">{item.icon}</span>
-            <span>{item.name}</span>
-          </button>
-        ))}
+        {navigation.map(
+          (item) => (
+            <button
+              key={item.name}
+              type="button"
+              className={
+                activePage ===
+                item.name
+                  ? "nav-item active"
+                  : "nav-item"
+              }
+              onClick={() =>
+                setActivePage(
+                  item.name
+                )
+              }
+            >
+              <span className="nav-icon">
+                {item.icon}
+              </span>
+
+              <span>
+                {item.name}
+              </span>
+            </button>
+          )
+        )}
       </nav>
 
       <div className="sidebar-bottom">
         <div className="connection-card">
           <span className="connection-indicator" />
+
           <div>
-            <strong>Feedback Status</strong>
-            <span>{feedbackEnabled ? "Active & receiving" : "Paused"}</span>
+            <strong>
+              ReviewAuto feedback
+            </strong>
+
+            <span>
+              {feedbackEnabled
+                ? "Feedback collection active"
+                : "Feedback collection paused"}
+            </span>
           </div>
         </div>
 
         <div className="account-card">
-          <div className="account-avatar">{getInitials(email)}</div>
-          <div className="account-details">
-            <strong>{email}</strong>
-            <span>Authenticated</span>
+          <div className="account-avatar">
+            {getInitials(
+              email
+            )}
           </div>
+
+          <div className="account-details">
+            <strong>
+              {email}
+            </strong>
+
+            <span>
+              Authenticated
+            </span>
+          </div>
+
           <button
             type="button"
             className="signout-button"
@@ -2354,29 +3145,54 @@ function Sidebar({
   );
 }
 
-function getInitials(email = "") {
-  const first = email.trim().charAt(0).toUpperCase();
+function getInitials(
+  email = ""
+) {
+  const first =
+    email
+      .trim()
+      .charAt(0)
+      .toUpperCase();
+
   return first || "U";
 }
 
-function Header({ activePage, businessName }) {
+function Header({
+  activePage,
+  businessName,
+}) {
   const title =
     activePage === "Dashboard"
-      ? `Good morning, ${businessName || "Business Owner"}.`
+      ? `Good morning, ${
+          businessName ||
+          "Business Owner"
+        }.`
       : activePage;
 
   return (
     <header className="header">
       <div>
-        <div className="eyebrow">{activePage.toUpperCase()}</div>
+        <div className="eyebrow">
+          {activePage.toUpperCase()}
+        </div>
+
         <h1>{title}</h1>
       </div>
 
       <div className="header-actions">
-        <button type="button" className="header-button" aria-label="Notifications">
-          🔔
+        <button
+          type="button"
+          className="header-button"
+          aria-label="Notifications"
+        >
+          ♧
         </button>
-        <button type="button" className="header-button" aria-label="Help">
+
+        <button
+          type="button"
+          className="header-button"
+          aria-label="Help"
+        >
           ?
         </button>
       </div>
@@ -2384,45 +3200,85 @@ function Header({ activePage, businessName }) {
   );
 }
 
-function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
-  const [activated, setActivated] = useState(false);
+function DashboardActivationCard({
+  workspace,
+  onOpenWebsiteWidget,
+}) {
+  const [activated, setActivated] =
+    useState(false);
   const [qrCode, setQrCode] = useState("");
   const [qrLoading, setQrLoading] = useState(false);
   const [qrError, setQrError] = useState("");
 
-  const feedbackUrl = workspace?.feedback_slug
-    ? `${window.location.origin}/f/${workspace.feedback_slug}`
-    : "";
+  const feedbackUrl =
+    workspace?.feedback_slug
+      ? `${window.location.origin}/f/${workspace.feedback_slug}`
+      : "";
 
   async function handleCopyLink() {
-    if (!feedbackUrl) return;
+    if (!feedbackUrl) {
+      return;
+    }
 
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(feedbackUrl);
+      if (
+        navigator.clipboard &&
+        window.isSecureContext
+      ) {
+        await navigator.clipboard.writeText(
+          feedbackUrl
+        );
       } else {
-        const textArea = document.createElement("textarea");
+        const textArea =
+          document.createElement(
+            "textarea"
+          );
+
         textArea.value = feedbackUrl;
-        textArea.setAttribute("readonly", "");
+        textArea.setAttribute(
+          "readonly",
+          ""
+        );
         textArea.style.position = "fixed";
         textArea.style.left = "-9999px";
         textArea.style.top = "0";
         textArea.style.opacity = "0";
 
-        document.body.appendChild(textArea);
+        document.body.appendChild(
+          textArea
+        );
         textArea.focus();
         textArea.select();
-        textArea.setSelectionRange(0, textArea.value.length);
+        textArea.setSelectionRange(
+          0,
+          textArea.value.length
+        );
 
-        const successful = document.execCommand("copy");
-        document.body.removeChild(textArea);
+        const successful =
+          document.execCommand("copy");
 
-        if (!successful) throw new Error("Browser blocked clipboard access.");
+        document.body.removeChild(
+          textArea
+        );
+
+        if (!successful) {
+          throw new Error(
+            "Browser blocked clipboard access."
+          );
+        }
       }
+
       setActivated(true);
     } catch (error) {
-      console.error("Feedback link copy failed:", error);
-      window.prompt("Copy your feedback link:", feedbackUrl);
+      console.error(
+        "Feedback link copy failed:",
+        error
+      );
+
+      window.prompt(
+        "Copy your feedback link:",
+        feedbackUrl
+      );
       setActivated(true);
     }
   }
@@ -2444,7 +3300,9 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
       setActivated(true);
     } catch (error) {
       console.error("QR code generation failed:", error);
-      setQrError("Couldn't generate QR code. Link is still active.");
+      setQrError(
+        "Couldn't generate the QR code. Your feedback link is still available."
+      );
     } finally {
       setQrLoading(false);
     }
@@ -2452,6 +3310,7 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
 
   function handleDownloadQr() {
     if (!qrCode) return;
+
     const link = document.createElement("a");
     link.href = qrCode;
     link.download = `${workspace?.name || "reviewauto"}-feedback-qr.png`;
@@ -2462,6 +3321,7 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
 
   function handlePrintQr() {
     if (!qrCode) return;
+
     const printWindow = window.open("", "_blank", "width=700,height=800");
     if (!printWindow) return;
 
@@ -2471,20 +3331,20 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
       <!doctype html>
       <html>
         <head>
-          <title>Feedback QR Code - ${businessName}</title>
+          <title>ReviewAuto Feedback QR Code</title>
           <style>
-            body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #0f172a; }
+            body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, sans-serif; color: #111; }
             .sheet { text-align: center; padding: 40px; }
-            img { width: 300px; height: 300px; }
-            h1 { margin: 20px 0 8px; font-size: 24px; font-weight: 700; }
-            p { margin: 0; color: #64748b; font-size: 14px; }
+            img { width: 320px; height: 320px; image-rendering: pixelated; }
+            h1 { margin: 20px 0 8px; font-size: 24px; }
+            p { margin: 0; color: #666; font-size: 13px; }
           </style>
         </head>
         <body>
           <div class="sheet">
-            <img src="${qrCode}" alt="QR code" />
+            <img src="${qrCode}" alt="ReviewAuto feedback QR code" />
             <h1>${businessName}</h1>
-            <p>Scan to send us direct feedback</p>
+            <p>Scan to send us your feedback</p>
           </div>
           <script>window.onload = function () { window.print(); };<\/script>
         </body>
@@ -2495,7 +3355,11 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
 
   function handleWebsiteWidget() {
     setActivated(true);
-    if (typeof onOpenWebsiteWidget === "function") {
+
+    if (
+      typeof onOpenWebsiteWidget ===
+      "function"
+    ) {
       onOpenWebsiteWidget();
     }
   }
@@ -2504,30 +3368,48 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
     <section className="dashboard-activation">
       <div className="dashboard-activation-header">
         <div>
-          <div className="eyebrow">Setup & Deployment</div>
+          <div className="eyebrow">
+            GET REVIEWAUTO WORKING
+          </div>
+
           <h2>
             {activated
-              ? "You're ready to collect customer feedback."
-              : "Start collecting feedback seamlessly."}
+              ? "You're ready to collect feedback."
+              : "Start collecting customer feedback."}
           </h2>
+
           <p>
             {activated
-              ? "Share your custom feedback link or download your brand QR code."
-              : "Choose how customers will submit feedback to your workspace."}
+              ? "Share your feedback link or add the widget to your website."
+              : "Your ReviewAuto workspace is ready. Choose how customers will give you feedback."}
           </p>
         </div>
 
         <div className="dashboard-activation-progress">
-          <span className="activation-check">✓</span>
+          <span className="activation-check">
+            ✓
+          </span>
           <span>Workspace</span>
-          <span className="activation-divider">→</span>
-          <span className="activation-check">✓</span>
-          <span>Link</span>
-          <span className="activation-divider">→</span>
-          <span className={activated ? "activation-check" : "activation-pending"}>
+          <span className="activation-divider">
+            →
+          </span>
+          <span className="activation-check">
+            ✓
+          </span>
+          <span>Feedback link</span>
+          <span className="activation-divider">
+            →
+          </span>
+          <span
+            className={
+              activated
+                ? "activation-check"
+                : "activation-pending"
+            }
+          >
             {activated ? "✓" : "○"}
           </span>
-          <span>Deployment</span>
+          <span>Collection method</span>
         </div>
       </div>
 
@@ -2535,15 +3417,17 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
         <div className="activation-option">
           <div className="activation-option-icon">↗</div>
           <div className="activation-option-content">
-            <h3>Direct Link</h3>
-            <p>Share with customers via SMS, WhatsApp, Email or receipt slips.</p>
+            <h3>Share Link</h3>
+            <p>
+              Send your feedback link through SMS, WhatsApp, email, or anywhere else.
+            </p>
             <button
               type="button"
               className="activation-button"
               onClick={handleCopyLink}
               disabled={!feedbackUrl}
             >
-              Copy link
+              Copy feedback link
             </button>
           </div>
         </div>
@@ -2552,30 +3436,42 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
           <div className="activation-option-icon">#</div>
           <div className="activation-option-content">
             <h3>QR Code</h3>
-            <p>Generate high-res QR for menus, tables, packaging or counter stands.</p>
+            <p>
+              Put a QR code on tables, receipts, counters, packaging, or printed materials.
+            </p>
             <button
               type="button"
               className="activation-button"
               onClick={handleGenerateQr}
               disabled={!feedbackUrl || qrLoading}
             >
-              {qrLoading ? "Generating..." : qrCode ? "Regenerate QR" : "Generate QR"}
+              {qrLoading
+                ? "Generating QR code…"
+                : qrCode
+                ? "Regenerate QR code"
+                : "Generate QR code"}
             </button>
-            {qrError && <div className="activation-error">{qrError}</div>}
+            {qrError ? (
+              <div className="activation-error">
+                {qrError}
+              </div>
+            ) : null}
           </div>
         </div>
 
         <div className="activation-option">
           <div className="activation-option-icon">▣</div>
           <div className="activation-option-content">
-            <h3>Embed Widget</h3>
-            <p>Embed an elegant feedback component into your website.</p>
+            <h3>Website Widget</h3>
+            <p>
+              Add ReviewAuto directly to your website using the existing widget.
+            </p>
             <button
               type="button"
-              className="activation-button secondary"
+              className="activation-button"
               onClick={handleWebsiteWidget}
             >
-              Configure widget
+              Set up widget
             </button>
           </div>
         </div>
@@ -2584,16 +3480,20 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
           <div className="activation-option-icon">⌖</div>
           <div className="activation-option-content">
             <div className="activation-option-title-row">
-              <h3>Google Reviews</h3>
-              <span className="activation-coming-soon">SOON</span>
+              <h3>Google Business Profile</h3>
+              <span className="activation-coming-soon">
+                COMING SOON
+              </span>
             </div>
-            <p>Sync and automatically reply to Google Business Profile reviews.</p>
+            <p>
+              Connect your Google Business Profile to manage Google reviews.
+            </p>
             <button
               type="button"
               className="activation-button secondary"
               disabled
             >
-              Coming soon
+              Not available yet
             </button>
           </div>
         </div>
@@ -2606,16 +3506,18 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
           </div>
           <div className="activation-qr-details">
             <div>
-              <div className="activation-qr-eyebrow">QR READY FOR PRINT & DIGITAL</div>
-              <h3>Scan-ready customer feedback code</h3>
-              <p>Customers can point their camera to leave direct ratings and reviews.</p>
+              <div className="activation-qr-eyebrow">FEEDBACK QR CODE READY</div>
+              <h3>Customers can scan and send feedback.</h3>
+              <p>
+                This QR code points to your existing ReviewAuto feedback link.
+              </p>
             </div>
             <div className="activation-qr-actions">
-              <button type="button" className="secondary-button" onClick={handleDownloadQr}>
-                Download PNG
+              <button type="button" className="activation-button" onClick={handleDownloadQr}>
+                Download QR
               </button>
-              <button type="button" className="primary-button" onClick={handlePrintQr}>
-                Print Code
+              <button type="button" className="activation-button secondary" onClick={handlePrintQr}>
+                Print QR
               </button>
             </div>
           </div>
@@ -2634,70 +3536,117 @@ function DashboardContent({
   onToggleAutomation,
   onOpenWebsiteWidget,
 }) {
-  const totalReviews = reviews.length;
+  const totalReviews =
+    reviews.length;
 
   const averageRating =
     totalReviews > 0
       ? (
-          reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) /
+          reviews.reduce(
+            (sum, review) =>
+              sum +
+              Number(
+                review.rating ||
+                  0
+              ),
+            0
+          ) /
           totalReviews
         ).toFixed(1)
       : "—";
 
-  const repliesSent = reviews.filter(
-    (review) => review.reply_status === "published"
-  ).length;
+  const repliesSent =
+    reviews.filter(
+      (review) =>
+        review.reply_status ===
+        "published"
+    ).length;
 
-  const needsAttention = reviews.filter(
-    (review) =>
-      review.automation_status === "awaiting_approval" ||
-      review.ai_risk_level === "high" ||
-      review.ai_risk_level === "critical"
-  ).length;
+  const needsAttention =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+          "awaiting_approval" ||
+        review.ai_risk_level ===
+          "high" ||
+        review.ai_risk_level ===
+          "critical"
+    ).length;
 
   return (
     <>
       <DashboardActivationCard
         workspace={workspace}
-        onOpenWebsiteWidget={onOpenWebsiteWidget}
+        onOpenWebsiteWidget={
+          onOpenWebsiteWidget
+        }
       />
 
       <section className="stats-grid">
         <StatCard
-          label="Total Reviews"
+          label="Total reviews"
           value={totalReviews}
-          detail={totalReviews > 0 ? "Stored in workspace" : "No feedback collected yet"}
+          detail={
+            totalReviews > 0
+              ? "Stored in your workspace"
+              : "No reviews yet"
+          }
         />
 
         <StatCard
-          label="Average Rating"
-          value={averageRating !== "—" ? `${averageRating} ★` : "—"}
-          detail={totalReviews > 0 ? "Overall satisfaction score" : "Awaiting first rating"}
+          label="Average rating"
+          value={
+            averageRating
+          }
+          detail={
+            totalReviews > 0
+              ? "Based on stored reviews"
+              : "Waiting for reviews"
+          }
         />
 
         <StatCard
-          label="Replies Published"
+          label="Replies sent"
           value={repliesSent}
-          detail={repliesSent > 0 ? "Sent to customers" : "No automated replies sent"}
+          detail={
+            repliesSent > 0
+              ? "Published replies"
+              : "No replies published"
+          }
         />
 
         <StatCard
-          label="Needs Attention"
-          value={needsAttention}
-          detail={needsAttention > 0 ? "Requires owner approval" : "All clean & processed"}
+          label="Needs attention"
+          value={
+            needsAttention
+          }
+          detail={
+            needsAttention > 0
+              ? "Requires review"
+              : "Nothing requiring attention"
+          }
         />
       </section>
 
       <AutomationBanner
-        enabled={automation?.enabled || false}
-        setEnabled={onToggleAutomation}
+        enabled={
+          automation?.enabled ||
+          false
+        }
+        setEnabled={
+          onToggleAutomation
+        }
       />
 
       <section className="content-grid">
         <ReviewsPanel
           reviews={reviews}
-          setReviews={setReviews}
-          loading={reviewsLoading}
+          setReviews={
+            setReviews
+          }
+          loading={
+            reviewsLoading
+          }
         />
 
         <div className="right-column">
@@ -2709,65 +3658,190 @@ function DashboardContent({
   );
 }
 
-function StatCard({ label, value, detail }) {
+function StatCard({
+  label,
+  value,
+  detail,
+}) {
   return (
     <div className="stat-card">
-      <span className="stat-label">{label}</span>
-      <strong className="stat-value">{value}</strong>
-      <span className="stat-detail">{detail}</span>
+      <span className="stat-label">
+        {label}
+      </span>
+
+      <strong className="stat-value">
+        {value}
+      </strong>
+
+      <span className="stat-detail">
+        {detail}
+      </span>
     </div>
   );
 }
 
-function AnalyticsPage({ reviews = [], loading }) {
+/*
+ * PHASE 2D
+ * Analytics page
+ *
+ * Existing analytics implementation.
+ * No new database query.
+ * No new backend.
+ * No new analytics table.
+ */
+function AnalyticsPage({
+  reviews = [],
+  loading,
+}) {
   const total = reviews.length;
 
   const averageRating =
     total > 0
       ? (
-          reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0) / total
+          reviews.reduce(
+            (sum, review) =>
+              sum +
+              Number(
+                review.rating || 0
+              ),
+            0
+          ) / total
         ).toFixed(1)
       : "—";
 
-  const positive = reviews.filter((r) => r.ai_sentiment === "positive").length;
-  const neutral = reviews.filter((r) => r.ai_sentiment === "neutral").length;
-  const negative = reviews.filter((r) => r.ai_sentiment === "negative").length;
-  const mixed = reviews.filter((r) => r.ai_sentiment === "mixed").length;
+  const positive =
+    reviews.filter(
+      (review) =>
+        review.ai_sentiment ===
+        "positive"
+    ).length;
 
-  const needsAttention = reviews.filter(
-    (r) =>
-      r.automation_status === "awaiting_approval" ||
-      r.ai_risk_level === "high" ||
-      r.ai_risk_level === "critical"
-  ).length;
+  const neutral =
+    reviews.filter(
+      (review) =>
+        review.ai_sentiment ===
+        "neutral"
+    ).length;
 
-  const approved = reviews.filter((r) => r.automation_status === "approved").length;
-  const rejected = reviews.filter(
-    (r) => r.automation_status === "skipped" || r.automation_status === "rejected"
-  ).length;
+  const negative =
+    reviews.filter(
+      (review) =>
+        review.ai_sentiment ===
+        "negative"
+    ).length;
 
-  const repliesPublished = reviews.filter((r) => r.reply_status === "published").length;
+  const mixed =
+    reviews.filter(
+      (review) =>
+        review.ai_sentiment ===
+        "mixed"
+    ).length;
+
+  const needsAttention =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+          "awaiting_approval" ||
+        review.ai_risk_level ===
+          "high" ||
+        review.ai_risk_level ===
+          "critical"
+    ).length;
+
+  const approved =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+        "approved"
+    ).length;
+
+  const rejected =
+    reviews.filter(
+      (review) =>
+        review.automation_status ===
+          "skipped" ||
+        review.automation_status ===
+          "rejected"
+    ).length;
+
+  const repliesPublished =
+    reviews.filter(
+      (review) =>
+        review.reply_status ===
+        "published"
+    ).length;
 
   const sourceCounts = {
-    reviewauto: reviews.filter((r) => r.source === "reviewauto").length,
-    google: reviews.filter((r) => r.source === "google").length,
-    manual: reviews.filter((r) => r.source === "manual").length,
+    reviewauto:
+      reviews.filter(
+        (review) =>
+          review.source ===
+          "reviewauto"
+      ).length,
+
+    google:
+      reviews.filter(
+        (review) =>
+          review.source ===
+          "google"
+      ).length,
+
+    manual:
+      reviews.filter(
+        (review) =>
+          review.source ===
+          "manual"
+      ).length,
   };
 
   const ratingCounts = {
-    5: reviews.filter((r) => Number(r.rating) === 5).length,
-    4: reviews.filter((r) => Number(r.rating) === 4).length,
-    3: reviews.filter((r) => Number(r.rating) === 3).length,
-    2: reviews.filter((r) => Number(r.rating) === 2).length,
-    1: reviews.filter((r) => Number(r.rating) === 1).length,
+    5: reviews.filter(
+      (review) =>
+        Number(
+          review.rating
+        ) === 5
+    ).length,
+
+    4: reviews.filter(
+      (review) =>
+        Number(
+          review.rating
+        ) === 4
+    ).length,
+
+    3: reviews.filter(
+      (review) =>
+        Number(
+          review.rating
+        ) === 3
+    ).length,
+
+    2: reviews.filter(
+      (review) =>
+        Number(
+          review.rating
+        ) === 2
+    ).length,
+
+    1: reviews.filter(
+      (review) =>
+        Number(
+          review.rating
+        ) === 1
+    ).length,
   };
 
-  const lastSevenDays = getLastSevenDays(reviews);
+  const lastSevenDays =
+    getLastSevenDays(
+      reviews
+    );
 
   if (loading) {
     return (
       <section className="panel">
-        <div className="empty-state">Loading analytics...</div>
+        <div className="empty-state">
+          Loading analytics...
+        </div>
       </section>
     );
   }
@@ -2776,99 +3850,230 @@ function AnalyticsPage({ reviews = [], loading }) {
     <section>
       <section className="stats-grid">
         <StatCard
-          label="Total Feedback"
+          label="Total feedback"
           value={total}
-          detail={total > 0 ? "Lifetime customer submissions" : "No feedback yet"}
+          detail={
+            total > 0
+              ? "All feedback in your workspace"
+              : "No feedback yet"
+          }
         />
+
         <StatCard
-          label="Average Rating"
-          value={averageRating !== "—" ? `${averageRating} ★` : "—"}
-          detail={total > 0 ? "Across all channels" : "Waiting for reviews"}
+          label="Average rating"
+          value={
+            averageRating
+          }
+          detail={
+            total > 0
+              ? "Across all feedback"
+              : "Waiting for feedback"
+          }
         />
+
         <StatCard
-          label="Needs Attention"
-          value={needsAttention}
-          detail={needsAttention > 0 ? "High risk or pending" : "All clean"}
+          label="Needs attention"
+          value={
+            needsAttention
+          }
+          detail={
+            needsAttention > 0
+              ? "Requires human review"
+              : "Nothing requiring attention"
+          }
         />
+
         <StatCard
-          label="Replies Published"
-          value={repliesPublished}
-          detail={repliesPublished > 0 ? "Delivered to clients" : "No replies published"}
+          label="Replies published"
+          value={
+            repliesPublished
+          }
+          detail={
+            repliesPublished > 0
+              ? "Published responses"
+              : "No published replies"
+          }
         />
       </section>
 
-      <section className="content-grid" style={{ marginTop: "24px" }}>
+      <section
+        className="content-grid"
+        style={{
+          marginTop: "18px",
+        }}
+      >
         <div>
           <section className="panel">
             <div className="panel-header">
               <div>
-                <div className="eyebrow">Customer Sentiment</div>
-                <h2>Sentiment Breakdown</h2>
-              </div>
-            </div>
+                <div className="eyebrow">
+                  CUSTOMER SENTIMENT
+                </div>
 
-            <div style={{ marginTop: "20px" }}>
-              <AnalyticsMetricRow label="Positive" value={positive} total={total} color="#10b981" />
-              <AnalyticsMetricRow label="Neutral" value={neutral} total={total} color="#64748b" />
-              <AnalyticsMetricRow label="Negative" value={negative} total={total} color="#ef4444" />
-              <AnalyticsMetricRow label="Mixed" value={mixed} total={total} color="#f59e0b" />
-            </div>
-          </section>
-
-          <section className="panel" style={{ marginTop: "24px" }}>
-            <div className="panel-header">
-              <div>
-                <div className="eyebrow">Activity Velocity</div>
-                <h2>Last 7 Days</h2>
+                <h2>
+                  What customers are saying
+                </h2>
               </div>
             </div>
 
             <div
               style={{
-                display: "flex",
-                alignItems: "flex-end",
-                gap: "14px",
-                height: "160px",
-                marginTop: "20px",
-                padding: "10px 0",
+                marginTop:
+                  "20px",
               }}
             >
-              {lastSevenDays.map((day) => {
-                const maximum = Math.max(...lastSevenDays.map((i) => i.count), 1);
-                const height =
-                  day.count === 0 ? 4 : Math.max(12, (day.count / maximum) * 110);
+              <AnalyticsMetricRow
+                label="Positive"
+                value={
+                  positive
+                }
+                total={total}
+              />
 
-                return (
-                  <div
-                    key={day.key}
-                    style={{
-                      flex: 1,
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", marginBottom: "6px" }}>
-                      {day.count}
-                    </span>
+              <AnalyticsMetricRow
+                label="Neutral"
+                value={
+                  neutral
+                }
+                total={total}
+              />
+
+              <AnalyticsMetricRow
+                label="Negative"
+                value={
+                  negative
+                }
+                total={total}
+              />
+
+              <AnalyticsMetricRow
+                label="Mixed"
+                value={
+                  mixed
+                }
+                total={total}
+              />
+            </div>
+          </section>
+
+          <section
+            className="panel"
+            style={{
+              marginTop:
+                "18px",
+            }}
+          >
+            <div className="panel-header">
+              <div>
+                <div className="eyebrow">
+                  ACTIVITY
+                </div>
+
+                <h2>
+                  Last 7 days
+                </h2>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display:
+                  "flex",
+                alignItems:
+                  "flex-end",
+                gap: "10px",
+                height:
+                  "150px",
+                marginTop:
+                  "24px",
+              }}
+            >
+              {lastSevenDays.map(
+                (day) => {
+                  const maximum =
+                    Math.max(
+                      ...lastSevenDays.map(
+                        (item) =>
+                          item.count
+                      ),
+                      1
+                    );
+
+                  const height =
+                    day.count ===
+                    0
+                      ? 3
+                      : Math.max(
+                          8,
+                          (day.count /
+                            maximum) *
+                            110
+                        );
+
+                  return (
                     <div
+                      key={
+                        day.key
+                      }
                       style={{
-                        width: "100%",
-                        maxWidth: "36px",
-                        height: `${height}px`,
-                        background: "#0f172a",
-                        borderRadius: "4px 4px 0 0",
-                        transition: "height 0.3s ease",
+                        flex: 1,
+                        height:
+                          "100%",
+                        display:
+                          "flex",
+                        flexDirection:
+                          "column",
+                        justifyContent:
+                          "flex-end",
+                        alignItems:
+                          "center",
                       }}
-                    />
-                    <span style={{ marginTop: "8px", fontSize: "10px", color: "#94a3b8", fontWeight: 600 }}>
-                      {day.label}
-                    </span>
-                  </div>
-                );
-              })}
+                    >
+                      <span
+                        style={{
+                          fontSize:
+                            "9px",
+                          color:
+                            "#777",
+                          marginBottom:
+                            "6px",
+                        }}
+                      >
+                        {
+                          day.count
+                        }
+                      </span>
+
+                      <div
+                        style={{
+                          width:
+                            "100%",
+                          maxWidth:
+                            "34px",
+                          height: `${height}px`,
+                          background:
+                            "#222",
+                        }}
+                      />
+
+                      <span
+                        style={{
+                          marginTop:
+                            "7px",
+                          fontSize:
+                            "8px",
+                          color:
+                            "#999",
+                        }}
+                      >
+                        {
+                          day.label
+                        }
+                      </span>
+                    </div>
+                  );
+                }
+              )}
             </div>
           </section>
         </div>
@@ -2877,41 +4082,95 @@ function AnalyticsPage({ reviews = [], loading }) {
           <section className="panel">
             <div className="panel-header">
               <div>
-                <div className="eyebrow">Workflow Progress</div>
-                <h2>Review Status</h2>
+                <div className="eyebrow">
+                  WORKFLOW
+                </div>
+
+                <h2>
+                  Review status
+                </h2>
               </div>
             </div>
 
-            <div style={{ marginTop: "16px" }}>
-              <AnalyticsSimpleCount label="Approved" value={approved} />
-              <AnalyticsSimpleCount label="Needs Attention" value={needsAttention} />
-              <AnalyticsSimpleCount label="Skipped / Rejected" value={rejected} />
+            <div
+              style={{
+                marginTop:
+                  "18px",
+              }}
+            >
+              <AnalyticsSimpleCount
+                label="Approved"
+                value={
+                  approved
+                }
+              />
+
+              <AnalyticsSimpleCount
+                label="Needs attention"
+                value={
+                  needsAttention
+                }
+              />
+
+              <AnalyticsSimpleCount
+                label="Rejected"
+                value={
+                  rejected
+                }
+              />
             </div>
           </section>
 
           <section className="panel">
             <div className="panel-header">
               <div>
-                <div className="eyebrow">Channels</div>
-                <h2>Feedback Sources</h2>
+                <div className="eyebrow">
+                  SOURCES
+                </div>
+
+                <h2>
+                  Feedback sources
+                </h2>
               </div>
             </div>
 
-            <div style={{ marginTop: "16px" }}>
+            <div
+              style={{
+                marginTop:
+                  "18px",
+              }}
+            >
               <AnalyticsSimpleCount
-                label="Direct Web Form"
-                value={sourceCounts.reviewauto}
-                detail={getAnalyticsPercentage(sourceCounts.reviewauto, total)}
+                label="ReviewAuto"
+                value={
+                  sourceCounts.reviewauto
+                }
+                detail={getAnalyticsPercentage(
+                  sourceCounts.reviewauto,
+                  total
+                )}
               />
+
               <AnalyticsSimpleCount
-                label="Google Reviews"
-                value={sourceCounts.google}
-                detail={getAnalyticsPercentage(sourceCounts.google, total)}
+                label="Google"
+                value={
+                  sourceCounts.google
+                }
+                detail={getAnalyticsPercentage(
+                  sourceCounts.google,
+                  total
+                )}
               />
+
               <AnalyticsSimpleCount
-                label="Manual Import"
-                value={sourceCounts.manual}
-                detail={getAnalyticsPercentage(sourceCounts.manual, total)}
+                label="Manual"
+                value={
+                  sourceCounts.manual
+                }
+                detail={getAnalyticsPercentage(
+                  sourceCounts.manual,
+                  total
+                )}
               />
             </div>
           </section>
@@ -2919,20 +4178,43 @@ function AnalyticsPage({ reviews = [], loading }) {
           <section className="panel">
             <div className="panel-header">
               <div>
-                <div className="eyebrow">Ratings</div>
-                <h2>Rating Distribution</h2>
+                <div className="eyebrow">
+                  RATINGS
+                </div>
+
+                <h2>
+                  Rating distribution
+                </h2>
               </div>
             </div>
 
-            <div style={{ marginTop: "16px" }}>
-              {[5, 4, 3, 2, 1].map((rating) => (
-                <AnalyticsSimpleCount
-                  key={rating}
-                  label={`${rating} Stars`}
-                  value={ratingCounts[rating]}
-                  detail={getAnalyticsPercentage(ratingCounts[rating], total)}
-                />
-              ))}
+            <div
+              style={{
+                marginTop:
+                  "18px",
+              }}
+            >
+              {[5, 4, 3, 2, 1].map(
+                (rating) => (
+                  <AnalyticsSimpleCount
+                    key={
+                      rating
+                    }
+                    label={`${rating} stars`}
+                    value={
+                      ratingCounts[
+                        rating
+                      ]
+                    }
+                    detail={getAnalyticsPercentage(
+                      ratingCounts[
+                        rating
+                      ],
+                      total
+                    )}
+                  />
+                )
+              )}
             </div>
           </section>
         </div>
@@ -2941,41 +4223,70 @@ function AnalyticsPage({ reviews = [], loading }) {
   );
 }
 
-function AnalyticsMetricRow({ label, value, total, color = "#0f172a" }) {
-  const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+function AnalyticsMetricRow({
+  label,
+  value,
+  total,
+}) {
+  const percentage =
+    total > 0
+      ? Math.round(
+          (value / total) *
+            100
+        )
+      : 0;
 
   return (
-    <div style={{ marginBottom: "16px" }}>
+    <div
+      style={{
+        marginBottom:
+          "16px",
+      }}
+    >
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: "12px",
-          marginBottom: "6px",
+          display:
+            "flex",
+          justifyContent:
+            "space-between",
+          alignItems:
+            "center",
+          fontSize:
+            "10px",
+          marginBottom:
+            "6px",
         }}
       >
-        <span style={{ fontWeight: 600, color: "#334155" }}>{label}</span>
-        <span style={{ color: "#64748b", fontWeight: 700 }}>
-          {value} ({percentage}%)
+        <span>
+          {label}
+        </span>
+
+        <span>
+          {value} ·{" "}
+          {percentage}%
         </span>
       </div>
+
       <div
         style={{
-          width: "100%",
-          height: "6px",
-          background: "#f1f5f9",
-          borderRadius: "4px",
-          overflow: "hidden",
+          width:
+            "100%",
+          height:
+            "5px",
+          background:
+            "#eeeeeb",
+          overflow:
+            "hidden",
         }}
       >
         <div
           style={{
-            width: `${percentage}%`,
-            height: "100%",
-            background: color,
-            borderRadius: "4px",
-            transition: "width 0.3s ease",
+            width:
+              `${percentage}%`,
+            height:
+              "100%",
+            background:
+              "#222",
           }}
         />
       </div>
@@ -2983,181 +4294,391 @@ function AnalyticsMetricRow({ label, value, total, color = "#0f172a" }) {
   );
 }
 
-function AnalyticsSimpleCount({ label, value, detail }) {
+function AnalyticsSimpleCount({
+  label,
+  value,
+  detail,
+}) {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 0",
-        borderBottom: "1px solid #f1f5f9",
-        fontSize: "12px",
+        display:
+          "flex",
+        justifyContent:
+          "space-between",
+        alignItems:
+          "center",
+        padding:
+          "10px 0",
+        borderBottom:
+          "1px solid #eeeeeb",
+        fontSize:
+          "10px",
       }}
     >
-      <span style={{ color: "#475569", fontWeight: 500 }}>{label}</span>
-      <span style={{ fontWeight: 700, color: "#0f172a" }}>
-        {value} {detail ? <span style={{ color: "#94a3b8", fontWeight: 500 }}>({detail})</span> : ""}
+      <span>
+        {label}
+      </span>
+
+      <span
+        style={{
+          fontWeight:
+            700,
+        }}
+      >
+        {value}
+        {detail
+          ? ` · ${detail}`
+          : ""}
       </span>
     </div>
   );
 }
 
-function getAnalyticsPercentage(value, total) {
-  if (!total) return "0%";
-  return `${Math.round((value / total) * 100)}%`;
+function getAnalyticsPercentage(
+  value,
+  total
+) {
+  if (!total) {
+    return "0%";
+  }
+
+  return `${Math.round(
+    (value / total) *
+      100
+  )}%`;
 }
 
-function getLastSevenDays(reviews) {
+function getLastSevenDays(
+  reviews
+) {
   const days = [];
 
-  for (let offset = 6; offset >= 0; offset--) {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    date.setDate(date.getDate() - offset);
+  for (
+    let offset = 6;
+    offset >= 0;
+    offset--
+  ) {
+    const date =
+      new Date();
 
-    const key = date.toISOString().slice(0, 10);
+    date.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
-    const count = reviews.filter((review) => {
-      const value = review.created_at || review.review_created_at;
-      if (!value) return false;
+    date.setDate(
+      date.getDate() -
+        offset
+    );
 
-      const reviewDate = new Date(value);
-      if (Number.isNaN(reviewDate.getTime())) return false;
+    const key =
+      date
+        .toISOString()
+        .slice(0, 10);
 
-      reviewDate.setHours(0, 0, 0, 0);
-      return reviewDate.toISOString().slice(0, 10) === key;
-    }).length;
+    const count =
+      reviews.filter(
+        (review) => {
+          const value =
+            review.created_at ||
+            review.review_created_at;
+
+          if (!value) {
+            return false;
+          }
+
+          const reviewDate =
+            new Date(
+              value
+            );
+
+          if (
+            Number.isNaN(
+              reviewDate.getTime()
+            )
+          ) {
+            return false;
+          }
+
+          reviewDate.setHours(
+            0,
+            0,
+            0,
+            0
+          );
+
+          return (
+            reviewDate
+              .toISOString()
+              .slice(0, 10) ===
+            key
+          );
+        }
+      ).length;
 
     days.push({
       key,
       count,
-      label: date.toLocaleDateString(undefined, { weekday: "short" }),
+      label:
+        date.toLocaleDateString(
+          undefined,
+          {
+            weekday:
+              "short",
+          }
+        ),
     });
   }
 
   return days;
 }
 
-function AutomationBanner({ enabled, setEnabled }) {
+function AutomationBanner({
+  enabled,
+  setEnabled,
+}) {
   return (
     <section className="automation-banner">
       <div>
-        <div className="eyebrow">AI AUTOMATION ENGINE</div>
-        <h2>System status: {enabled ? "Running & Autonomous" : "Paused"}</h2>
+        <div className="eyebrow">
+          AUTOMATION
+        </div>
+
+        <h2>
+          ReviewAuto is{" "}
+          {enabled
+            ? "active"
+            : "paused"}
+        </h2>
+
         <p>
           {enabled
-            ? "Incoming reviews undergo automatic sentiment, safety checks, and response drafting."
-            : "Automatic processing is paused. New customer reviews require manual handling."}
+            ? "New feedback can move through the AI workflow automatically."
+            : "Automation is paused. New feedback will wait for manual action."}
         </p>
       </div>
 
       <button
         type="button"
-        className={enabled ? "toggle-button active" : "toggle-button"}
-        onClick={setEnabled}
-        aria-label={enabled ? "Turn automation off" : "Turn automation on"}
+        className={
+          enabled
+            ? "toggle-button active"
+            : "toggle-button"
+        }
+        onClick={
+          setEnabled
+        }
+        aria-label={
+          enabled
+            ? "Turn automation off"
+            : "Turn automation on"
+        }
       >
         <span />
-        {enabled ? "ACTIVE" : "PAUSED"}
+        {enabled
+          ? "ON"
+          : "OFF"}
       </button>
     </section>
   );
 }
 
-function ReviewsPanel({ reviews, setReviews, loading }) {
+function ReviewsPanel({
+  reviews,
+  setReviews,
+  loading,
+}) {
   return (
     <section className="panel">
       <div className="panel-header">
         <div>
-          <div className="eyebrow">Recent Activity</div>
-          <h2>Latest Customer Feedback</h2>
+          <div className="eyebrow">
+            REVIEWS
+          </div>
+
+          <h2>
+            Recent feedback
+          </h2>
         </div>
-        <span className="panel-count">{reviews.length}</span>
+
+        <span className="panel-count">
+          {reviews.length}
+        </span>
       </div>
 
       {loading ? (
-        <div className="empty-state">Loading reviews...</div>
-      ) : reviews.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">★</div>
-          <h3>No reviews yet</h3>
-          <p>Your incoming feedback will appear here in real-time.</p>
+          Loading reviews...
+        </div>
+      ) : reviews.length ===
+        0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">
+            ★
+          </div>
+
+          <h3>
+            No reviews yet
+          </h3>
+
+          <p>
+            Your customer feedback will appear here once ReviewAuto receives it.
+          </p>
         </div>
       ) : (
         <div className="review-list">
-          {reviews.slice(0, 5).map((review) => (
-            <ReviewRow key={review.id} review={review} />
-          ))}
+          {reviews
+            .slice(0, 5)
+            .map(
+              (review) => (
+                <ReviewRow
+                  key={
+                    review.id
+                  }
+                  review={
+                    review
+                  }
+                />
+              )
+            )}
         </div>
       )}
     </section>
   );
 }
 
-function ReviewsPage({ reviews, setReviews, loading }) {
+function ReviewsPage({
+  reviews,
+  setReviews,
+  loading,
+}) {
   return (
     <section className="panel">
       <div className="panel-header">
         <div>
-          <div className="eyebrow">Inbox</div>
-          <h2>All Reviews & Feedback</h2>
+          <div className="eyebrow">
+            REVIEWS
+          </div>
+
+          <h2>
+            All customer feedback
+          </h2>
         </div>
-        <span className="panel-count">{reviews.length}</span>
+
+        <span className="panel-count">
+          {reviews.length}
+        </span>
       </div>
 
       {loading ? (
-        <div className="empty-state">Loading feedback stream...</div>
-      ) : reviews.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">★</div>
-          <h3>No customer reviews found</h3>
-          <p>Share your feedback link or embed the website widget to get started.</p>
+          Loading reviews...
+        </div>
+      ) : reviews.length ===
+        0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">
+            ★
+          </div>
+
+          <h3>
+            No reviews yet
+          </h3>
+
+          <p>
+            Share your ReviewAuto feedback link with customers to start collecting feedback.
+          </p>
         </div>
       ) : (
         <div className="review-list">
-          {reviews.map((review) => (
-            <ReviewWorkflowRow
-              key={review.id}
-              review={review}
-              setReviews={setReviews}
-            />
-          ))}
+          {reviews.map(
+            (review) => (
+              <ReviewWorkflowRow
+                key={
+                  review.id
+                }
+                review={
+                  review
+                }
+                setReviews={
+                  setReviews
+                }
+              />
+            )
+          )}
         </div>
       )}
     </section>
   );
 }
 
-function ReviewWorkflowRow({ review, setReviews }) {
-  const [reply, setReply] = useState(review.ai_generated_reply || "");
-  const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
+function ReviewWorkflowRow({
+  review,
+  setReviews,
+}) {
+  const [reply, setReply] =
+    useState(
+      review.ai_generated_reply ||
+        ""
+    );
+
+  const [editing, setEditing] =
+    useState(false);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [analyzing, setAnalyzing] =
+    useState(false);
 
   async function saveApproval() {
-    if (!reply.trim()) return;
+    if (!reply.trim()) {
+      return;
+    }
+
     setSaving(true);
 
-    const { data, error } = await supabase
+    const {
+      data,
+      error,
+    } = await supabase
       .from("reviews")
       .update({
-        ai_generated_reply: reply.trim(),
-        automation_status: "approved",
-        reply_status: "draft",
+        ai_generated_reply:
+          reply.trim(),
+        automation_status:
+          "approved",
+        reply_status:
+          "draft",
       })
-      .eq("id", review.id)
+      .eq(
+        "id",
+        review.id
+      )
       .select()
       .single();
 
     if (error) {
-      console.error("Review approval failed:", error);
+      console.error(
+        "Review approval failed:",
+        error
+      );
       setSaving(false);
       return;
     }
 
-    setReviews((current) =>
-      current.map((item) => (item.id === review.id ? data : item))
+    setReviews(
+      (current) =>
+        current.map(
+          (item) =>
+            item.id ===
+            review.id
+              ? data
+              : item
+        )
     );
 
     setEditing(false);
@@ -3165,28 +4686,50 @@ function ReviewWorkflowRow({ review, setReviews }) {
   }
 
   async function approve() {
-    if (!reply.trim()) return;
+    if (!reply.trim()) {
+      return;
+    }
+
     setSaving(true);
 
-    const { data, error } = await supabase
+    const {
+      data,
+      error,
+    } = await supabase
       .from("reviews")
       .update({
-        ai_generated_reply: reply.trim(),
-        automation_status: "approved",
-        reply_status: "draft",
+        ai_generated_reply:
+          reply.trim(),
+        automation_status:
+          "approved",
+        reply_status:
+          "draft",
       })
-      .eq("id", review.id)
+      .eq(
+        "id",
+        review.id
+      )
       .select()
       .single();
 
     if (error) {
-      console.error("Review approval failed:", error);
+      console.error(
+        "Review approval failed:",
+        error
+      );
       setSaving(false);
       return;
     }
 
-    setReviews((current) =>
-      current.map((item) => (item.id === review.id ? data : item))
+    setReviews(
+      (current) =>
+        current.map(
+          (item) =>
+            item.id ===
+            review.id
+              ? data
+              : item
+        )
     );
 
     setSaving(false);
@@ -3195,24 +4738,42 @@ function ReviewWorkflowRow({ review, setReviews }) {
   async function reject() {
     setSaving(true);
 
-    const { data, error } = await supabase
+    const {
+      data,
+      error,
+    } = await supabase
       .from("reviews")
       .update({
-        automation_status: "skipped",
-        reply_status: "not_replied",
+        automation_status:
+          "skipped",
+        reply_status:
+          "not_replied",
       })
-      .eq("id", review.id)
+      .eq(
+        "id",
+        review.id
+      )
       .select()
       .single();
 
     if (error) {
-      console.error("Review rejection failed:", error);
+      console.error(
+        "Review rejection failed:",
+        error
+      );
       setSaving(false);
       return;
     }
 
-    setReviews((current) =>
-      current.map((item) => (item.id === review.id ? data : item))
+    setReviews(
+      (current) =>
+        current.map(
+          (item) =>
+            item.id ===
+            review.id
+              ? data
+              : item
+        )
     );
 
     setSaving(false);
@@ -3223,131 +4784,211 @@ function ReviewWorkflowRow({ review, setReviews }) {
 
     try {
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
+        data: {
+          session,
+        },
+      } =
+        await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        throw new Error("You are not authenticated.");
+        throw new Error(
+          "You are not authenticated."
+        );
       }
 
-      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-review`;
+      const functionUrl =
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-review`;
 
-      const response = await fetch(functionUrl, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
-        body: JSON.stringify({ review_id: review.id }),
-      });
+      const response =
+        await fetch(
+          functionUrl,
+          {
+            method:
+              "POST",
+            headers: {
+              Authorization:
+                `Bearer ${session.access_token}`,
+              "Content-Type":
+                "application/json",
+              apikey:
+                import.meta.env
+                  .VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+            body:
+              JSON.stringify({
+                review_id:
+                  review.id,
+              }),
+          }
+        );
 
-      const result = await response.json();
+      const result =
+        await response.json();
 
       if (!response.ok) {
-        throw new Error(result?.error || "AI analysis failed.");
+        throw new Error(
+          result?.error ||
+            "AI analysis failed."
+        );
       }
 
-      const { data, error } = await supabase
+      const {
+        data,
+        error,
+      } = await supabase
         .from("reviews")
         .select("*")
-        .eq("id", review.id)
+        .eq(
+          "id",
+          review.id
+        )
         .single();
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
-      setReply(data.ai_generated_reply || "");
-      setReviews((current) =>
-        current.map((item) => (item.id === review.id ? data : item))
+      setReply(
+        data.ai_generated_reply ||
+          ""
+      );
+
+      setReviews(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              review.id
+                ? data
+                : item
+          )
       );
     } catch (error) {
-      console.error("AI analysis failed:", error);
+      console.error(
+        "AI analysis failed:",
+        error
+      );
     } finally {
       setAnalyzing(false);
     }
   }
 
-  const status = review.automation_status || "pending";
+  const status =
+    review.automation_status ||
+    "pending";
 
   return (
     <article className="review-workflow-row">
       <div className="review-main">
-        {/* COMPACT CLEAN RATING CARD (NEVER STRETCHES) */}
-        <div className="review-rating-card" title={`${review.rating || 0} out of 5 stars`}>
-          <div className="rating-number-row">
-            <span className="rating-val">{review.rating || "—"}</span>
-            <span className="rating-max">/5</span>
-          </div>
-          <div className="rating-stars-row">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className={
-                  star <= Number(review.rating)
-                    ? "star-glyph filled"
-                    : "star-glyph empty"
-                }
-              >
-                ★
-              </span>
-            ))}
-          </div>
+        <div className="review-rating">
+          {review.rating || "—"}
         </div>
 
         <div className="review-content">
           <div className="review-meta">
-            <strong>{review.customer_name || "Anonymous Customer"}</strong>
-            <span>{formatDate(review.review_created_at || review.created_at)}</span>
+            <strong>
+              {review.customer_name ||
+                "Customer"}
+            </strong>
+
+            <span>
+              {formatDate(
+                review.review_created_at ||
+                  review.created_at
+              )}
+            </span>
+
             {review.source && (
-              <span style={{ textTransform: "capitalize", background: "#f1f5f9", padding: "1px 6px", borderRadius: "4px" }}>
+              <span>
                 {review.source}
               </span>
             )}
           </div>
 
-          <p className="review-text">{review.review_text || "No text feedback provided."}</p>
+          <p className="review-text">
+            {review.review_text ||
+              "No review text."}
+          </p>
 
           <div className="review-ai-meta">
-            <span style={{ color: review.ai_sentiment === "negative" ? "#ef4444" : "#10b981" }}>
-              Sentiment: {review.ai_sentiment || "Not analyzed"}
+            <span className={`sentiment-pill sentiment-${review.ai_sentiment || "none"}`}>
+              Sentiment:{" "}
+              {review.ai_sentiment ||
+                "Not analyzed"}
             </span>
-            <span>Risk: {review.ai_risk_level || "low"}</span>
-            <span>Intent: {review.ai_intent || "feedback"}</span>
+
+            <span className={`sentiment-pill sentiment-${review.ai_risk_level || "none"}`}>
+              Risk:{" "}
+              {review.ai_risk_level ||
+                "Not analyzed"}
+            </span>
+
+            <span>
+              Intent:{" "}
+              {review.ai_intent ||
+                "Not analyzed"}
+            </span>
           </div>
         </div>
       </div>
 
       <div className="review-workflow">
         <div className="workflow-status">
-          <span data-status={status}>{status}</span>
+          <span
+            data-status={
+              status
+            }
+          >
+            {status}
+          </span>
         </div>
 
         {editing ? (
           <textarea
             value={reply}
-            onChange={(e) => setReply(e.target.value)}
+            onChange={(event) =>
+              setReply(
+                event.target.value
+              )
+            }
             rows={4}
             style={{
-              width: "100%",
-              resize: "vertical",
-              border: "1px solid var(--border-color)",
-              borderRadius: "8px",
-              padding: "10px 12px",
-              fontSize: "12px",
-              lineHeight: 1.5,
-              fontFamily: "inherit",
-              color: "#334155",
-              background: "#ffffff",
-              boxSizing: "border-box",
-              outline: "none",
+              width:
+                "100%",
+              marginTop:
+                "0",
+              resize:
+                "vertical",
+              border:
+                "1px solid #ddd",
+              borderRadius:
+                "8px",
+              padding:
+                "10px",
+              fontSize:
+                "10px",
+              lineHeight:
+                1.6,
+              fontFamily:
+                "inherit",
+              color:
+                "#333",
+              background:
+                "#ffffff",
+              boxSizing:
+                "border-box",
             }}
           />
         ) : (
           <div className="ai-reply">
-            <div className="eyebrow" style={{ color: "#2563eb", marginBottom: "4px" }}>
-              ✨ AI Draft Response
+            <div className="eyebrow">
+              AI REPLY
             </div>
-            <p>{reply || "No response generated. Click Analyze to create one."}</p>
+
+            <p>
+              {reply ||
+                "No AI reply generated yet."}
+            </p>
           </div>
         )}
 
@@ -3355,17 +4996,37 @@ function ReviewWorkflowRow({ review, setReviews }) {
           <button
             type="button"
             className="secondary-button"
-            onClick={editing ? saveApproval : () => setEditing(true)}
-            disabled={saving || analyzing}
+            onClick={
+              editing
+                ? saveApproval
+                : () =>
+                    setEditing(
+                      true
+                    )
+            }
+            disabled={
+              saving ||
+              analyzing
+            }
           >
-            {saving ? "Saving..." : editing ? "Save & Approve" : "Edit Response"}
+            {saving
+              ? "Saving..."
+              : editing
+              ? "Save & approve"
+              : "Edit AI reply"}
           </button>
 
           <button
             type="button"
             className="primary-button"
-            onClick={approve}
-            disabled={saving || !reply.trim() || analyzing}
+            onClick={
+              approve
+            }
+            disabled={
+              saving ||
+              !reply.trim() ||
+              analyzing
+            }
           >
             Approve
           </button>
@@ -3373,8 +5034,13 @@ function ReviewWorkflowRow({ review, setReviews }) {
           <button
             type="button"
             className="danger-button"
-            onClick={reject}
-            disabled={saving || analyzing}
+            onClick={
+              reject
+            }
+            disabled={
+              saving ||
+              analyzing
+            }
           >
             Reject
           </button>
@@ -3382,10 +5048,17 @@ function ReviewWorkflowRow({ review, setReviews }) {
           <button
             type="button"
             className="secondary-button"
-            onClick={analyze}
-            disabled={saving || analyzing}
+            onClick={
+              analyze
+            }
+            disabled={
+              saving ||
+              analyzing
+            }
           >
-            {analyzing ? "Analyzing..." : "Analyze AI"}
+            {analyzing
+              ? "Analyzing..."
+              : "Analyze with AI"}
           </button>
         </div>
       </div>
@@ -3393,61 +5066,113 @@ function ReviewWorkflowRow({ review, setReviews }) {
   );
 }
 
-function ReviewRow({ review }) {
-  const status = review.automation_status || "pending";
+function ReviewRow({
+  review,
+}) {
+  const status =
+    review.automation_status ||
+    "pending";
 
   const statusClass =
-    status === "approved" || status === "published"
+    status ===
+      "approved" ||
+    status ===
+      "published"
       ? "review-status replied"
-      : status === "awaiting_approval"
+      : status ===
+        "awaiting_approval"
       ? "review-status approval"
       : "review-status";
 
   return (
     <article className="review-row">
-      <div className="review-rating-compact">
-        <span style={{ color: "#f59e0b" }}>★</span>
-        <span>{review.rating || "—"}</span>
+      <div className="review-rating">
+        {review.rating || "—"}
       </div>
 
       <div className="review-content">
         <div className="review-meta">
-          <strong>{review.customer_name || "Customer"}</strong>
-          <span>{formatDate(review.review_created_at || review.created_at)}</span>
+          <strong>
+            {review.customer_name ||
+              "Customer"}
+          </strong>
+
+          <span>
+            {formatDate(
+              review.review_created_at ||
+                review.created_at
+            )}
+          </span>
+
           {review.source && (
-            <span style={{ textTransform: "capitalize" }}>{review.source}</span>
+            <span>
+              {review.source}
+            </span>
           )}
         </div>
 
-        <p className="review-text">{review.review_text || "No review text."}</p>
+        <p className="review-text">
+          {review.review_text ||
+            "No review text."}
+        </p>
 
         <div className="review-ai-meta">
-          <span>{review.ai_sentiment || "neutral"}</span>
-          <span>Risk: {review.ai_risk_level || "low"}</span>
+          <span className={`sentiment-pill sentiment-${review.ai_sentiment || "none"}`}>
+            {review.ai_sentiment ||
+              "Not analyzed"}
+          </span>
+
+          <span className={`sentiment-pill sentiment-${review.ai_risk_level || "none"}`}>
+            Risk:{" "}
+            {review.ai_risk_level ||
+              "—"}
+          </span>
         </div>
       </div>
 
-      <div className={statusClass}>{status}</div>
+      <div
+        className={
+          statusClass
+        }
+      >
+        <span />
+        {status}
+      </div>
     </article>
   );
 }
 
-function SettingsContent({ workspace, onToggleFeedback, onCopyFeedbackLink }) {
-  const [copied, setCopied] = useState(false);
+function SettingsContent({
+  workspace,
+  onToggleFeedback,
+  onCopyFeedbackLink,
+}) {
+  const [copied, setCopied] =
+    useState(false);
 
-  if (!workspace) return null;
+  if (!workspace) {
+    return null;
+  }
 
-  const feedbackUrl = workspace.feedback_slug
-    ? `${window.location.origin}/f/${workspace.feedback_slug}`
-    : "";
+  const feedbackUrl =
+    workspace.feedback_slug
+      ? `${window.location.origin}/f/${workspace.feedback_slug}`
+      : "";
 
-  const feedbackEnabled = workspace.feedback_enabled !== false;
+  const feedbackEnabled =
+    workspace.feedback_enabled !==
+    false;
 
   async function handleCopy() {
-    const success = await onCopyFeedbackLink();
+    const success =
+      await onCopyFeedbackLink();
+
     if (success) {
       setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 1800);
     }
   }
 
@@ -3455,60 +5180,112 @@ function SettingsContent({ workspace, onToggleFeedback, onCopyFeedbackLink }) {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <div className="eyebrow">Configuration</div>
-          <h2>Customer Feedback Form</h2>
+          <div className="eyebrow">
+            SETTINGS
+          </div>
+
+          <h2>
+            ReviewAuto feedback
+          </h2>
         </div>
 
-        <span className={feedbackEnabled ? "status-pill active" : "status-pill paused"}>
-          {feedbackEnabled ? "ACTIVE" : "PAUSED"}
+        <span
+          className={
+            feedbackEnabled
+              ? "status-pill active"
+              : "status-pill paused"
+          }
+        >
+          {feedbackEnabled
+            ? "ACTIVE"
+            : "PAUSED"}
         </span>
       </div>
 
-      <div style={{ marginTop: "20px" }}>
-        <div className="eyebrow">FEEDBACK DESTINATION URL</div>
-        <p style={{ color: "#64748b", fontSize: "12px", lineHeight: 1.6, maxWidth: "620px" }}>
-          Share this direct URL with customers to collect ratings, comments, and survey feedback.
+      <div
+        style={{
+          marginTop: "20px",
+        }}
+      >
+        <div className="eyebrow">
+          FEEDBACK LINK
+        </div>
+
+        <p
+          style={{
+            color: "#777",
+            fontSize: "11px",
+            lineHeight: 1.6,
+            maxWidth: "620px",
+          }}
+        >
+          Share this link with customers
+          to collect direct feedback through
+          ReviewAuto.
         </p>
 
         <div
           style={{
             marginTop: "14px",
-            padding: "12px 14px",
-            background: "#f8fafc",
-            border: "1px solid var(--border-color)",
-            borderRadius: "8px",
-            fontSize: "13px",
-            fontWeight: 600,
-            wordBreak: "break-all",
-            color: "#0f172a",
+            padding:
+              "12px 14px",
+            background:
+              "#f5f5f2",
+            border:
+              "1px solid #e3e3de",
+            fontSize: "11px",
+            wordBreak:
+              "break-all",
           }}
         >
-          {feedbackUrl || "Feedback link unavailable"}
+          {feedbackUrl ||
+            "Feedback link unavailable"}
         </div>
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "14px" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            flexWrap: "wrap",
+            marginTop: "12px",
+          }}
+        >
           <button
             type="button"
             className="primary-button"
-            onClick={handleCopy}
+            onClick={
+              handleCopy
+            }
             disabled={!feedbackUrl}
           >
-            {copied ? "Copied to clipboard!" : "Copy feedback link"}
+            {copied
+              ? "Copied"
+              : "Copy feedback link"}
           </button>
 
           <button
             type="button"
             className="secondary-button"
-            onClick={onToggleFeedback}
+            onClick={
+              onToggleFeedback
+            }
           >
-            {feedbackEnabled ? "Disable form access" : "Enable form access"}
+            {feedbackEnabled
+              ? "Disable feedback"
+              : "Enable feedback"}
           </button>
         </div>
 
-        <div style={{ marginTop: "16px", fontSize: "11px", color: "#94a3b8" }}>
+        <div
+          style={{
+            marginTop: "14px",
+            fontSize: "10px",
+            color: "#777",
+          }}
+        >
           {feedbackEnabled
-            ? "Your public feedback endpoint is accepting new submissions."
-            : "Customer submissions are temporarily paused for this workspace."}
+            ? "Customers can currently submit feedback through this link."
+            : "Customer submissions are currently paused."}
         </div>
       </div>
     </section>
@@ -3516,38 +5293,56 @@ function SettingsContent({ workspace, onToggleFeedback, onCopyFeedbackLink }) {
 }
 
 function formatDate(value) {
-  if (!value) return "Unknown date";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Unknown date";
+  if (!value) {
+    return "Unknown date";
+  }
 
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "Unknown date";
+  }
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
 }
 
 function WorkflowPanel() {
   const steps = [
     {
       number: "01",
-      title: "Receive Feedback",
-      description: "ReviewAuto captures customer submissions and reviews.",
+      title: "New feedback",
+      description:
+        "ReviewAuto receives customer feedback from a connected source.",
     },
     {
       number: "02",
-      title: "Context & Safety AI",
-      description: "Analyzes sentiment, intent, and flags safety risks.",
+      title: "AI analysis",
+      description:
+        "The system analyzes rating, sentiment and context.",
     },
     {
       number: "03",
-      title: "Autonomous Decision",
-      description: "Approves safe responses or requests owner approval.",
+      title: "Safety check",
+      description:
+        "Rules decide whether the feedback can be handled automatically.",
     },
     {
       number: "04",
-      title: "Public Response",
-      description: "Delivers the verified response directly to the platform.",
+      title: "Response",
+      description:
+        "An approved response is prepared for the appropriate source.",
     },
   ];
 
@@ -3555,31 +5350,60 @@ function WorkflowPanel() {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <div className="eyebrow">Pipeline</div>
-          <h2>AI Workflow</h2>
+          <div className="eyebrow">
+            AUTOMATION
+          </div>
+
+          <h2>
+            How it works
+          </h2>
         </div>
       </div>
 
       <div className="workflow">
-        {steps.map((step, index) => (
-          <WorkflowStep
-            key={step.number}
-            {...step}
-            last={index === steps.length - 1}
-          />
-        ))}
+        {steps.map(
+          (step, index) => (
+            <WorkflowStep
+              key={step.number}
+              {...step}
+              last={
+                index ===
+                steps.length - 1
+              }
+            />
+          )
+        )}
       </div>
     </section>
   );
 }
 
-function WorkflowStep({ number, title, description, last }) {
+function WorkflowStep({
+  number,
+  title,
+  description,
+  last,
+}) {
   return (
-    <div className={last ? "workflow-step last" : "workflow-step"}>
-      <div className="step-number">{number}</div>
+    <div
+      className={
+        last
+          ? "workflow-step last"
+          : "workflow-step"
+      }
+    >
+      <div className="step-number">
+        {number}
+      </div>
+
       <div className="step-content">
-        <strong>{title}</strong>
-        <p>{description}</p>
+        <strong>
+          {title}
+        </strong>
+
+        <p>
+          {description}
+        </p>
       </div>
     </div>
   );
@@ -3589,20 +5413,37 @@ function LocationPanel() {
   return (
     <section className="panel location-panel">
       <div className="location-top">
-        <div className="google-mark">G</div>
-        <div className="location-title">
-          <div className="eyebrow">Google Business Profile</div>
-          <h3>Google Sync</h3>
+        <div className="google-mark">
+          G
         </div>
-        <span className="connected-badge">SOON</span>
+
+        <div className="location-title">
+          <div className="eyebrow">
+            GOOGLE BUSINESS PROFILE
+          </div>
+
+          <h3>
+            Not connected
+          </h3>
+        </div>
+
+        <span className="connected-badge disconnected">
+          NEXT
+        </span>
       </div>
 
       <p className="location-description">
-        Connect your verified Google location to automatically monitor and answer Google Maps reviews.
+        Connect your Google Business
+        Profile to bring real reviews
+        into ReviewAuto.
       </p>
 
-      <button type="button" className="secondary-button" style={{ width: "100%" }} disabled>
-        Connect Location
+      <button
+        type="button"
+        className="secondary-button"
+        disabled
+      >
+        Connect Google
       </button>
     </section>
   );
@@ -3613,33 +5454,78 @@ function LocationsPage() {
     <section className="panel">
       <div className="panel-header">
         <div>
-          <div className="eyebrow">Google Sync</div>
-          <h2>Connected Locations</h2>
+          <div className="eyebrow">
+            LOCATIONS
+          </div>
+
+          <h2>
+            Your business locations
+          </h2>
         </div>
-        <span className="status-pill paused">NOT CONNECTED</span>
+
+        <span className="status-pill paused">
+          NOT CONNECTED
+        </span>
       </div>
 
-      <div className="empty-state" style={{ marginTop: "24px" }}>
-        <div className="empty-state-icon">⌖</div>
-        <h3>No locations linked</h3>
-        <p>Google Business Profile sync will become available in the next release.</p>
-        <div style={{ marginTop: "16px" }}>
-          <button type="button" className="secondary-button" disabled>
-            Connect Google Business Profile
-          </button>
+      <div
+        className="empty-state"
+        style={{
+          marginTop: "18px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "24px",
+            marginBottom: "10px",
+          }}
+        >
+          ⌖
         </div>
+
+        <h3>
+          No locations connected
+        </h3>
+
+        <p>
+          Google Business Profile connection will be added when the integration is available.
+        </p>
+
+        <button
+          type="button"
+          className="secondary-button"
+          disabled
+        >
+          Connect Google Business Profile
+        </button>
       </div>
     </section>
   );
 }
 
-function PlaceholderPage({ page, onBack }) {
+function PlaceholderPage({
+  page,
+  onBack,
+}) {
   return (
     <section className="placeholder-page">
-      <div className="placeholder-icon">✦</div>
+      <div className="placeholder-icon">
+        ✦
+      </div>
+
       <h2>{page}</h2>
-      <p>This module will be connected during the upcoming development cycle.</p>
-      <button type="button" className="primary-button" onClick={onBack}>
+
+      <p>
+        This section will be connected
+        during the next development
+        stage.
+      </p>
+
+      <button
+        type="button"
+        className="primary-button"
+        onClick={onBack}
+      >
         Back to dashboard
       </button>
     </section>
