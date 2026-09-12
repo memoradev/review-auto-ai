@@ -799,7 +799,7 @@ function DashboardReviewsStyles() {
         gap: 24px;
       }
 
-      /* REVIEWS LIST & ROW */
+      /* REVIEWS LIST & ROW (DASHBOARD) */
       .review-list {
         display: flex;
         flex-direction: column;
@@ -821,16 +821,87 @@ function DashboardReviewsStyles() {
         border-color: var(--border-hover);
       }
 
-      .review-rating {
+      /* REFINED REVIEW RATING (NO STRETCHING) */
+      .review-rating-compact {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 5px 9px;
+        border-radius: 8px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        color: #b45309;
         font-size: 12px;
         font-weight: 800;
-        color: #f59e0b;
-        background: #fef3c7;
-        padding: 4px 8px;
-        border-radius: 6px;
+        flex-shrink: 0;
+        align-self: flex-start;
+      }
+
+      /* MODERN RATING CARD FOR WORKFLOW ROWS */
+      .review-rating-card {
+        width: 56px;
+        min-width: 56px;
+        height: 56px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        flex-shrink: 0;
+        align-self: flex-start;
+        margin-top: 1px;
+        user-select: none;
+        transition: all 0.15s ease;
+      }
+
+      .review-rating-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      }
+
+      .rating-number-row {
+        display: flex;
+        align-items: baseline;
+        gap: 1px;
+        line-height: 1;
+      }
+
+      .rating-val {
+        font-size: 17px;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+      }
+
+      .rating-max {
+        font-size: 10px;
+        font-weight: 600;
+        color: #94a3b8;
+      }
+
+      .rating-stars-row {
         display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 2px;
+        margin-top: 5px;
+        line-height: 1;
+      }
+
+      .star-glyph {
+        font-size: 8px;
+        line-height: 1;
+      }
+
+      .star-glyph.filled {
+        color: #f59e0b;
+      }
+
+      .star-glyph.empty {
+        color: #e2e8f0;
       }
 
       .review-content {
@@ -900,7 +971,7 @@ function DashboardReviewsStyles() {
         color: #b45309;
       }
 
-      /* WORKFLOW ROWS (FULL PAGE) */
+      /* WORKFLOW ROWS (FULL REVIEWS PAGE) */
       .review-workflow-row {
         background: #ffffff;
         border: 1px solid var(--border-color);
@@ -914,7 +985,8 @@ function DashboardReviewsStyles() {
 
       .review-main {
         display: flex;
-        gap: 14px;
+        align-items: flex-start; /* CRITICAL FIX: PREVENTS VERTICAL STRETCHING */
+        gap: 16px;
       }
 
       .review-workflow {
@@ -1450,6 +1522,14 @@ function DashboardReviewsStyles() {
           flex-direction: column;
           align-items: flex-start;
           gap: 12px;
+        }
+        .review-rating-card {
+          width: 50px;
+          min-width: 50px;
+          height: 50px;
+        }
+        .rating-val {
+          font-size: 15px;
         }
       }
     `}</style>
@@ -3192,7 +3272,27 @@ function ReviewWorkflowRow({ review, setReviews }) {
   return (
     <article className="review-workflow-row">
       <div className="review-main">
-        <div className="review-rating">{review.rating ? `${review.rating} ★` : "—"}</div>
+        {/* COMPACT CLEAN RATING CARD (NEVER STRETCHES) */}
+        <div className="review-rating-card" title={`${review.rating || 0} out of 5 stars`}>
+          <div className="rating-number-row">
+            <span className="rating-val">{review.rating || "—"}</span>
+            <span className="rating-max">/5</span>
+          </div>
+          <div className="rating-stars-row">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={
+                  star <= Number(review.rating)
+                    ? "star-glyph filled"
+                    : "star-glyph empty"
+                }
+              >
+                ★
+              </span>
+            ))}
+          </div>
+        </div>
 
         <div className="review-content">
           <div className="review-meta">
@@ -3305,7 +3405,10 @@ function ReviewRow({ review }) {
 
   return (
     <article className="review-row">
-      <div className="review-rating">{review.rating ? `${review.rating} ★` : "—"}</div>
+      <div className="review-rating-compact">
+        <span style={{ color: "#f59e0b" }}>★</span>
+        <span>{review.rating || "—"}</span>
+      </div>
 
       <div className="review-content">
         <div className="review-meta">
