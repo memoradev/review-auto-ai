@@ -1524,199 +1524,506 @@ function DashboardReviewsStyles() {
 
       /* TARGETED MOBILE-ONLY RESPONSIVE BREAKPOINTS (DESKTOP UNTOUCHED) */
       @media (max-width: 1100px) {
-        .dashboard-activation-options {
+        .mobile-app .dashboard-activation-options {
           grid-template-columns: repeat(2, 1fr);
         }
-        .stats-grid {
+        .mobile-app .stats-grid {
           grid-template-columns: repeat(2, 1fr);
         }
-        .content-grid {
+        .mobile-app .content-grid {
           grid-template-columns: 1fr;
         }
       }
 
       @media (max-width: 768px) {
-        .dashboard-activation-options {
+        .mobile-app .dashboard-activation-options {
           grid-template-columns: 1fr;
         }
-        .activation-option p {
+        .mobile-app .activation-option p {
           min-height: auto;
           margin: 4px 0 12px;
         }
-        .dashboard-activation-header {
+        .mobile-app .dashboard-activation-header {
           flex-direction: column;
           align-items: flex-start;
           gap: 14px;
         }
-        .dashboard-activation-progress {
+        .mobile-app .dashboard-activation-progress {
           width: 100%;
           justify-content: space-between;
           flex-wrap: wrap;
           gap: 6px;
         }
-        .review-workflow-row {
+        .mobile-app .review-workflow-row {
           grid-template-columns: 1fr;
           padding: 16px;
           gap: 16px;
         }
-        .activation-qr-panel {
+        .mobile-app .activation-qr-panel {
           flex-direction: column;
           align-items: center;
           text-align: center;
           gap: 16px;
           padding: 16px;
         }
-        .activation-qr-details {
+        .mobile-app .activation-qr-details {
           flex-direction: column;
           align-items: center;
           text-align: center;
           width: 100%;
           gap: 14px;
         }
-        .activation-qr-actions {
+        .mobile-app .activation-qr-actions {
           width: 100%;
           display: flex;
           flex-direction: column;
           gap: 8px;
         }
-        .activation-qr-actions button {
+        .mobile-app .activation-qr-actions button {
           width: 100%;
         }
-        .review-rating-card {
+        .mobile-app .review-rating-card {
           width: 48px;
           min-width: 48px;
           height: 48px;
           border-radius: 10px;
         }
-        .rating-val {
+        .mobile-app .rating-val {
           font-size: 14px;
         }
-        .rating-max {
+        .mobile-app .rating-max {
           font-size: 9px;
         }
-        .rating-stars-row {
+        .mobile-app .rating-stars-row {
           gap: 1px;
           margin-top: 3px;
         }
-        .star-glyph {
+        .mobile-app .star-glyph {
           font-size: 7px;
         }
-        .auth-form input,
-        textarea {
+        .mobile-app .auth-form input,
+        .mobile-app textarea {
           font-size: 16px !important; /* Prevents auto-zoom in iOS Safari */
         }
       }
 
       @media (max-width: 640px) {
-        .mobile-main {
+        .mobile-app .mobile-main {
           padding: 14px 12px;
         }
-        .panel {
+        .mobile-app .panel {
           padding: 16px 14px;
           border-radius: 12px;
         }
-        .panel-header {
+        .mobile-app .panel-header {
           flex-wrap: wrap;
           gap: 8px;
           align-items: flex-start;
         }
-        .automation-banner {
+        .mobile-app .automation-banner {
           flex-direction: column;
           align-items: flex-start;
           gap: 14px;
           padding: 14px 16px;
         }
-        .automation-banner .toggle-button {
+        .mobile-app .automation-banner .toggle-button {
           align-self: flex-start;
         }
-        .workflow-actions {
+        .mobile-app .workflow-actions {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 8px;
         }
-        .workflow-actions button {
+        .mobile-app .workflow-actions button {
           width: 100%;
           padding: 9px 6px;
           font-size: 11px;
         }
-        .review-row {
+        .mobile-app .review-row {
           flex-wrap: wrap;
           gap: 8px 12px;
           padding: 12px;
         }
-        .review-rating-compact {
+        .mobile-app .review-rating-compact {
           order: 1;
         }
-        .review-status {
+        .mobile-app .review-status {
           order: 2;
           margin-left: auto;
         }
-        .review-content {
+        .mobile-app .review-content {
           order: 3;
           width: 100%;
         }
-        .review-meta {
+        .mobile-app .review-meta {
           flex-wrap: wrap;
           gap: 6px;
         }
-        .review-ai-meta {
+        .mobile-app .review-ai-meta {
           flex-wrap: wrap;
           gap: 6px;
         }
-        .analytics-velocity-chart {
+        .mobile-app .analytics-velocity-chart {
           gap: 6px !important;
         }
-        .settings-actions {
+        .mobile-app .settings-actions {
           flex-direction: column !important;
           gap: 8px !important;
         }
-        .settings-actions button {
+        .mobile-app .settings-actions button {
           width: 100% !important;
         }
       }
 
       @media (max-width: 480px) {
-        .stats-grid {
+        .mobile-app .stats-grid {
           grid-template-columns: repeat(2, 1fr);
           gap: 10px;
           margin-bottom: 16px;
         }
-        .stat-card {
+        .mobile-app .stat-card {
           padding: 12px;
           border-radius: 10px;
         }
-        .stat-label {
+        .mobile-app .stat-label {
           font-size: 10px;
         }
-        .stat-value {
+        .mobile-app .stat-value {
           font-size: 20px;
           margin: 6px 0 2px;
         }
-        .stat-detail {
+        .mobile-app .stat-detail {
           font-size: 10px;
           line-height: 1.3;
         }
-        .auth-page {
+        .mobile-app .auth-page {
           padding: 16px 12px;
         }
-        .auth-card {
+        .mobile-app .auth-card {
           padding: 20px 16px;
           border-radius: 12px;
         }
-        .auth-heading h1 {
+        .mobile-app .auth-heading h1 {
           font-size: 20px;
         }
-        .placeholder-page {
+        .mobile-app .placeholder-page {
           padding: 40px 16px;
         }
       }
 
       @media (max-width: 350px) {
-        .stats-grid {
+        .mobile-app .stats-grid {
           grid-template-columns: 1fr;
         }
-        .workflow-actions {
+        .mobile-app .workflow-actions {
           grid-template-columns: 1fr;
+        }
+      }
+
+
+      /* -------------------------------------------------------------
+         MOBILE DASHBOARD — PRESENTATION ONLY
+         Desktop styles above remain untouched.
+      ------------------------------------------------------------- */
+      .mobile-app .dashboard-activation,
+      .mobile-app .stat-card,
+      .mobile-app .automation-banner,
+      .mobile-app .panel {
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+      }
+
+      .mobile-app .mobile-main {
+        padding: 14px 14px 32px;
+      }
+
+      .mobile-app .dashboard-activation {
+        margin: 0 0 14px;
+        padding: 16px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      }
+
+      .mobile-app .dashboard-activation-header {
+        margin-bottom: 14px;
+        gap: 12px;
+      }
+
+      .mobile-app .dashboard-activation h2 {
+        font-size: 18px;
+        line-height: 1.18;
+        letter-spacing: -0.035em;
+      }
+
+      .mobile-app .dashboard-activation-header p {
+        max-width: 34rem;
+        font-size: 11px;
+        line-height: 1.5;
+      }
+
+      .mobile-app .dashboard-activation-progress {
+        width: 100%;
+        padding: 7px 9px;
+        border-radius: 10px;
+        font-size: 9px;
+        justify-content: flex-start;
+        gap: 6px;
+      }
+
+      .mobile-app .activation-check,
+      .mobile-app .activation-pending {
+        width: 15px;
+        height: 15px;
+        flex: 0 0 15px;
+      }
+
+      .mobile-app .dashboard-activation-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .mobile-app .activation-option {
+        min-width: 0;
+        min-height: 150px;
+        padding: 11px;
+        gap: 8px;
+        border-radius: 12px;
+        background: #fbfbf9;
+      }
+
+      .mobile-app .activation-option-icon {
+        width: 30px;
+        height: 30px;
+        margin-bottom: 9px;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+
+      .mobile-app .activation-option h3 {
+        font-size: 11px;
+        line-height: 1.25;
+      }
+
+      .mobile-app .activation-option p {
+        min-height: 0;
+        margin: 5px 0 10px;
+        font-size: 9px;
+        line-height: 1.42;
+      }
+
+      .mobile-app .activation-button {
+        width: 100%;
+        min-height: 34px;
+        padding: 7px 8px;
+        border-radius: 8px;
+        font-size: 8px;
+        line-height: 1.15;
+      }
+
+      .mobile-app .activation-coming-soon {
+        font-size: 7px;
+      }
+
+      .mobile-app .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+        margin-bottom: 14px;
+      }
+
+      .mobile-app .stat-card {
+        min-width: 0;
+        min-height: 94px;
+        padding: 12px;
+        border-radius: 12px;
+      }
+
+      .mobile-app .stat-label {
+        font-size: 8px;
+        line-height: 1.25;
+      }
+
+      .mobile-app .stat-value {
+        font-size: 21px;
+        line-height: 1;
+        margin: 7px 0 5px;
+      }
+
+      .mobile-app .stat-detail {
+        font-size: 9px;
+        line-height: 1.3;
+      }
+
+      .mobile-app .automation-banner {
+        margin-bottom: 14px;
+        padding: 13px 14px;
+        border-radius: 13px;
+        gap: 11px;
+      }
+
+      .mobile-app .automation-banner h2 {
+        font-size: 13px;
+        line-height: 1.3;
+      }
+
+      .mobile-app .automation-banner p {
+        max-width: 34rem;
+        font-size: 10px;
+        line-height: 1.45;
+      }
+
+      .mobile-app .toggle-button {
+        min-height: 32px;
+        padding: 0 11px;
+        font-size: 9px;
+      }
+
+      .mobile-app .content-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .mobile-app .right-column {
+        gap: 14px;
+      }
+
+      .mobile-app .panel {
+        padding: 14px;
+        border-radius: 13px;
+      }
+
+      .mobile-app .panel-header {
+        margin-bottom: 14px;
+      }
+
+      .mobile-app .panel-header h2 {
+        font-size: 14px;
+        line-height: 1.25;
+      }
+
+      .mobile-app .eyebrow {
+        font-size: 8px;
+        letter-spacing: 0.09em;
+      }
+
+      .mobile-app .review-list {
+        gap: 8px;
+      }
+
+      .mobile-app .review-row {
+        padding: 11px;
+        border-radius: 11px;
+      }
+
+      .mobile-app .review-meta strong {
+        font-size: 11px;
+      }
+
+      .mobile-app .review-meta span,
+      .mobile-app .review-text {
+        font-size: 10px;
+      }
+
+      .mobile-app .review-text {
+        margin: 5px 0;
+        line-height: 1.45;
+      }
+
+      .mobile-app .review-ai-meta {
+        font-size: 8px;
+      }
+
+      .mobile-app .review-ai-meta span,
+      .mobile-app .review-status {
+        font-size: 8px;
+      }
+
+      .mobile-app .workflow {
+        gap: 10px;
+      }
+
+      .mobile-app .workflow-step {
+        gap: 9px;
+        padding-bottom: 10px;
+      }
+
+      .mobile-app .step-number {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+      }
+
+      .mobile-app .step-content strong {
+        font-size: 11px;
+      }
+
+      .mobile-app .step-content p,
+      .mobile-app .location-description {
+        font-size: 10px;
+        line-height: 1.45;
+      }
+
+      .mobile-app .location-description {
+        margin: 9px 0;
+      }
+
+      .mobile-app .location-title h3 {
+        font-size: 11px;
+      }
+
+      .mobile-app .connection-card {
+        padding: 9px 10px;
+      }
+
+      @media (max-width: 380px) {
+        .mobile-app .mobile-main {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+
+        .mobile-app .dashboard-activation {
+          padding: 13px;
+          border-radius: 14px;
+        }
+
+        .mobile-app .dashboard-activation h2 {
+          font-size: 16px;
+        }
+
+        .mobile-app .dashboard-activation-options {
+          gap: 7px;
+        }
+
+        .mobile-app .activation-option {
+          min-height: 142px;
+          padding: 9px;
+        }
+
+        .mobile-app .activation-option-icon {
+          width: 27px;
+          height: 27px;
+          margin-bottom: 7px;
+        }
+
+        .mobile-app .activation-option h3 {
+          font-size: 10px;
+        }
+
+        .mobile-app .activation-option p {
+          font-size: 8px;
+          margin-bottom: 8px;
+        }
+
+        .mobile-app .activation-button {
+          min-height: 32px;
+          font-size: 7px;
+        }
+
+        .mobile-app .stat-card {
+          min-height: 88px;
+          padding: 10px;
+        }
+
+        .mobile-app .stat-value {
+          font-size: 19px;
         }
       }
     `}</style>
