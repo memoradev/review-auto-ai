@@ -2030,6 +2030,240 @@ function DashboardReviewsStyles() {
   );
 }
 
+
+function LandingPage({ onLogin }) {
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <main className="landing-page">
+      <style>{`
+        .landing-page {
+          min-height: 100vh;
+          background: #fbfbf9;
+          color: #111111;
+          overflow-x: hidden;
+        }
+        .landing-nav {
+          width: min(1180px, calc(100% - 40px));
+          margin: 0 auto;
+          height: 76px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: relative;
+          z-index: 5;
+        }
+        .landing-brand { display:flex; align-items:center; gap:10px; }
+        .landing-mark {
+          width:34px; height:34px; border-radius:10px; background:#111; color:#fff;
+          display:grid; place-items:center; font-weight:800; font-size:15px;
+        }
+        .landing-brand-name { font-weight:750; letter-spacing:-.03em; font-size:16px; }
+        .landing-brand-ai { font-size:9px; margin-left:5px; color:#777; font-weight:700; }
+        .landing-nav-actions { display:flex; align-items:center; gap:8px; }
+        .landing-nav-button, .landing-ghost-button {
+          border:0; background:transparent; color:#555; font:600 12px inherit; cursor:pointer;
+          padding:9px 12px; border-radius:8px;
+        }
+        .landing-nav-button:hover { background:#f0f0ed; color:#111; }
+        .landing-nav-cta, .landing-primary {
+          border:1px solid #111; background:#111; color:#fff; cursor:pointer;
+          font:700 12px inherit; border-radius:9px; padding:10px 15px;
+          box-shadow:0 8px 20px rgba(0,0,0,.08);
+        }
+        .landing-nav-cta:hover, .landing-primary:hover { background:#292929; }
+        .landing-hero {
+          width:min(1180px, calc(100% - 40px)); margin:0 auto; padding:76px 0 88px;
+          display:grid; grid-template-columns:1.02fr .98fr; gap:58px; align-items:center;
+        }
+        .landing-kicker { font-size:10px; letter-spacing:.14em; font-weight:800; color:#8a8a83; text-transform:uppercase; margin-bottom:18px; }
+        .landing-hero h1 { margin:0; max-width:680px; font-size:clamp(46px,6vw,78px); line-height:.97; letter-spacing:-.065em; font-weight:780; }
+        .landing-hero h1 em { font-style:normal; color:#77776f; }
+        .landing-hero-copy { max-width:520px; margin:24px 0 28px; color:#62625c; font-size:16px; line-height:1.65; }
+        .landing-hero-actions { display:flex; gap:10px; flex-wrap:wrap; }
+        .landing-secondary { border:1px solid #deded8; background:#fff; color:#222; cursor:pointer; font:700 12px inherit; border-radius:9px; padding:10px 15px; }
+        .landing-secondary:hover { background:#f4f4f1; }
+        .landing-hero-note { margin-top:16px; color:#999991; font-size:10px; }
+        .landing-demo {
+          position:relative; border:1px solid #deded8; border-radius:22px; background:#111; padding:10px;
+          box-shadow:0 28px 70px rgba(0,0,0,.13); transform:rotate(1deg);
+        }
+        .landing-window { background:#f7f7f4; border-radius:15px; overflow:hidden; }
+        .landing-window-bar { height:34px; padding:0 12px; display:flex; align-items:center; gap:5px; border-bottom:1px solid #e4e4df; background:#fff; }
+        .landing-dot { width:6px; height:6px; border-radius:50%; background:#d4d4ce; }
+        .landing-demo-body { padding:18px; }
+        .landing-demo-title { font-size:10px; color:#8b8b84; text-transform:uppercase; letter-spacing:.1em; font-weight:800; }
+        .landing-demo-heading { margin:5px 0 15px; font-size:21px; letter-spacing:-.04em; font-weight:800; }
+        .landing-demo-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .landing-demo-card { background:#fff; border:1px solid #e3e3de; border-radius:10px; padding:11px; }
+        .landing-demo-card small { display:block; color:#8b8b84; font-size:8px; text-transform:uppercase; letter-spacing:.08em; font-weight:800; }
+        .landing-demo-card strong { display:block; margin-top:5px; font-size:13px; }
+        .landing-demo-review { margin-top:8px; padding:11px; background:#fff; border:1px solid #e3e3de; border-radius:10px; font-size:10px; line-height:1.5; color:#4d4d47; }
+        .landing-demo-tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:9px; }
+        .landing-demo-tag { font-size:8px; padding:4px 6px; border-radius:5px; background:#f0f0ec; color:#55554f; font-weight:700; }
+        .landing-section { width:min(1000px, calc(100% - 40px)); margin:0 auto; padding:92px 0; }
+        .landing-section-label { color:#999991; font-size:10px; letter-spacing:.13em; text-transform:uppercase; font-weight:800; margin-bottom:14px; }
+        .landing-section h2 { margin:0; max-width:700px; font-size:clamp(32px,4.5vw,52px); line-height:1.02; letter-spacing:-.055em; }
+        .landing-problem { border-top:1px solid #deded8; border-bottom:1px solid #deded8; }
+        .landing-review-stack { margin-top:38px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+        .landing-review { background:#fff; border:1px solid #e2e2dd; border-radius:14px; padding:18px; min-height:150px; }
+        .landing-stars { font-size:13px; letter-spacing:2px; margin-bottom:18px; }
+        .landing-review p { margin:0; font-size:13px; line-height:1.55; color:#44443f; }
+        .landing-pattern { margin-top:22px; padding:22px; border-radius:15px; background:#111; color:#fff; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+        .landing-pattern strong { font-size:18px; letter-spacing:-.03em; }
+        .landing-pattern span { color:#bdbdb7; font-size:11px; line-height:1.5; max-width:360px; }
+        .landing-steps { margin-top:40px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+        .landing-step { padding:18px; border:1px solid #e1e1dc; border-radius:14px; background:#fff; min-height:150px; }
+        .landing-step-number { color:#aaa9a2; font-size:10px; font-weight:800; }
+        .landing-step h3 { margin:28px 0 8px; font-size:14px; letter-spacing:-.02em; }
+        .landing-step p { margin:0; color:#777770; font-size:11px; line-height:1.5; }
+        .landing-product { background:#111; color:#fff; width:100%; }
+        .landing-product-inner { width:min(1000px, calc(100% - 40px)); margin:0 auto; padding:92px 0; }
+        .landing-product .landing-section-label { color:#8d8d87; }
+        .landing-product h2 { color:#fff; }
+        .landing-product-copy { color:#a7a7a0; max-width:600px; font-size:13px; line-height:1.6; margin:18px 0 30px; }
+        .landing-product-ui { background:#f7f7f4; border-radius:18px; padding:9px; border:1px solid #2e2e2e; box-shadow:0 25px 60px rgba(0,0,0,.3); }
+        .landing-product-screen { background:#fff; border-radius:12px; padding:20px; color:#111; }
+        .landing-screen-head { display:flex; justify-content:space-between; gap:15px; align-items:flex-start; margin-bottom:18px; }
+        .landing-screen-title { font-size:18px; font-weight:800; letter-spacing:-.04em; }
+        .landing-screen-pill { font-size:8px; padding:5px 7px; background:#f0f0ec; border-radius:5px; color:#666; font-weight:800; }
+        .landing-screen-review { border:1px solid #e4e4df; border-radius:10px; padding:13px; }
+        .landing-screen-review-top { display:flex; justify-content:space-between; gap:10px; font-size:10px; font-weight:800; }
+        .landing-screen-review p { margin:8px 0 11px; color:#555; font-size:10px; line-height:1.5; }
+        .landing-screen-insights { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+        .landing-screen-insight { padding:10px; background:#f6f6f2; border-radius:8px; }
+        .landing-screen-insight small { color:#999; font-size:7px; text-transform:uppercase; font-weight:800; }
+        .landing-screen-insight strong { display:block; margin-top:4px; font-size:10px; }
+        .landing-final { text-align:center; padding:110px 20px 90px; }
+        .landing-final h2 { margin:0 auto; max-width:760px; font-size:clamp(38px,5vw,62px); line-height:1; letter-spacing:-.06em; }
+        .landing-final p { color:#777770; font-size:13px; margin:18px auto 25px; }
+        .landing-footer { width:min(1180px, calc(100% - 40px)); margin:0 auto; padding:24px 0 32px; border-top:1px solid #deded8; display:flex; justify-content:space-between; gap:15px; color:#999991; font-size:10px; }
+        @media (max-width: 800px) {
+          .landing-nav { width:calc(100% - 28px); height:64px; }
+          .landing-nav-button { display:none; }
+          .landing-nav-cta { padding:9px 12px; }
+          .landing-hero { width:calc(100% - 28px); grid-template-columns:1fr; gap:38px; padding:50px 0 62px; }
+          .landing-hero h1 { font-size:clamp(43px,13vw,65px); }
+          .landing-hero-copy { font-size:14px; }
+          .landing-demo { transform:none; }
+          .landing-section { width:calc(100% - 28px); padding:68px 0; }
+          .landing-review-stack, .landing-steps { grid-template-columns:1fr; }
+          .landing-pattern { flex-direction:column; align-items:flex-start; }
+          .landing-product-inner { width:calc(100% - 28px); padding:68px 0; }
+          .landing-screen-insights { grid-template-columns:1fr; }
+          .landing-footer { width:calc(100% - 28px); }
+        }
+        @media (max-width: 420px) {
+          .landing-hero-actions { flex-direction:column; }
+          .landing-primary, .landing-secondary { width:100%; }
+          .landing-demo-grid { grid-template-columns:1fr 1fr; }
+          .landing-demo-body { padding:12px; }
+          .landing-demo-heading { font-size:18px; }
+        }
+      `}</style>
+
+      <nav className="landing-nav">
+        <div className="landing-brand">
+          <div className="landing-mark">R</div>
+          <div className="landing-brand-name">ReviewAuto<span className="landing-brand-ai">AI</span></div>
+        </div>
+        <div className="landing-nav-actions">
+          <button className="landing-nav-button" onClick={() => scrollTo("landing-how")}>How it works</button>
+          <button className="landing-nav-button" onClick={() => scrollTo("landing-product")}>Product</button>
+          <button className="landing-ghost-button" onClick={onLogin}>Login</button>
+          <button className="landing-nav-cta" onClick={onLogin}>Get started</button>
+        </div>
+      </nav>
+
+      <section className="landing-hero">
+        <div>
+          <div className="landing-kicker">Customer feedback, understood</div>
+          <h1>Your customers are already telling you what's wrong. <em>You're just seeing it one review at a time.</em></h1>
+          <p className="landing-hero-copy">ReviewAuto turns customer feedback into clear insights, appropriate responses, and actions your business can actually use.</p>
+          <div className="landing-hero-actions">
+            <button className="landing-primary" onClick={onLogin}>Get started</button>
+            <button className="landing-secondary" onClick={() => scrollTo("landing-how")}>See how it works</button>
+          </div>
+          <div className="landing-hero-note">Collect → understand → decide → act.</div>
+        </div>
+        <div className="landing-demo" aria-label="ReviewAuto product preview">
+          <div className="landing-window">
+            <div className="landing-window-bar"><span className="landing-dot"/><span className="landing-dot"/><span className="landing-dot"/></div>
+            <div className="landing-demo-body">
+              <div className="landing-demo-title">ReviewAuto AI</div>
+              <div className="landing-demo-heading">What needs attention?</div>
+              <div className="landing-demo-grid">
+                <div className="landing-demo-card"><small>Sentiment</small><strong>Mixed</strong></div>
+                <div className="landing-demo-card"><small>Risk</small><strong>Medium</strong></div>
+              </div>
+              <div className="landing-demo-review">“The food was great, but we waited way too long and nobody checked on our table.”</div>
+              <div className="landing-demo-tags"><span className="landing-demo-tag">Service issue</span><span className="landing-demo-tag">Wait time</span><span className="landing-demo-tag">Review internally</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section landing-problem" id="landing-problem">
+        <div className="landing-section-label">The problem</div>
+        <h2>Five stars can still hide a problem.</h2>
+        <div className="landing-review-stack">
+          <article className="landing-review"><div className="landing-stars">★★★★★</div><p>“Great food and friendly staff!”</p></article>
+          <article className="landing-review"><div className="landing-stars">★★★★★</div><p>“Food was great, but the wait was too long.”</p></article>
+          <article className="landing-review"><div className="landing-stars">★★★★★</div><p>“Loved the place. Service needs to be faster.”</p></article>
+        </div>
+        <div className="landing-pattern"><strong>You see individual reviews.</strong><span>ReviewAuto helps you see the pattern behind them.</span></div>
+      </section>
+
+      <section className="landing-section" id="landing-how">
+        <div className="landing-section-label">How it works</div>
+        <h2>Feedback in. Clear actions out.</h2>
+        <div className="landing-steps">
+          <article className="landing-step"><div className="landing-step-number">01</div><h3>Collect</h3><p>Give customers a simple way to share what happened.</p></article>
+          <article className="landing-step"><div className="landing-step-number">02</div><h3>Understand</h3><p>AI analyzes sentiment, risk, intent, and recurring issues.</p></article>
+          <article className="landing-step"><div className="landing-step-number">03</div><h3>Decide</h3><p>See what needs a response, review, or follow-up.</p></article>
+          <article className="landing-step"><div className="landing-step-number">04</div><h3>Act</h3><p>Turn customer feedback into the next useful action.</p></article>
+        </div>
+      </section>
+
+      <section className="landing-product" id="landing-product">
+        <div className="landing-product-inner">
+          <div className="landing-section-label">Inside ReviewAuto</div>
+          <h2>Stop reading feedback one review at a time.</h2>
+          <p className="landing-product-copy">ReviewAuto brings the important signals together so your team can understand what customers are saying and what deserves attention.</p>
+          <div className="landing-product-ui">
+            <div className="landing-product-screen">
+              <div className="landing-screen-head"><div className="landing-screen-title">Review Engine</div><div className="landing-screen-pill">AI ANALYSIS</div></div>
+              <div className="landing-screen-review">
+                <div className="landing-screen-review-top"><span>Customer feedback</span><span>Needs attention</span></div>
+                <p>“The food was excellent, but the service was slow and we waited too long for our order.”</p>
+                <div className="landing-screen-insights">
+                  <div className="landing-screen-insight"><small>Sentiment</small><strong>Mixed</strong></div>
+                  <div className="landing-screen-insight"><small>Risk</small><strong>Medium</strong></div>
+                  <div className="landing-screen-insight"><small>Intent</small><strong>Service complaint</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-final">
+        <div className="landing-section-label">ReviewAuto AI</div>
+        <h2>Your customers are giving you the answers.</h2>
+        <p>ReviewAuto helps you find them.</p>
+        <button className="landing-primary" onClick={onLogin}>Get started</button>
+      </section>
+
+      <footer className="landing-footer">
+        <span>© {new Date().getFullYear()} ReviewAuto AI</span>
+        <span>Turn customer feedback into action.</span>
+      </footer>
+    </main>
+  );
+}
+
 function App() {
   const feedbackMatch =
     window.location.pathname.match(
@@ -2046,11 +2280,15 @@ function App() {
     );
   }
 
-  return <AuthenticatedApp />;
+  const isResetPassword =
+    window.location.pathname === "/reset-password";
+
+  return <AuthenticatedApp forceAuth={isResetPassword} />;
 }
 
-function AuthenticatedApp() {
+function AuthenticatedApp({ forceAuth = false }) {
   const [session, setSession] = useState(null);
+  const [showAuth, setShowAuth] = useState(forceAuth);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -2097,7 +2335,10 @@ function AuthenticatedApp() {
   }
 
   if (!session) {
-    return <Auth />;
+    if (showAuth || forceAuth) {
+      return <Auth />;
+    }
+    return <LandingPage onLogin={() => setShowAuth(true)} />;
   }
 
   return <Dashboard session={session} />;
