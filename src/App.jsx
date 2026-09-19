@@ -17,6 +17,1071 @@ const navigation = [
 ];
 
 /* -------------------------------------------------------------
+   LANDING PAGE STYLES (LOGGED-OUT VISITORS)
+------------------------------------------------------------- */
+function LandingPageStyles() {
+  return (
+    <style>{`
+      .lp-root {
+        min-height: 100vh;
+        background-color: #f8fafc;
+        color: #0f172a;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.5;
+        overflow-x: hidden;
+      }
+
+      /* NAV */
+      .lp-nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .lp-nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .lp-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+      }
+
+      .lp-brand-mark {
+        width: 32px;
+        height: 32px;
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 15px;
+      }
+
+      .lp-brand-text {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .lp-brand-tag {
+        font-size: 10px;
+        font-weight: 700;
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+
+      .lp-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+
+      .lp-nav-link {
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.15s ease;
+      }
+
+      .lp-nav-link:hover {
+        color: #0f172a;
+      }
+
+      .lp-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .lp-btn-ghost {
+        background: transparent;
+        border: 1px solid transparent;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .lp-btn-ghost:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+
+      .lp-btn-primary {
+        background: #0f172a;
+        color: #ffffff;
+        border: 1px solid #0f172a;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 9px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.1);
+      }
+
+      .lp-btn-primary:hover {
+        background: #1e293b;
+        border-color: #1e293b;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+      }
+
+      /* HERO */
+      .lp-hero {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 72px 24px 48px;
+        text-align: center;
+      }
+
+      .lp-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #475569;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      }
+
+      .lp-eyebrow-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #2563eb;
+      }
+
+      .lp-hero-title {
+        font-size: 54px;
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        color: #0f172a;
+        max-width: 900px;
+        margin: 0 auto 20px;
+      }
+
+      .lp-hero-title span {
+        color: #2563eb;
+        display: block;
+      }
+
+      .lp-hero-description {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #475569;
+        max-width: 640px;
+        margin: 0 auto 32px;
+      }
+
+      .lp-hero-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .lp-hero-btn-main {
+        padding: 13px 28px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .lp-hero-btn-secondary {
+        padding: 13px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .lp-hero-btn-secondary:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+        color: #0f172a;
+      }
+
+      .lp-hero-subtext {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-bottom: 48px;
+      }
+
+      /* PRODUCT PREVIEW FRAME */
+      .lp-preview-wrapper {
+        max-width: 1080px;
+        margin: 0 auto 80px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 16px;
+        box-shadow: 0 20px 45px -15px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(226, 232, 240, 0.6);
+        overflow: hidden;
+        text-align: left;
+      }
+
+      .lp-preview-chrome {
+        background: #f1f5f9;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .lp-preview-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .lp-preview-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #cbd5e1;
+      }
+
+      .lp-preview-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.02em;
+        margin-left: 8px;
+      }
+
+      .lp-preview-content {
+        padding: 24px;
+        background: #f8fafc;
+      }
+
+      /* MOCK DASHBOARD ELEMENTS */
+      .lp-mock-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .lp-mock-stat {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px 16px;
+      }
+
+      .lp-mock-stat-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .lp-mock-stat-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 6px 0 2px;
+      }
+
+      .lp-mock-stat-sub {
+        font-size: 10px;
+        color: #94a3b8;
+      }
+
+      .lp-mock-review-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 20px;
+      }
+
+      .lp-mock-left {
+        display: flex;
+        gap: 14px;
+      }
+
+      .lp-mock-rating-badge {
+        width: 52px;
+        min-width: 52px;
+        height: 52px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .lp-mock-rating-num {
+        font-size: 16px;
+        font-weight: 800;
+        color: #b45309;
+        line-height: 1;
+      }
+
+      .lp-mock-rating-stars {
+        font-size: 9px;
+        color: #f59e0b;
+        margin-top: 3px;
+      }
+
+      .lp-mock-review-body strong {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .lp-mock-review-body span {
+        font-size: 11px;
+        color: #64748b;
+        margin-left: 6px;
+      }
+
+      .lp-mock-text {
+        font-size: 12px;
+        color: #334155;
+        line-height: 1.5;
+        margin: 8px 0 10px;
+      }
+
+      .lp-mock-pills {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .lp-pill {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+
+      .lp-pill-risk {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+
+      .lp-pill-sentiment {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .lp-pill-intent {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+
+      .lp-mock-right {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .lp-mock-ai-header {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #2563eb;
+        margin-bottom: 6px;
+      }
+
+      .lp-mock-ai-reply {
+        font-size: 11px;
+        line-height: 1.5;
+        color: #334155;
+        margin: 0 0 12px;
+      }
+
+      .lp-mock-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .lp-mock-btn-approve {
+        flex: 1;
+        background: #0f172a;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 7px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .lp-mock-btn-edit {
+        flex: 1;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+        border-radius: 6px;
+        padding: 7px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* PROBLEM SECTION */
+      .lp-section {
+        padding: 80px 24px;
+      }
+
+      .lp-section-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+
+      .lp-problem-header {
+        text-align: center;
+        max-width: 720px;
+        margin: 0 auto 48px;
+      }
+
+      .lp-problem-header h2 {
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        margin: 8px 0 14px;
+      }
+
+      .lp-problem-header p {
+        font-size: 16px;
+        color: #64748b;
+      }
+
+      .lp-quotes-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 36px;
+      }
+
+      .lp-quote-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .lp-quote-text {
+        font-size: 15px;
+        font-style: italic;
+        color: #334155;
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+
+      .lp-quote-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      .lp-problem-takeaway {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-left: 4px solid #2563eb;
+        border-radius: 12px;
+        padding: 24px 28px;
+        text-align: center;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .lp-problem-takeaway strong {
+        display: block;
+        font-size: 20px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+        letter-spacing: -0.02em;
+      }
+
+      .lp-problem-takeaway p {
+        margin: 0;
+        font-size: 14px;
+        color: #475569;
+        line-height: 1.6;
+      }
+
+      /* HOW IT WORKS */
+      .lp-how-bg {
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .lp-steps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-top: 40px;
+        position: relative;
+      }
+
+      .lp-step-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 24px 20px;
+      }
+
+      .lp-step-num {
+        font-size: 11px;
+        font-weight: 800;
+        color: #2563eb;
+        background: #eff6ff;
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 6px;
+        margin-bottom: 14px;
+      }
+
+      .lp-step-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 8px;
+      }
+
+      .lp-step-desc {
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      /* PRODUCT IN DEPTH */
+      .lp-product-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        margin-top: 40px;
+      }
+
+      .lp-feature-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 28px;
+      }
+
+      .lp-feature-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: #0f172a;
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .lp-feature-card h3 {
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 8px;
+        color: #0f172a;
+      }
+
+      .lp-feature-card p {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      /* FINAL CTA */
+      .lp-cta-section {
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 20px;
+        padding: 64px 32px;
+        text-align: center;
+        max-width: 1080px;
+        margin: 60px auto 80px;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+      }
+
+      .lp-cta-section h2 {
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        margin: 0 0 10px;
+      }
+
+      .lp-cta-section h3 {
+        font-size: 22px;
+        font-weight: 600;
+        color: #94a3b8;
+        margin: 0 0 28px;
+      }
+
+      .lp-cta-btn {
+        background: #ffffff;
+        color: #0f172a;
+        border: none;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 14px 32px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .lp-cta-btn:hover {
+        background: #f1f5f9;
+        transform: translateY(-1px);
+      }
+
+      /* FOOTER */
+      .lp-footer {
+        border-top: 1px solid #e2e8f0;
+        padding: 32px 24px;
+        font-size: 12px;
+        color: #94a3b8;
+        text-align: center;
+      }
+
+      .lp-footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .lp-hero-title {
+          font-size: 38px;
+        }
+        .lp-quotes-grid {
+          grid-template-columns: 1fr;
+        }
+        .lp-steps-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .lp-product-grid {
+          grid-template-columns: 1fr;
+        }
+        .lp-mock-stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .lp-mock-review-card {
+          grid-template-columns: 1fr;
+        }
+        .lp-nav-links {
+          display: none;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .lp-hero {
+          padding: 48px 16px 36px;
+        }
+        .lp-hero-title {
+          font-size: 30px;
+        }
+        .lp-hero-description {
+          font-size: 15px;
+        }
+        .lp-steps-grid {
+          grid-template-columns: 1fr;
+        }
+        .lp-cta-section {
+          padding: 44px 20px;
+          margin: 40px 16px 60px;
+        }
+        .lp-cta-section h2 {
+          font-size: 26px;
+        }
+        .lp-cta-section h3 {
+          font-size: 16px;
+        }
+        .lp-footer-container {
+          flex-direction: column;
+          gap: 12px;
+        }
+      }
+    `}</style>
+  );
+}
+
+/* -------------------------------------------------------------
+   LANDING PAGE COMPONENT (REVIEWAUTO PRD V1.0)
+------------------------------------------------------------- */
+function LandingPage({ onGetStarted, onLogin }) {
+  return (
+    <div className="lp-root">
+      <LandingPageStyles />
+
+      {/* NAVIGATION */}
+      <header className="lp-nav">
+        <div className="lp-nav-container">
+          <div className="lp-brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+            <div className="lp-brand-mark">R</div>
+            <div className="lp-brand-text">
+              ReviewAuto
+              <span className="lp-brand-tag">AI</span>
+            </div>
+          </div>
+
+          <nav className="lp-nav-links">
+            <a href="#problem" className="lp-nav-link">The Problem</a>
+            <a href="#how-it-works" className="lp-nav-link">How It Works</a>
+            <a href="#product" className="lp-nav-link">Product</a>
+          </nav>
+
+          <div className="lp-nav-actions">
+            <button type="button" className="lp-btn-ghost" onClick={onLogin}>
+              Log In
+            </button>
+            <button type="button" className="lp-btn-primary" onClick={onGetStarted}>
+              Get Started
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* 1. HERO */}
+      <section className="lp-hero">
+        <div className="lp-eyebrow">
+          <span className="lp-eyebrow-dot" />
+          AUTONOMOUS CUSTOMER FEEDBACK INTELLIGENCE
+        </div>
+
+        <h1 className="lp-hero-title">
+          Your customers are already telling you what's wrong.
+          <span>ReviewAuto helps you understand it and take action.</span>
+        </h1>
+
+        <p className="lp-hero-description">
+          Stop reacting to scattered one-off ratings. ReviewAuto gathers customer feedback,
+          decodes sentiment and operational risks in real-time, and drafts high-context responses autonomously.
+        </p>
+
+        <div className="lp-hero-actions">
+          <button type="button" className="lp-btn-primary lp-hero-btn-main" onClick={onGetStarted}>
+            Get Started Free
+          </button>
+          <button type="button" className="lp-hero-btn-secondary" onClick={onLogin}>
+            Sign In to Workspace
+          </button>
+        </div>
+
+        <div className="lp-hero-subtext">
+          Instant setup • No card required • Direct QR & Web Deployment
+        </div>
+
+        {/* REAL PRODUCT VISUAL */}
+        <div className="lp-preview-wrapper">
+          <div className="lp-preview-chrome">
+            <div className="lp-preview-dots">
+              <span className="lp-preview-dot" />
+              <span className="lp-preview-dot" />
+              <span className="lp-preview-dot" />
+            </div>
+            <div className="lp-preview-title">reviewauto-workspace // autonomous-engine: active</div>
+          </div>
+
+          <div className="lp-preview-content">
+            <div className="lp-mock-stats">
+              <div className="lp-mock-stat">
+                <span className="lp-mock-stat-label">Total Feedback</span>
+                <div className="lp-mock-stat-value">248</div>
+                <span className="lp-mock-stat-sub">Direct forms & QR codes</span>
+              </div>
+              <div className="lp-mock-stat">
+                <span className="lp-mock-stat-label">Average Rating</span>
+                <div className="lp-mock-stat-value">4.6 ★</div>
+                <span className="lp-mock-stat-sub">Across all locations</span>
+              </div>
+              <div className="lp-mock-stat">
+                <span className="lp-mock-stat-label">Needs Attention</span>
+                <div className="lp-mock-stat-value" style={{ color: "#b45309" }}>2</div>
+                <span className="lp-mock-stat-sub">Bottleneck detected</span>
+              </div>
+              <div className="lp-mock-stat">
+                <span className="lp-mock-stat-label">Auto-Replies</span>
+                <div className="lp-mock-stat-value" style={{ color: "#047857" }}>98.4%</div>
+                <span className="lp-mock-stat-sub">Processed by AI pipeline</span>
+              </div>
+            </div>
+
+            <div className="lp-mock-review-card">
+              <div className="lp-mock-left">
+                <div className="lp-mock-rating-badge">
+                  <span className="lp-mock-rating-num">2/5</span>
+                  <span className="lp-mock-rating-stars">★★☆☆☆</span>
+                </div>
+                <div className="lp-mock-review-body">
+                  <strong>Marcus Sterling</strong>
+                  <span>14 mins ago • Direct QR</span>
+                  <p className="lp-mock-text">
+                    “Great food, but we waited 35 minutes for our table on a Friday night. Nobody checked in while we were waiting.”
+                  </p>
+                  <div className="lp-mock-pills">
+                    <span className="lp-pill lp-pill-risk">Risk: High</span>
+                    <span className="lp-pill lp-pill-sentiment">Sentiment: Negative</span>
+                    <span className="lp-pill lp-pill-intent">Intent: Service Delay</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lp-mock-right">
+                <div>
+                  <div className="lp-mock-ai-header">✨ AI Generated Reply Draft</div>
+                  <p className="lp-mock-ai-reply">
+                    “Hi Marcus, thank you for praising our food, but a 35-minute wait without check-in is below our standard. I have shared this with our floor supervisor to improve peak-hour table pacing.”
+                  </p>
+                </div>
+                <div className="lp-mock-actions">
+                  <button type="button" className="lp-mock-btn-approve" onClick={onGetStarted}>
+                    Approve Reply
+                  </button>
+                  <button type="button" className="lp-mock-btn-edit" onClick={onGetStarted}>
+                    Edit Response
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. THE PROBLEM */}
+      <section id="problem" className="lp-section">
+        <div className="lp-section-inner">
+          <div className="lp-problem-header">
+            <div className="lp-eyebrow">
+              <span className="lp-eyebrow-dot" />
+              THE REALITY OF FEEDBACK
+            </div>
+            <h2>Reviews are noisy. Problems stay hidden.</h2>
+            <p>Every business collects customer feedback, but individual complaints mask systemic operational issues.</p>
+          </div>
+
+          <div className="lp-quotes-grid">
+            <div className="lp-quote-card">
+              <div className="lp-quote-text">
+                “Great food, but we waited 35 minutes.”
+              </div>
+              <div className="lp-quote-meta">
+                <span>Direct Table QR</span>
+                <span>★ ★ ☆ ☆ ☆</span>
+              </div>
+            </div>
+
+            <div className="lp-quote-card">
+              <div className="lp-quote-text">
+                “Friendly staff, slow service.”
+              </div>
+              <div className="lp-quote-meta">
+                <span>Customer Survey</span>
+                <span>★ ★ ★ ☆ ☆</span>
+              </div>
+            </div>
+
+            <div className="lp-quote-card">
+              <div className="lp-quote-text">
+                “Loved the coffee, but waiting 20 minutes for a pastry at lunch makes no sense.”
+              </div>
+              <div className="lp-quote-meta">
+                <span>Website Widget</span>
+                <span>★ ★ ★ ☆ ☆</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="lp-problem-takeaway">
+            <strong>You see individual reviews. ReviewAuto helps you see the pattern.</strong>
+            <p>
+              When complaints arrive one at a time, managers dismiss them as bad luck or an off day. ReviewAuto aggregates every channel, detects recurring root causes, and tells you exactly what operational adjustment to make.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. HOW IT WORKS */}
+      <section id="how-it-works" className="lp-section lp-how-bg">
+        <div className="lp-section-inner">
+          <div className="lp-problem-header">
+            <div className="lp-eyebrow">
+              <span className="lp-eyebrow-dot" />
+              STREAMLINED PIPELINE
+            </div>
+            <h2>How ReviewAuto Works</h2>
+            <p>From customer submission to operational resolution in four clear stages.</p>
+          </div>
+
+          <div className="lp-steps-grid">
+            <div className="lp-step-card">
+              <span className="lp-step-num">STEP 01</span>
+              <h3 className="lp-step-title">Collect feedback</h3>
+              <p className="lp-step-desc">
+                Deploy instant table QR codes, custom web forms, and embed widgets to capture impressions before they escalate to public negative reviews.
+              </p>
+            </div>
+
+            <div className="lp-step-card">
+              <span className="lp-step-num">STEP 02</span>
+              <h3 className="lp-step-title">AI analyzes it</h3>
+              <p className="lp-step-desc">
+                ReviewAuto instantly parses sentiment, categorizes customer intent, and scores liability risks for every single submission.
+              </p>
+            </div>
+
+            <div className="lp-step-card">
+              <span className="lp-step-num">STEP 03</span>
+              <h3 className="lp-step-title">Understand the problems</h3>
+              <p className="lp-step-desc">
+                Identify service bottlenecks, staff friction, or kitchen delays. Recurring patterns are flagged so you fix the root cause.
+              </p>
+            </div>
+
+            <div className="lp-step-card">
+              <span className="lp-step-num">STEP 04</span>
+              <h3 className="lp-step-title">Take action</h3>
+              <p className="lp-step-desc">
+                Approve contextual AI responses, escalate high-risk complaints to management, and publish verified replies with one click.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. PRODUCT */}
+      <section id="product" className="lp-section">
+        <div className="lp-section-inner">
+          <div className="lp-problem-header">
+            <div className="lp-eyebrow">
+              <span className="lp-eyebrow-dot" />
+              INTELLIGENCE IN ACTION
+            </div>
+            <h2>Built for business operators, not algorithms.</h2>
+            <p>Everything you need to safeguard your reputation and improve your operations.</p>
+          </div>
+
+          <div className="lp-product-grid">
+            <div className="lp-feature-card">
+              <div className="lp-feature-icon">★</div>
+              <h3>Real-Time Sentiment</h3>
+              <p>
+                Identifies nuanced sentiment across positive, mixed, and negative reviews—flagging subtle passive dissatisfaction that ordinary rating averages miss.
+              </p>
+            </div>
+
+            <div className="lp-feature-card">
+              <div className="lp-feature-icon">⚡</div>
+              <h3>Automated Risk Detection</h3>
+              <p>
+                Flags critical issues such as food safety, extreme wait times, billing discrepancies, or staff misconduct so managers can intervene immediately.
+              </p>
+            </div>
+
+            <div className="lp-feature-card">
+              <div className="lp-feature-icon">⌖</div>
+              <h3>Customer Intent Recognition</h3>
+              <p>
+                Separates compliments from operational grievances, refund requests, and product inquiries. Know exactly why customers are reaching out.
+              </p>
+            </div>
+
+            <div className="lp-feature-card">
+              <div className="lp-feature-icon">▣</div>
+              <h3>Autonomous & Approved Replies</h3>
+              <p>
+                Let safe responses publish automatically while keeping delicate or high-risk feedback queued for one-click human review and editing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. FINAL CTA */}
+      <section className="lp-cta-section">
+        <h2>Your customers are giving you the answers.</h2>
+        <h3>ReviewAuto helps you find them.</h3>
+        <button type="button" className="lp-cta-btn" onClick={onGetStarted}>
+          Get Started with ReviewAuto
+        </button>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="lp-footer">
+        <div className="lp-footer-container">
+          <div>
+            <strong>ReviewAuto</strong> — Autonomous Feedback Intelligence & Operational Insights.
+          </div>
+          <div>
+            © {new Date().getFullYear()} ReviewAuto. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------
    REVIEWAUTO MODERN DESIGN SYSTEM & COMPONENT STYLES
 ------------------------------------------------------------- */
 function DashboardReviewsStyles() {
@@ -1522,7 +2587,7 @@ function DashboardReviewsStyles() {
         min-height: 42px;
       }
 
-      /* TARGETED MOBILE-ONLY RESPONSIVE BREAKPOINTS (DESKTOP UNTOUCHED) */
+      /* RESPONSIVE LAYOUTS */
       @media (max-width: 1100px) {
         .mobile-app .dashboard-activation-options {
           grid-template-columns: repeat(2, 1fr);
@@ -1603,7 +2668,7 @@ function DashboardReviewsStyles() {
         }
         .mobile-app .auth-form input,
         .mobile-app textarea {
-          font-size: 16px !important; /* Prevents auto-zoom in iOS Safari */
+          font-size: 16px !important;
         }
       }
 
@@ -1710,557 +2775,7 @@ function DashboardReviewsStyles() {
           padding: 40px 16px;
         }
       }
-
-      @media (max-width: 350px) {
-        .mobile-app .stats-grid {
-          grid-template-columns: 1fr;
-        }
-        .mobile-app .workflow-actions {
-          grid-template-columns: 1fr;
-        }
-      }
-
-
-      /* -------------------------------------------------------------
-         MOBILE DASHBOARD — PRESENTATION ONLY
-         Desktop styles above remain untouched.
-      ------------------------------------------------------------- */
-      .mobile-app .dashboard-activation,
-      .mobile-app .stat-card,
-      .mobile-app .automation-banner,
-      .mobile-app .panel {
-        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-      }
-
-      .mobile-app .mobile-main {
-        padding: 14px 14px 32px;
-      }
-
-      .mobile-app .dashboard-activation {
-        margin: 0 0 14px;
-        padding: 16px;
-        border-radius: 16px;
-        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-      }
-
-      .mobile-app .dashboard-activation-header {
-        margin-bottom: 14px;
-        gap: 12px;
-      }
-
-      .mobile-app .dashboard-activation h2 {
-        font-size: 18px;
-        line-height: 1.18;
-        letter-spacing: -0.035em;
-      }
-
-      .mobile-app .dashboard-activation-header p {
-        max-width: 34rem;
-        font-size: 11px;
-        line-height: 1.5;
-      }
-
-      .mobile-app .dashboard-activation-progress {
-        width: 100%;
-        padding: 7px 9px;
-        border-radius: 10px;
-        font-size: 9px;
-        justify-content: flex-start;
-        gap: 6px;
-      }
-
-      .mobile-app .activation-check,
-      .mobile-app .activation-pending {
-        width: 15px;
-        height: 15px;
-        flex: 0 0 15px;
-      }
-
-      .mobile-app .dashboard-activation-options {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
-      }
-
-      .mobile-app .activation-option {
-        min-width: 0;
-        min-height: 150px;
-        padding: 11px;
-        gap: 8px;
-        border-radius: 12px;
-        background: #fbfbf9;
-      }
-
-      .mobile-app .activation-option-icon {
-        width: 30px;
-        height: 30px;
-        margin-bottom: 9px;
-        border-radius: 8px;
-        font-size: 13px;
-      }
-
-      .mobile-app .activation-option h3 {
-        font-size: 11px;
-        line-height: 1.25;
-      }
-
-      .mobile-app .activation-option p {
-        min-height: 0;
-        margin: 5px 0 10px;
-        font-size: 9px;
-        line-height: 1.42;
-      }
-
-      .mobile-app .activation-button {
-        width: 100%;
-        min-height: 34px;
-        padding: 7px 8px;
-        border-radius: 8px;
-        font-size: 8px;
-        line-height: 1.15;
-      }
-
-      .mobile-app .activation-coming-soon {
-        font-size: 7px;
-      }
-
-      .mobile-app .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
-        margin-bottom: 14px;
-      }
-
-      .mobile-app .stat-card {
-        min-width: 0;
-        min-height: 94px;
-        padding: 12px;
-        border-radius: 12px;
-      }
-
-      .mobile-app .stat-label {
-        font-size: 8px;
-        line-height: 1.25;
-      }
-
-      .mobile-app .stat-value {
-        font-size: 21px;
-        line-height: 1;
-        margin: 7px 0 5px;
-      }
-
-      .mobile-app .stat-detail {
-        font-size: 9px;
-        line-height: 1.3;
-      }
-
-      .mobile-app .automation-banner {
-        margin-bottom: 14px;
-        padding: 13px 14px;
-        border-radius: 13px;
-        gap: 11px;
-      }
-
-      .mobile-app .automation-banner h2 {
-        font-size: 13px;
-        line-height: 1.3;
-      }
-
-      .mobile-app .automation-banner p {
-        max-width: 34rem;
-        font-size: 10px;
-        line-height: 1.45;
-      }
-
-      .mobile-app .toggle-button {
-        min-height: 32px;
-        padding: 0 11px;
-        font-size: 9px;
-      }
-
-      .mobile-app .content-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-
-      .mobile-app .right-column {
-        gap: 14px;
-      }
-
-      .mobile-app .panel {
-        padding: 14px;
-        border-radius: 13px;
-      }
-
-      .mobile-app .panel-header {
-        margin-bottom: 14px;
-      }
-
-      .mobile-app .panel-header h2 {
-        font-size: 14px;
-        line-height: 1.25;
-      }
-
-      .mobile-app .eyebrow {
-        font-size: 8px;
-        letter-spacing: 0.09em;
-      }
-
-      .mobile-app .review-list {
-        gap: 8px;
-      }
-
-      .mobile-app .review-row {
-        padding: 11px;
-        border-radius: 11px;
-      }
-
-      .mobile-app .review-meta strong {
-        font-size: 11px;
-      }
-
-      .mobile-app .review-meta span,
-      .mobile-app .review-text {
-        font-size: 10px;
-      }
-
-      .mobile-app .review-text {
-        margin: 5px 0;
-        line-height: 1.45;
-      }
-
-      .mobile-app .review-ai-meta {
-        font-size: 8px;
-      }
-
-      .mobile-app .review-ai-meta span,
-      .mobile-app .review-status {
-        font-size: 8px;
-      }
-
-      .mobile-app .workflow {
-        gap: 10px;
-      }
-
-      .mobile-app .workflow-step {
-        gap: 9px;
-        padding-bottom: 10px;
-      }
-
-      .mobile-app .step-number {
-        width: 22px;
-        height: 22px;
-        flex: 0 0 22px;
-      }
-
-      .mobile-app .step-content strong {
-        font-size: 11px;
-      }
-
-      .mobile-app .step-content p,
-      .mobile-app .location-description {
-        font-size: 10px;
-        line-height: 1.45;
-      }
-
-      .mobile-app .location-description {
-        margin: 9px 0;
-      }
-
-      .mobile-app .location-title h3 {
-        font-size: 11px;
-      }
-
-      .mobile-app .connection-card {
-        padding: 9px 10px;
-      }
-
-      @media (max-width: 380px) {
-        .mobile-app .mobile-main {
-          padding-left: 10px;
-          padding-right: 10px;
-        }
-
-        .mobile-app .dashboard-activation {
-          padding: 13px;
-          border-radius: 14px;
-        }
-
-        .mobile-app .dashboard-activation h2 {
-          font-size: 16px;
-        }
-
-        .mobile-app .dashboard-activation-options {
-          gap: 7px;
-        }
-
-        .mobile-app .activation-option {
-          min-height: 142px;
-          padding: 9px;
-        }
-
-        .mobile-app .activation-option-icon {
-          width: 27px;
-          height: 27px;
-          margin-bottom: 7px;
-        }
-
-        .mobile-app .activation-option h3 {
-          font-size: 10px;
-        }
-
-        .mobile-app .activation-option p {
-          font-size: 8px;
-          margin-bottom: 8px;
-        }
-
-        .mobile-app .activation-button {
-          min-height: 32px;
-          font-size: 7px;
-        }
-
-        .mobile-app .stat-card {
-          min-height: 88px;
-          padding: 10px;
-        }
-
-        .mobile-app .stat-value {
-          font-size: 19px;
-        }
-      }
     `}</style>
-  );
-}
-
-
-function LandingPage({ onLogin }) {
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  return (
-    <main className="landing-page">
-      <style>{`
-        .landing-page {
-          min-height: 100vh;
-          background: #fbfbf9;
-          color: #111111;
-          overflow-x: hidden;
-        }
-        .landing-nav {
-          width: min(1180px, calc(100% - 40px));
-          margin: 0 auto;
-          height: 76px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          position: relative;
-          z-index: 5;
-        }
-        .landing-brand { display:flex; align-items:center; gap:10px; }
-        .landing-mark {
-          width:34px; height:34px; border-radius:10px; background:#111; color:#fff;
-          display:grid; place-items:center; font-weight:800; font-size:15px;
-        }
-        .landing-brand-name { font-weight:750; letter-spacing:-.03em; font-size:16px; }
-        .landing-brand-ai { font-size:9px; margin-left:5px; color:#777; font-weight:700; }
-        .landing-nav-actions { display:flex; align-items:center; gap:8px; }
-        .landing-nav-button, .landing-ghost-button {
-          border:0; background:transparent; color:#555; font:600 12px inherit; cursor:pointer;
-          padding:9px 12px; border-radius:8px;
-        }
-        .landing-nav-button:hover { background:#f0f0ed; color:#111; }
-        .landing-nav-cta, .landing-primary {
-          border:1px solid #111; background:#111; color:#fff; cursor:pointer;
-          font:700 12px inherit; border-radius:9px; padding:10px 15px;
-          box-shadow:0 8px 20px rgba(0,0,0,.08);
-        }
-        .landing-nav-cta:hover, .landing-primary:hover { background:#292929; }
-        .landing-hero {
-          width:min(1180px, calc(100% - 40px)); margin:0 auto; padding:76px 0 88px;
-          display:grid; grid-template-columns:1.02fr .98fr; gap:58px; align-items:center;
-        }
-        .landing-kicker { font-size:10px; letter-spacing:.14em; font-weight:800; color:#8a8a83; text-transform:uppercase; margin-bottom:18px; }
-        .landing-hero h1 { margin:0; max-width:680px; font-size:clamp(46px,6vw,78px); line-height:.97; letter-spacing:-.065em; font-weight:780; }
-        .landing-hero h1 em { font-style:normal; color:#77776f; }
-        .landing-hero-copy { max-width:520px; margin:24px 0 28px; color:#62625c; font-size:16px; line-height:1.65; }
-        .landing-hero-actions { display:flex; gap:10px; flex-wrap:wrap; }
-        .landing-secondary { border:1px solid #deded8; background:#fff; color:#222; cursor:pointer; font:700 12px inherit; border-radius:9px; padding:10px 15px; }
-        .landing-secondary:hover { background:#f4f4f1; }
-        .landing-hero-note { margin-top:16px; color:#999991; font-size:10px; }
-        .landing-demo {
-          position:relative; border:1px solid #deded8; border-radius:22px; background:#111; padding:10px;
-          box-shadow:0 28px 70px rgba(0,0,0,.13); transform:rotate(1deg);
-        }
-        .landing-window { background:#f7f7f4; border-radius:15px; overflow:hidden; }
-        .landing-window-bar { height:34px; padding:0 12px; display:flex; align-items:center; gap:5px; border-bottom:1px solid #e4e4df; background:#fff; }
-        .landing-dot { width:6px; height:6px; border-radius:50%; background:#d4d4ce; }
-        .landing-demo-body { padding:18px; }
-        .landing-demo-title { font-size:10px; color:#8b8b84; text-transform:uppercase; letter-spacing:.1em; font-weight:800; }
-        .landing-demo-heading { margin:5px 0 15px; font-size:21px; letter-spacing:-.04em; font-weight:800; }
-        .landing-demo-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-        .landing-demo-card { background:#fff; border:1px solid #e3e3de; border-radius:10px; padding:11px; }
-        .landing-demo-card small { display:block; color:#8b8b84; font-size:8px; text-transform:uppercase; letter-spacing:.08em; font-weight:800; }
-        .landing-demo-card strong { display:block; margin-top:5px; font-size:13px; }
-        .landing-demo-review { margin-top:8px; padding:11px; background:#fff; border:1px solid #e3e3de; border-radius:10px; font-size:10px; line-height:1.5; color:#4d4d47; }
-        .landing-demo-tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:9px; }
-        .landing-demo-tag { font-size:8px; padding:4px 6px; border-radius:5px; background:#f0f0ec; color:#55554f; font-weight:700; }
-        .landing-section { width:min(1000px, calc(100% - 40px)); margin:0 auto; padding:92px 0; }
-        .landing-section-label { color:#999991; font-size:10px; letter-spacing:.13em; text-transform:uppercase; font-weight:800; margin-bottom:14px; }
-        .landing-section h2 { margin:0; max-width:700px; font-size:clamp(32px,4.5vw,52px); line-height:1.02; letter-spacing:-.055em; }
-        .landing-problem { border-top:1px solid #deded8; border-bottom:1px solid #deded8; }
-        .landing-review-stack { margin-top:38px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
-        .landing-review { background:#fff; border:1px solid #e2e2dd; border-radius:14px; padding:18px; min-height:150px; }
-        .landing-stars { font-size:13px; letter-spacing:2px; margin-bottom:18px; }
-        .landing-review p { margin:0; font-size:13px; line-height:1.55; color:#44443f; }
-        .landing-pattern { margin-top:22px; padding:22px; border-radius:15px; background:#111; color:#fff; display:flex; align-items:center; justify-content:space-between; gap:20px; }
-        .landing-pattern strong { font-size:18px; letter-spacing:-.03em; }
-        .landing-pattern span { color:#bdbdb7; font-size:11px; line-height:1.5; max-width:360px; }
-        .landing-steps { margin-top:40px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-        .landing-step { padding:18px; border:1px solid #e1e1dc; border-radius:14px; background:#fff; min-height:150px; }
-        .landing-step-number { color:#aaa9a2; font-size:10px; font-weight:800; }
-        .landing-step h3 { margin:28px 0 8px; font-size:14px; letter-spacing:-.02em; }
-        .landing-step p { margin:0; color:#777770; font-size:11px; line-height:1.5; }
-        .landing-product { background:#111; color:#fff; width:100%; }
-        .landing-product-inner { width:min(1000px, calc(100% - 40px)); margin:0 auto; padding:92px 0; }
-        .landing-product .landing-section-label { color:#8d8d87; }
-        .landing-product h2 { color:#fff; }
-        .landing-product-copy { color:#a7a7a0; max-width:600px; font-size:13px; line-height:1.6; margin:18px 0 30px; }
-        .landing-product-ui { background:#f7f7f4; border-radius:18px; padding:9px; border:1px solid #2e2e2e; box-shadow:0 25px 60px rgba(0,0,0,.3); }
-        .landing-product-screen { background:#fff; border-radius:12px; padding:20px; color:#111; }
-        .landing-screen-head { display:flex; justify-content:space-between; gap:15px; align-items:flex-start; margin-bottom:18px; }
-        .landing-screen-title { font-size:18px; font-weight:800; letter-spacing:-.04em; }
-        .landing-screen-pill { font-size:8px; padding:5px 7px; background:#f0f0ec; border-radius:5px; color:#666; font-weight:800; }
-        .landing-screen-review { border:1px solid #e4e4df; border-radius:10px; padding:13px; }
-        .landing-screen-review-top { display:flex; justify-content:space-between; gap:10px; font-size:10px; font-weight:800; }
-        .landing-screen-review p { margin:8px 0 11px; color:#555; font-size:10px; line-height:1.5; }
-        .landing-screen-insights { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
-        .landing-screen-insight { padding:10px; background:#f6f6f2; border-radius:8px; }
-        .landing-screen-insight small { color:#999; font-size:7px; text-transform:uppercase; font-weight:800; }
-        .landing-screen-insight strong { display:block; margin-top:4px; font-size:10px; }
-        .landing-final { text-align:center; padding:110px 20px 90px; }
-        .landing-final h2 { margin:0 auto; max-width:760px; font-size:clamp(38px,5vw,62px); line-height:1; letter-spacing:-.06em; }
-        .landing-final p { color:#777770; font-size:13px; margin:18px auto 25px; }
-        .landing-footer { width:min(1180px, calc(100% - 40px)); margin:0 auto; padding:24px 0 32px; border-top:1px solid #deded8; display:flex; justify-content:space-between; gap:15px; color:#999991; font-size:10px; }
-        @media (max-width: 800px) {
-          .landing-nav { width:calc(100% - 28px); height:64px; }
-          .landing-nav-button { display:none; }
-          .landing-nav-cta { padding:9px 12px; }
-          .landing-hero { width:calc(100% - 28px); grid-template-columns:1fr; gap:38px; padding:50px 0 62px; }
-          .landing-hero h1 { font-size:clamp(43px,13vw,65px); }
-          .landing-hero-copy { font-size:14px; }
-          .landing-demo { transform:none; }
-          .landing-section { width:calc(100% - 28px); padding:68px 0; }
-          .landing-review-stack, .landing-steps { grid-template-columns:1fr; }
-          .landing-pattern { flex-direction:column; align-items:flex-start; }
-          .landing-product-inner { width:calc(100% - 28px); padding:68px 0; }
-          .landing-screen-insights { grid-template-columns:1fr; }
-          .landing-footer { width:calc(100% - 28px); }
-        }
-        @media (max-width: 420px) {
-          .landing-hero-actions { flex-direction:column; }
-          .landing-primary, .landing-secondary { width:100%; }
-          .landing-demo-grid { grid-template-columns:1fr 1fr; }
-          .landing-demo-body { padding:12px; }
-          .landing-demo-heading { font-size:18px; }
-        }
-      `}</style>
-
-      <nav className="landing-nav">
-        <div className="landing-brand">
-          <div className="landing-mark">R</div>
-          <div className="landing-brand-name">ReviewAuto<span className="landing-brand-ai">AI</span></div>
-        </div>
-        <div className="landing-nav-actions">
-          <button className="landing-nav-button" onClick={() => scrollTo("landing-how")}>How it works</button>
-          <button className="landing-nav-button" onClick={() => scrollTo("landing-product")}>Product</button>
-          <button className="landing-ghost-button" onClick={onLogin}>Login</button>
-          <button className="landing-nav-cta" onClick={onLogin}>Get started</button>
-        </div>
-      </nav>
-
-      <section className="landing-hero">
-        <div>
-          <div className="landing-kicker">Customer feedback, understood</div>
-          <h1>Your customers are already telling you what's wrong. <em>You're just seeing it one review at a time.</em></h1>
-          <p className="landing-hero-copy">ReviewAuto turns customer feedback into clear insights, appropriate responses, and actions your business can actually use.</p>
-          <div className="landing-hero-actions">
-            <button className="landing-primary" onClick={onLogin}>Get started</button>
-            <button className="landing-secondary" onClick={() => scrollTo("landing-how")}>See how it works</button>
-          </div>
-          <div className="landing-hero-note">Collect → understand → decide → act.</div>
-        </div>
-        <div className="landing-demo" aria-label="ReviewAuto product preview">
-          <div className="landing-window">
-            <div className="landing-window-bar"><span className="landing-dot"/><span className="landing-dot"/><span className="landing-dot"/></div>
-            <div className="landing-demo-body">
-              <div className="landing-demo-title">ReviewAuto AI</div>
-              <div className="landing-demo-heading">What needs attention?</div>
-              <div className="landing-demo-grid">
-                <div className="landing-demo-card"><small>Sentiment</small><strong>Mixed</strong></div>
-                <div className="landing-demo-card"><small>Risk</small><strong>Medium</strong></div>
-              </div>
-              <div className="landing-demo-review">“The food was great, but we waited way too long and nobody checked on our table.”</div>
-              <div className="landing-demo-tags"><span className="landing-demo-tag">Service issue</span><span className="landing-demo-tag">Wait time</span><span className="landing-demo-tag">Review internally</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-section landing-problem" id="landing-problem">
-        <div className="landing-section-label">The problem</div>
-        <h2>Five stars can still hide a problem.</h2>
-        <div className="landing-review-stack">
-          <article className="landing-review"><div className="landing-stars">★★★★★</div><p>“Great food and friendly staff!”</p></article>
-          <article className="landing-review"><div className="landing-stars">★★★★★</div><p>“Food was great, but the wait was too long.”</p></article>
-          <article className="landing-review"><div className="landing-stars">★★★★★</div><p>“Loved the place. Service needs to be faster.”</p></article>
-        </div>
-        <div className="landing-pattern"><strong>You see individual reviews.</strong><span>ReviewAuto helps you see the pattern behind them.</span></div>
-      </section>
-
-      <section className="landing-section" id="landing-how">
-        <div className="landing-section-label">How it works</div>
-        <h2>Feedback in. Clear actions out.</h2>
-        <div className="landing-steps">
-          <article className="landing-step"><div className="landing-step-number">01</div><h3>Collect</h3><p>Give customers a simple way to share what happened.</p></article>
-          <article className="landing-step"><div className="landing-step-number">02</div><h3>Understand</h3><p>AI analyzes sentiment, risk, intent, and recurring issues.</p></article>
-          <article className="landing-step"><div className="landing-step-number">03</div><h3>Decide</h3><p>See what needs a response, review, or follow-up.</p></article>
-          <article className="landing-step"><div className="landing-step-number">04</div><h3>Act</h3><p>Turn customer feedback into the next useful action.</p></article>
-        </div>
-      </section>
-
-      <section className="landing-product" id="landing-product">
-        <div className="landing-product-inner">
-          <div className="landing-section-label">Inside ReviewAuto</div>
-          <h2>Stop reading feedback one review at a time.</h2>
-          <p className="landing-product-copy">ReviewAuto brings the important signals together so your team can understand what customers are saying and what deserves attention.</p>
-          <div className="landing-product-ui">
-            <div className="landing-product-screen">
-              <div className="landing-screen-head"><div className="landing-screen-title">Review Engine</div><div className="landing-screen-pill">AI ANALYSIS</div></div>
-              <div className="landing-screen-review">
-                <div className="landing-screen-review-top"><span>Customer feedback</span><span>Needs attention</span></div>
-                <p>“The food was excellent, but the service was slow and we waited too long for our order.”</p>
-                <div className="landing-screen-insights">
-                  <div className="landing-screen-insight"><small>Sentiment</small><strong>Mixed</strong></div>
-                  <div className="landing-screen-insight"><small>Risk</small><strong>Medium</strong></div>
-                  <div className="landing-screen-insight"><small>Intent</small><strong>Service complaint</strong></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-final">
-        <div className="landing-section-label">ReviewAuto AI</div>
-        <h2>Your customers are giving you the answers.</h2>
-        <p>ReviewAuto helps you find them.</p>
-        <button className="landing-primary" onClick={onLogin}>Get started</button>
-      </section>
-
-      <footer className="landing-footer">
-        <span>© {new Date().getFullYear()} ReviewAuto AI</span>
-        <span>Turn customer feedback into action.</span>
-      </footer>
-    </main>
   );
 }
 
@@ -2280,16 +2795,26 @@ function App() {
     );
   }
 
-  const isResetPassword =
-    window.location.pathname === "/reset-password";
-
-  return <AuthenticatedApp forceAuth={isResetPassword} />;
+  return <AuthenticatedApp />;
 }
 
-function AuthenticatedApp({ forceAuth = false }) {
+function AuthenticatedApp() {
   const [session, setSession] = useState(null);
-  const [showAuth, setShowAuth] = useState(forceAuth);
   const [loading, setLoading] = useState(true);
+
+  // Preserve direct auth routes like /reset-password or Supabase access token links
+  const [showAuth, setShowAuth] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const path = window.location.pathname;
+    const hash = window.location.hash || "";
+    return (
+      path === "/reset-password" ||
+      path === "/login" ||
+      path === "/signup" ||
+      hash.includes("access_token") ||
+      hash.includes("type=recovery")
+    );
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -2335,10 +2860,46 @@ function AuthenticatedApp({ forceAuth = false }) {
   }
 
   if (!session) {
-    if (showAuth || forceAuth) {
-      return <Auth />;
+    if (showAuth) {
+      return (
+        <div style={{ position: "relative" }}>
+          {window.location.pathname !== "/reset-password" && (
+            <button
+              type="button"
+              onClick={() => setShowAuth(false)}
+              style={{
+                position: "absolute",
+                top: "20px",
+                left: "20px",
+                zIndex: 50,
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                borderRadius: "8px",
+                padding: "8px 14px",
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "#334155",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              }}
+            >
+              ← Back to Overview
+            </button>
+          )}
+          <Auth />
+        </div>
+      );
     }
-    return <LandingPage onLogin={() => setShowAuth(true)} />;
+
+    return (
+      <LandingPage
+        onGetStarted={() => setShowAuth(true)}
+        onLogin={() => setShowAuth(true)}
+      />
+    );
   }
 
   return <Dashboard session={session} />;
@@ -2390,7 +2951,6 @@ function MobileDashboard({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Prevent background scroll when mobile drawer is open
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = "hidden";
@@ -4027,7 +4587,6 @@ function ReviewWorkflowRow({ review, setReviews }) {
   return (
     <article className="review-workflow-row">
       <div className="review-main">
-        {/* COMPACT CLEAN RATING CARD */}
         <div className="review-rating-card" title={`${review.rating || 0} out of 5 stars`}>
           <div className="rating-number-row">
             <span className="rating-val">{review.rating || "—"}</span>
