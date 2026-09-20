@@ -17,6 +17,24 @@ const navigation = [
 ];
 
 /* -------------------------------------------------------------
+   RAZORPAY SCRIPT LOADER HELPER
+------------------------------------------------------------- */
+function loadRazorpayScript() {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+/* -------------------------------------------------------------
    LANDING PAGE STYLES (LOGGED-OUT VISITORS)
 ------------------------------------------------------------- */
 function LandingPageStyles() {
@@ -1214,10 +1232,46 @@ function DashboardReviewsStyles() {
         color: var(--text-main);
         font-size: 13px;
         font-weight: 600;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      .plan-status-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 10px;
+        background: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .plan-status-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .plan-badge {
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .plan-badge.pro {
+        background: #0f172a;
+        color: #ffffff;
+      }
+
+      .plan-badge.free {
+        background: #e2e8f0;
+        color: #475569;
       }
 
       .navigation {
@@ -1849,6 +1903,117 @@ function DashboardReviewsStyles() {
       .activation-qr-actions {
         display: flex;
         gap: 8px;
+      }
+
+      /* BILLING STYLING */
+      .billing-panel-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .billing-plan-card {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .billing-plan-card.current {
+        border-color: #0f172a;
+        background: #f8fafc;
+      }
+
+      .billing-plan-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .billing-plan-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text-main);
+      }
+
+      .billing-plan-price {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.02em;
+      }
+
+      .billing-plan-price span {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .billing-features {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0 20px;
+      }
+
+      .billing-features li {
+        font-size: 12px;
+        color: #334155;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .billing-features li span {
+        color: #10b981;
+        font-weight: 800;
+      }
+
+      .billing-status-alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .billing-status-alert.verifying {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+      }
+
+      .billing-status-alert.success {
+        background: #ecfdf5;
+        color: #047857;
+        border: 1px solid #a7f3d0;
+      }
+
+      .billing-status-alert.failed {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+      }
+
+      .billing-meta-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        padding: 8px 0;
+        border-top: 1px solid #e2e8f0;
+        color: var(--text-muted);
+      }
+
+      .billing-meta-row strong {
+        color: var(--text-main);
       }
 
       /* CONTENT GRID */
@@ -2598,6 +2763,9 @@ function DashboardReviewsStyles() {
         .mobile-app .content-grid {
           grid-template-columns: 1fr;
         }
+        .billing-panel-grid {
+          grid-template-columns: 1fr;
+        }
       }
 
       @media (max-width: 768px) {
@@ -2947,6 +3115,10 @@ function MobileDashboard({
   onOpenWebsiteWidget,
   onToggleFeedback,
   onCopyFeedbackLink,
+  subscription,
+  onUpgrade,
+  checkoutLoading,
+  paymentStatus,
   onSignOut,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -3032,6 +3204,17 @@ function MobileDashboard({
 
             <div style={{ marginTop: "auto", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
               <div className="connection-card">
+                <span
+                  className="connection-indicator"
+                  style={{ background: subscription?.plan === "pro" ? "var(--success)" : "#94a3b8" }}
+                />
+                <div>
+                  <strong>Workspace Plan</strong>
+                  <span>{subscription?.plan === "pro" ? "Pro Plan (Active)" : "Free Plan"}</span>
+                </div>
+              </div>
+
+              <div className="connection-card">
                 <span className="connection-indicator" />
                 <div>
                   <strong>Feedback Status</strong>
@@ -3084,6 +3267,10 @@ function MobileDashboard({
             workspace={workspace}
             onToggleFeedback={onToggleFeedback}
             onCopyFeedbackLink={onCopyFeedbackLink}
+            subscription={subscription}
+            onUpgrade={onUpgrade}
+            checkoutLoading={checkoutLoading}
+            paymentStatus={paymentStatus}
           />
         ) : activePage === "Locations" ? (
           <LocationsPage />
@@ -3109,6 +3296,11 @@ function Dashboard({ session }) {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [workspaceError, setWorkspaceError] = useState("");
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+
+  // Billing & Subscription state
+  const [subscription, setSubscription] = useState({ plan: "free", status: "active" });
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -3208,7 +3400,10 @@ function Dashboard({ session }) {
           setAutomation(automationSettings);
         }
 
-        await loadReviews(initializedBusiness.id, mounted);
+        await Promise.all([
+          loadReviews(initializedBusiness.id, mounted),
+          loadSubscription(initializedBusiness.id, session.user.id, mounted),
+        ]);
       } catch (error) {
         console.error("Workspace loading error:", error);
         if (mounted) {
@@ -3225,6 +3420,31 @@ function Dashboard({ session }) {
       mounted = false;
     };
   }, [session.user.id]);
+
+  async function loadSubscription(businessId, userId, mounted = true) {
+    try {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("business_id", businessId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Subscription loading error:", error);
+        return;
+      }
+
+      if (mounted) {
+        if (data) {
+          setSubscription(data);
+        } else {
+          setSubscription({ plan: "free", status: "active" });
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load subscription status:", err);
+    }
+  }
 
   async function loadReviews(businessId, mounted = true) {
     setReviewsLoading(true);
@@ -3352,6 +3572,157 @@ function Dashboard({ session }) {
     }
   }
 
+  /* -------------------------------------------------------------
+     RAZORPAY SUBSCRIPTION CHECKOUT & VERIFICATION
+  ------------------------------------------------------------- */
+  async function handleUpgradeToPro() {
+    if (!workspace || checkoutLoading) return;
+
+    setCheckoutLoading(true);
+    setPaymentStatus(null);
+
+    try {
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error("Unable to load secure checkout. Please check your internet connection.");
+      }
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        throw new Error("You are not authenticated.");
+      }
+
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-razorpay-order`;
+      const response = await fetch(functionUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({ business_id: workspace.id }),
+      });
+
+      const orderData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(orderData?.error || "Unable to start checkout. Please try again.");
+      }
+
+      const razorpayKey =
+        orderData.key_id || import.meta.env.VITE_RAZORPAY_KEY_ID;
+
+      if (!razorpayKey) {
+        throw new Error("Payment gateway configuration missing. Please contact support.");
+      }
+
+      const checkoutOptions = {
+        key: razorpayKey,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "ReviewAuto AI",
+        description: "ReviewAuto Pro Subscription (Monthly)",
+        ...(orderData.is_subscription
+          ? { subscription_id: orderData.id }
+          : { order_id: orderData.id }),
+        prefill: {
+          email: session.user.email || "",
+          name: workspace.name || "",
+        },
+        theme: {
+          color: "#0f172a",
+        },
+        modal: {
+          ondismiss: function () {
+            setCheckoutLoading(false);
+            setPaymentStatus({
+              state: "failed",
+              message: "Payment was cancelled. Your card was not charged.",
+            });
+          },
+        },
+        handler: async function (paymentResponse) {
+          await verifyPaymentResponse(paymentResponse);
+        },
+      };
+
+      const rzpInstance = new window.Razorpay(checkoutOptions);
+
+      rzpInstance.on("payment.failed", function (failResponse) {
+        setCheckoutLoading(false);
+        setPaymentStatus({
+          state: "failed",
+          message:
+            failResponse.error?.description ||
+            "Payment could not be completed. Please try again with another payment method.",
+        });
+      });
+
+      rzpInstance.open();
+    } catch (error) {
+      console.error("Payment initiation error:", error);
+      setPaymentStatus({
+        state: "failed",
+        message: error?.message || "Unable to start checkout. Please try again.",
+      });
+      setCheckoutLoading(false);
+    }
+  }
+
+  async function verifyPaymentResponse(paymentResponse) {
+    setPaymentStatus({
+      state: "verifying",
+      message: "Verifying your transaction with secure payment server...",
+    });
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) throw new Error("Session expired. Please sign in again.");
+
+      const verifyUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-razorpay-payment`;
+      const verifyRes = await fetch(verifyUrl, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({
+          business_id: workspace.id,
+          razorpay_payment_id: paymentResponse.razorpay_payment_id,
+          razorpay_order_id: paymentResponse.razorpay_order_id || null,
+          razorpay_subscription_id: paymentResponse.razorpay_subscription_id || null,
+          razorpay_signature: paymentResponse.razorpay_signature,
+        }),
+      });
+
+      const verifyResult = await verifyRes.json();
+
+      if (!verifyRes.ok || !verifyResult?.success) {
+        throw new Error(verifyResult?.error || "Payment verification failed. Your account has not been upgraded.");
+      }
+
+      setPaymentStatus({
+        state: "success",
+        message: "Payment verified successfully! Welcome to ReviewAuto Pro.",
+      });
+
+      await loadSubscription(workspace.id, session.user.id, true);
+    } catch (verifyError) {
+      console.error("Payment verification failure:", verifyError);
+      setPaymentStatus({
+        state: "failed",
+        message:
+          verifyError?.message ||
+          "Payment verification failed. Your account has not been upgraded.",
+      });
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }
+
   if (workspaceLoading) return <LoadingScreen />;
 
   if (needsOnboarding) {
@@ -3363,7 +3734,10 @@ function Dashboard({ session }) {
           setWorkspaceError("");
           setWorkspace(business);
           setAutomation(automationSettings);
-          await loadReviews(business.id, true);
+          await Promise.all([
+            loadReviews(business.id, true),
+            loadSubscription(business.id, session.user.id, true),
+          ]);
         }}
       />
     );
@@ -3389,6 +3763,10 @@ function Dashboard({ session }) {
         onOpenWebsiteWidget={() => setActivePage("Website Widget")}
         onToggleFeedback={updateFeedbackEnabled}
         onCopyFeedbackLink={copyFeedbackLink}
+        subscription={subscription}
+        onUpgrade={handleUpgradeToPro}
+        checkoutLoading={checkoutLoading}
+        paymentStatus={paymentStatus}
         onSignOut={handleSignOut}
       />
     );
@@ -3401,6 +3779,7 @@ function Dashboard({ session }) {
         setActivePage={setActivePage}
         email={session.user.email}
         businessName={workspace?.name}
+        plan={subscription?.plan || "free"}
         onSignOut={handleSignOut}
         feedbackEnabled={workspace?.feedback_enabled !== false}
       />
@@ -3441,6 +3820,10 @@ function Dashboard({ session }) {
             workspace={workspace}
             onToggleFeedback={updateFeedbackEnabled}
             onCopyFeedbackLink={copyFeedbackLink}
+            subscription={subscription}
+            onUpgrade={handleUpgradeToPro}
+            checkoutLoading={checkoutLoading}
+            paymentStatus={paymentStatus}
           />
         ) : activePage === "Locations" ? (
           <LocationsPage />
@@ -3607,6 +3990,7 @@ function Sidebar({
   setActivePage,
   email,
   businessName,
+  plan,
   onSignOut,
   feedbackEnabled,
 }) {
@@ -3623,6 +4007,13 @@ function Sidebar({
       <div className="workspace-label">Workspace</div>
       <div className="workspace-pill" title={businessName}>
         {businessName || "My Workspace"}
+      </div>
+
+      <div className="plan-status-card">
+        <span className="plan-status-label">Plan</span>
+        <span className={plan === "pro" ? "plan-badge pro" : "plan-badge free"}>
+          {plan === "pro" ? "Pro" : "Free"}
+        </span>
       </div>
 
       <nav className="navigation">
@@ -4746,7 +5137,15 @@ function ReviewRow({ review }) {
   );
 }
 
-function SettingsContent({ workspace, onToggleFeedback, onCopyFeedbackLink }) {
+function SettingsContent({
+  workspace,
+  onToggleFeedback,
+  onCopyFeedbackLink,
+  subscription,
+  onUpgrade,
+  checkoutLoading,
+  paymentStatus,
+}) {
   const [copied, setCopied] = useState(false);
 
   if (!workspace) return null;
@@ -4756,6 +5155,7 @@ function SettingsContent({ workspace, onToggleFeedback, onCopyFeedbackLink }) {
     : "";
 
   const feedbackEnabled = workspace.feedback_enabled !== false;
+  const isPro = subscription?.plan === "pro" && subscription?.status === "active";
 
   async function handleCopy() {
     const success = await onCopyFeedbackLink();
@@ -4766,66 +5166,178 @@ function SettingsContent({ workspace, onToggleFeedback, onCopyFeedbackLink }) {
   }
 
   return (
-    <section className="panel">
-      <div className="panel-header">
-        <div>
-          <div className="eyebrow">Configuration</div>
-          <h2>Customer Feedback Form</h2>
+    <div>
+      {/* 1. PLAN & BILLING CARD */}
+      <section className="panel" style={{ marginBottom: "24px" }}>
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">PLAN & BILLING</div>
+            <h2>Workspace Subscription</h2>
+          </div>
+          <span className={isPro ? "status-pill active" : "status-pill paused"}>
+            {isPro ? "PRO ACTIVE" : "FREE PLAN"}
+          </span>
         </div>
 
-        <span className={feedbackEnabled ? "status-pill active" : "status-pill paused"}>
-          {feedbackEnabled ? "ACTIVE" : "PAUSED"}
-        </span>
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <div className="eyebrow">FEEDBACK DESTINATION URL</div>
-        <p style={{ color: "#64748b", fontSize: "12px", lineHeight: 1.6, maxWidth: "620px" }}>
-          Share this direct URL with customers to collect ratings, comments, and survey feedback.
+        <p style={{ color: "#64748b", fontSize: "12px", lineHeight: 1.6, maxWidth: "680px" }}>
+          Upgrade your workspace to unlock autonomous AI responses, real-time risk classification, and full feedback analytics.
         </p>
 
-        <div
-          style={{
-            marginTop: "14px",
-            padding: "12px 14px",
-            background: "#f8fafc",
-            border: "1px solid var(--border-color)",
-            borderRadius: "8px",
-            fontSize: "13px",
-            fontWeight: 600,
-            wordBreak: "break-all",
-            color: "#0f172a",
-          }}
-        >
-          {feedbackUrl || "Feedback link unavailable"}
+        <div className="billing-panel-grid">
+          {/* FREE TIER CARD */}
+          <div className={`billing-plan-card ${!isPro ? "current" : ""}`}>
+            <div>
+              <div className="billing-plan-header">
+                <span className="billing-plan-title">Starter (Free)</span>
+                {!isPro && <span className="plan-badge free">Current</span>}
+              </div>
+              <div className="billing-plan-price">
+                ₹0 <span>/ month</span>
+              </div>
+              <ul className="billing-features">
+                <li><span>✓</span> Manual review analysis</li>
+                <li><span>✓</span> Direct feedback form & QR Code</li>
+                <li><span>✓</span> Standard response queue</li>
+                <li style={{ color: "#94a3b8" }}>✕ Autonomous background processing</li>
+                <li style={{ color: "#94a3b8" }}>✕ Advanced sentiment risk alerts</li>
+              </ul>
+            </div>
+            {!isPro ? (
+              <button type="button" className="secondary-button" style={{ width: "100%" }} disabled>
+                Active Plan
+              </button>
+            ) : (
+              <span style={{ fontSize: "11px", color: "#94a3b8", textAlign: "center" }}>
+                Included in workspace
+              </span>
+            )}
+          </div>
+
+          {/* PRO TIER CARD */}
+          <div className={`billing-plan-card ${isPro ? "current" : ""}`}>
+            <div>
+              <div className="billing-plan-header">
+                <span className="billing-plan-title">ReviewAuto Pro</span>
+                {isPro && <span className="plan-badge pro">Active</span>}
+              </div>
+              <div className="billing-plan-price">
+                ₹1,999 <span>/ month</span>
+              </div>
+              <ul className="billing-features">
+                <li><span>✓</span> Autonomous 24/7 AI review pipeline</li>
+                <li><span>✓</span> High-risk complaint & bottleneck alerts</li>
+                <li><span>✓</span> 1-star human approval protection</li>
+                <li><span>✓</span> Direct QR codes & embeddable web widget</li>
+                <li><span>✓</span> Full activity velocity & sentiment analytics</li>
+              </ul>
+            </div>
+
+            {isPro ? (
+              <div>
+                <div className="billing-meta-row">
+                  <span>Status</span>
+                  <strong style={{ color: "#047857" }}>Active (Auto-Renewing)</strong>
+                </div>
+                {subscription.current_period_end && (
+                  <div className="billing-meta-row">
+                    <span>Renewal Date</span>
+                    <strong>{formatDate(subscription.current_period_end)}</strong>
+                  </div>
+                )}
+                {subscription.razorpay_payment_id && (
+                  <div className="billing-meta-row">
+                    <span>Payment Ref</span>
+                    <strong style={{ fontFamily: "monospace", fontSize: "10px" }}>
+                      {subscription.razorpay_payment_id.slice(0, 16)}...
+                    </strong>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="primary-button"
+                style={{ width: "100%", padding: "11px" }}
+                onClick={onUpgrade}
+                disabled={checkoutLoading}
+              >
+                {checkoutLoading ? "Opening Secure Checkout..." : "Upgrade to Pro — ₹1,999/mo"}
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="settings-actions" style={{ display: "flex", gap: "10px", marginTop: "14px" }}>
-          <button
-            type="button"
-            className="primary-button"
-            onClick={handleCopy}
-            disabled={!feedbackUrl}
+        {/* FEEDBACK BANNER ON STATUS */}
+        {paymentStatus && (
+          <div className={`billing-status-alert ${paymentStatus.state}`}>
+            <span>{paymentStatus.state === "success" ? "✓" : paymentStatus.state === "verifying" ? "◒" : "!"}</span>
+            <span>{paymentStatus.message}</span>
+          </div>
+        )}
+      </section>
+
+      {/* 2. CUSTOMER FEEDBACK FORM CONFIG */}
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <div className="eyebrow">Configuration</div>
+            <h2>Customer Feedback Form</h2>
+          </div>
+
+          <span className={feedbackEnabled ? "status-pill active" : "status-pill paused"}>
+            {feedbackEnabled ? "ACTIVE" : "PAUSED"}
+          </span>
+        </div>
+
+        <div style={{ marginTop: "20px" }}>
+          <div className="eyebrow">FEEDBACK DESTINATION URL</div>
+          <p style={{ color: "#64748b", fontSize: "12px", lineHeight: 1.6, maxWidth: "620px" }}>
+            Share this direct URL with customers to collect ratings, comments, and survey feedback.
+          </p>
+
+          <div
+            style={{
+              marginTop: "14px",
+              padding: "12px 14px",
+              background: "#f8fafc",
+              border: "1px solid var(--border-color)",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 600,
+              wordBreak: "break-all",
+              color: "#0f172a",
+            }}
           >
-            {copied ? "Copied to clipboard!" : "Copy feedback link"}
-          </button>
+            {feedbackUrl || "Feedback link unavailable"}
+          </div>
 
-          <button
-            type="button"
-            className="secondary-button"
-            onClick={onToggleFeedback}
-          >
-            {feedbackEnabled ? "Disable form access" : "Enable form access"}
-          </button>
-        </div>
+          <div className="settings-actions" style={{ display: "flex", gap: "10px", marginTop: "14px" }}>
+            <button
+              type="button"
+              className="primary-button"
+              onClick={handleCopy}
+              disabled={!feedbackUrl}
+            >
+              {copied ? "Copied to clipboard!" : "Copy feedback link"}
+            </button>
 
-        <div style={{ marginTop: "16px", fontSize: "11px", color: "#94a3b8" }}>
-          {feedbackEnabled
-            ? "Your public feedback endpoint is accepting new submissions."
-            : "Customer submissions are temporarily paused for this workspace."}
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={onToggleFeedback}
+            >
+              {feedbackEnabled ? "Disable form access" : "Enable form access"}
+            </button>
+          </div>
+
+          <div style={{ marginTop: "16px", fontSize: "11px", color: "#94a3b8" }}>
+            {feedbackEnabled
+              ? "Your public feedback endpoint is accepting new submissions."
+              : "Customer submissions are temporarily paused for this workspace."}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
 
