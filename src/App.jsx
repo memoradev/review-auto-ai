@@ -1,3 +1,4 @@
+import LegalModal from "./components/LegalModal";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { supabase } from "./lib/supabaseClient";
@@ -788,313 +789,273 @@ function LandingPageStyles() {
    LANDING PAGE COMPONENT (REVIEWAUTO PRD V1.0)
 ------------------------------------------------------------- */
 function LandingPage({ onGetStarted, onLogin }) {
-  return (
-    <div className="lp-root">
-      <LandingPageStyles />
+  const [legalPolicy, setLegalPolicy] = useState(null);
 
-      {/* NAVIGATION */}
-      <header className="lp-nav">
-        <div className="lp-nav-container">
-          <div className="lp-brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <div className="lp-brand-mark">R</div>
-            <div className="lp-brand-text">
-              ReviewAuto
-              <span className="lp-brand-tag">AI</span>
-            </div>
+  return (
+    <div className="landing-container" style={{ minHeight: "100vh", backgroundColor: "#0B0F19", color: "#F3F4F6", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      {/* 1. Header / Navigation */}
+      <header style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)", padding: "18px 24px", position: "sticky", top: 0, backgroundColor: "rgba(11, 15, 25, 0.9)", backdropFilter: "blur(12px)", zIndex: 100 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "22px", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}>⚡</span>
+            <span style={{ fontWeight: "700", fontSize: "19px", letterSpacing: "-0.02em", color: "#FFFFFF" }}>ReviewAuto AI</span>
           </div>
 
-          <nav className="lp-nav-links">
-            <a href="#problem" className="lp-nav-link">The Problem</a>
-            <a href="#how-it-works" className="lp-nav-link">How It Works</a>
-            <a href="#product" className="lp-nav-link">Product</a>
-          </nav>
-
-          <div className="lp-nav-actions">
-            <button type="button" className="lp-btn-ghost" onClick={onLogin}>
-              Log In
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <button
+              type="button"
+              onClick={onLogin}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", fontWeight: "600", cursor: "pointer", padding: "8px 14px", transition: "color 0.15s ease" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+            >
+              Sign In
             </button>
-            <button type="button" className="lp-btn-primary" onClick={onGetStarted}>
+            <button
+              type="button"
+              onClick={onGetStarted}
+              style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "9px 18px", fontSize: "14px", fontWeight: "600", cursor: "pointer", transition: "background 0.15s ease", boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1D4ED8")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#2563EB")}
+            >
               Get Started
             </button>
           </div>
         </div>
       </header>
 
-      {/* 1. HERO */}
-      <section className="lp-hero">
-        <div className="lp-eyebrow">
-          <span className="lp-eyebrow-dot" />
-          AUTONOMOUS CUSTOMER FEEDBACK INTELLIGENCE
+      {/* 2. Hero Section */}
+      <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 60px", textAlign: "center" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "rgba(37, 99, 235, 0.12)", border: "1px solid rgba(37, 99, 235, 0.25)", padding: "6px 14px", borderRadius: "100px", marginBottom: "28px" }}>
+          <span style={{ fontSize: "12px", color: "#60A5FA", fontWeight: "600", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+            Actionable Feedback Intelligence
+          </span>
         </div>
 
-        <h1 className="lp-hero-title">
-          Your customers are already telling you what's wrong.
-          <span>ReviewAuto helps you understand it and take action.</span>
+        <h1 style={{ fontSize: "clamp(34px, 5.5vw, 58px)", fontWeight: "800", lineHeight: "1.12", letterSpacing: "-0.03em", color: "#FFFFFF", margin: "0 auto 24px", maxWidth: "900px" }}>
+          Turn customer feedback into clear insights, appropriate responses, and actionable business decisions.
         </h1>
 
-        <p className="lp-hero-description">
-          Stop reacting to scattered one-off ratings. ReviewAuto gathers customer feedback,
-          decodes sentiment and operational risks in real-time, and drafts high-context responses autonomously.
+        <p style={{ fontSize: "clamp(16px, 2.2vw, 19px)", lineHeight: "1.6", color: "#9CA3AF", margin: "0 auto 36px", maxWidth: "680px" }}>
+          Your customers are already telling you what is wrong. ReviewAuto AI analyzes sentiment and risk, recommends internal actions, and drafts safe responses.
         </p>
 
-        <div className="lp-hero-actions">
-          <button type="button" className="lp-btn-primary lp-hero-btn-main" onClick={onGetStarted}>
-            Get Started Free
+        <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "64px" }}>
+          <button
+            type="button"
+            onClick={onGetStarted}
+            style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "10px", padding: "14px 28px", fontSize: "16px", fontWeight: "600", cursor: "pointer", transition: "transform 0.15s ease, background 0.15s ease", boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)" }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#1D4ED8";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#2563EB";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            Start Free Trial
           </button>
-          <button type="button" className="lp-hero-btn-secondary" onClick={onLogin}>
-            Sign In to Workspace
+          <button
+            type="button"
+            onClick={onLogin}
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", color: "#FFFFFF", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "10px", padding: "14px 28px", fontSize: "16px", fontWeight: "600", cursor: "pointer", transition: "background 0.15s ease" }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)")}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)")}
+          >
+            Sign In to Dashboard
           </button>
         </div>
 
-        <div className="lp-hero-subtext">
-          Instant setup • No card required • Direct QR & Web Deployment
-        </div>
-
-        {/* REAL PRODUCT VISUAL */}
-        <div className="lp-preview-wrapper">
-          <div className="lp-preview-chrome">
-            <div className="lp-preview-dots">
-              <span className="lp-preview-dot" />
-              <span className="lp-preview-dot" />
-              <span className="lp-preview-dot" />
+        {/* 3. Product Visual / Review Card Mockup */}
+        <div style={{ maxWidth: "820px", margin: "0 auto", backgroundColor: "#111827", borderRadius: "16px", border: "1px solid rgba(255, 255, 255, 0.12)", padding: "28px", textAlign: "left", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: "14px", flexWrap: "wrap", gap: "10px" }}>
+            <div>
+              <span style={{ fontWeight: "700", color: "#FFFFFF", fontSize: "16px" }}>Sarah M.</span>
+              <span style={{ color: "#F59E0B", marginLeft: "10px", fontSize: "15px" }}>★★☆☆☆</span>
             </div>
-            <div className="lp-preview-title">reviewauto-workspace // autonomous-engine: active</div>
+            <span style={{ fontSize: "12px", color: "#9CA3AF" }}>Direct Customer Feedback</span>
           </div>
 
-          <div className="lp-preview-content">
-            <div className="lp-mock-stats">
-              <div className="lp-mock-stat">
-                <span className="lp-mock-stat-label">Total Feedback</span>
-                <div className="lp-mock-stat-value">248</div>
-                <span className="lp-mock-stat-sub">Direct forms & QR codes</span>
-              </div>
-              <div className="lp-mock-stat">
-                <span className="lp-mock-stat-label">Average Rating</span>
-                <div className="lp-mock-stat-value">4.6 ★</div>
-                <span className="lp-mock-stat-sub">Across all locations</span>
-              </div>
-              <div className="lp-mock-stat">
-                <span className="lp-mock-stat-label">Needs Attention</span>
-                <div className="lp-mock-stat-value" style={{ color: "#b45309" }}>2</div>
-                <span className="lp-mock-stat-sub">Bottleneck detected</span>
-              </div>
-              <div className="lp-mock-stat">
-                <span className="lp-mock-stat-label">Auto-Replies</span>
-                <div className="lp-mock-stat-value" style={{ color: "#047857" }}>98.4%</div>
-                <span className="lp-mock-stat-sub">Processed by AI pipeline</span>
-              </div>
+          <p style={{ fontSize: "15px", lineHeight: "1.6", color: "#D1D5DB", marginBottom: "20px" }}>
+            "The food was excellent, but we waited 40 minutes for our main course on a Saturday evening. The table next to us arrived after us and received their food first."
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px", marginBottom: "20px" }}>
+            <div style={{ backgroundColor: "#1F2937", padding: "14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+              <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "#9CA3AF", marginBottom: "4px" }}>AI Assessment</div>
+              <div style={{ fontSize: "13px", color: "#EF4444", fontWeight: "600" }}>Risk: Medium (Service Delay)</div>
             </div>
 
-            <div className="lp-mock-review-card">
-              <div className="lp-mock-left">
-                <div className="lp-mock-rating-badge">
-                  <span className="lp-mock-rating-num">2/5</span>
-                  <span className="lp-mock-rating-stars">★★☆☆☆</span>
-                </div>
-                <div className="lp-mock-review-body">
-                  <strong>Marcus Sterling</strong>
-                  <span>14 mins ago • Direct QR</span>
-                  <p className="lp-mock-text">
-                    “Great food, but we waited 35 minutes for our table on a Friday night. Nobody checked in while we were waiting.”
-                  </p>
-                  <div className="lp-mock-pills">
-                    <span className="lp-pill lp-pill-risk">Risk: High</span>
-                    <span className="lp-pill lp-pill-sentiment">Sentiment: Negative</span>
-                    <span className="lp-pill lp-pill-intent">Intent: Service Delay</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="lp-mock-right">
-                <div>
-                  <div className="lp-mock-ai-header">✨ AI Generated Reply Draft</div>
-                  <p className="lp-mock-ai-reply">
-                    “Hi Marcus, thank you for praising our food, but a 35-minute wait without check-in is below our standard. I have shared this with our floor supervisor to improve peak-hour table pacing.”
-                  </p>
-                </div>
-                <div className="lp-mock-actions">
-                  <button type="button" className="lp-mock-btn-approve" onClick={onGetStarted}>
-                    Approve Reply
-                  </button>
-                  <button type="button" className="lp-mock-btn-edit" onClick={onGetStarted}>
-                    Edit Response
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. THE PROBLEM */}
-      <section id="problem" className="lp-section">
-        <div className="lp-section-inner">
-          <div className="lp-problem-header">
-            <div className="lp-eyebrow">
-              <span className="lp-eyebrow-dot" />
-              THE REALITY OF FEEDBACK
-            </div>
-            <h2>Reviews are noisy. Problems stay hidden.</h2>
-            <p>Every business collects customer feedback, but individual complaints mask systemic operational issues.</p>
-          </div>
-
-          <div className="lp-quotes-grid">
-            <div className="lp-quote-card">
-              <div className="lp-quote-text">
-                “Great food, but we waited 35 minutes.”
-              </div>
-              <div className="lp-quote-meta">
-                <span>Direct Table QR</span>
-                <span>★ ★ ☆ ☆ ☆</span>
-              </div>
-            </div>
-
-            <div className="lp-quote-card">
-              <div className="lp-quote-text">
-                “Friendly staff, slow service.”
-              </div>
-              <div className="lp-quote-meta">
-                <span>Customer Survey</span>
-                <span>★ ★ ★ ☆ ☆</span>
-              </div>
-            </div>
-
-            <div className="lp-quote-card">
-              <div className="lp-quote-text">
-                “Loved the coffee, but waiting 20 minutes for a pastry at lunch makes no sense.”
-              </div>
-              <div className="lp-quote-meta">
-                <span>Website Widget</span>
-                <span>★ ★ ★ ☆ ☆</span>
-              </div>
+            <div style={{ backgroundColor: "#1F2937", padding: "14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+              <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "#9CA3AF", marginBottom: "4px" }}>Recommended Action</div>
+              <div style={{ fontSize: "13px", color: "#60A5FA", fontWeight: "600" }}>Review Kitchen Expediting</div>
             </div>
           </div>
 
-          <div className="lp-problem-takeaway">
-            <strong>You see individual reviews. ReviewAuto helps you see the pattern.</strong>
-            <p>
-              When complaints arrive one at a time, managers dismiss them as bad luck or an off day. ReviewAuto aggregates every channel, detects recurring root causes, and tells you exactly what operational adjustment to make.
+          <div style={{ backgroundColor: "rgba(31, 41, 55, 0.6)", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+              <span style={{ fontSize: "12px", color: "#9CA3AF", fontWeight: "600" }}>AI Response Draft</span>
+              <span style={{ fontSize: "11px", backgroundColor: "#FEF3C7", color: "#92400E", padding: "3px 8px", borderRadius: "4px", fontWeight: "600" }}>
+                Human Approval Required
+              </span>
+            </div>
+            <p style={{ fontSize: "13px", lineHeight: "1.5", color: "#9CA3AF", margin: 0 }}>
+              "Hi Sarah, thank you for praising our food. We sincerely apologize for the 40-minute wait on Saturday evening. We have addressed this with our kitchen expediter to ensure fair ticket sequencing. We hope to welcome you back for a seamless experience."
             </p>
           </div>
         </div>
       </section>
 
-      {/* 3. HOW IT WORKS */}
-      <section id="how-it-works" className="lp-section lp-how-bg">
-        <div className="lp-section-inner">
-          <div className="lp-problem-header">
-            <div className="lp-eyebrow">
-              <span className="lp-eyebrow-dot" />
-              STREAMLINED PIPELINE
-            </div>
-            <h2>How ReviewAuto Works</h2>
-            <p>From customer submission to operational resolution in four clear stages.</p>
+      {/* 4. Problem Section */}
+      <section style={{ maxWidth: "1000px", margin: "0 auto", padding: "60px 24px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: "700", color: "#FFFFFF", marginBottom: "12px" }}>
+            You see individual reviews. ReviewAuto helps you see the pattern.
+          </h2>
+          <p style={{ color: "#9CA3AF", fontSize: "16px", maxWidth: "600px", margin: "0 auto" }}>
+            Isolated complaints usually point to systemic operational bottlenecks.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
+          <div style={{ backgroundColor: "#111827", padding: "24px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+            <div style={{ color: "#F59E0B", marginBottom: "8px" }}>★★★☆☆</div>
+            <p style={{ fontSize: "14px", color: "#D1D5DB", lineHeight: "1.5", margin: 0 }}>
+              "Loved the food, but the table wait was 35 minutes."
+            </p>
           </div>
 
-          <div className="lp-steps-grid">
-            <div className="lp-step-card">
-              <span className="lp-step-num">STEP 01</span>
-              <h3 className="lp-step-title">Collect feedback</h3>
-              <p className="lp-step-desc">
-                Deploy instant table QR codes, custom web forms, and embed widgets to capture impressions before they escalate to public negative reviews.
-              </p>
-            </div>
+          <div style={{ backgroundColor: "#111827", padding: "24px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+            <div style={{ color: "#F59E0B", marginBottom: "8px" }}>★★★☆☆</div>
+            <p style={{ fontSize: "14px", color: "#D1D5DB", lineHeight: "1.5", margin: 0 }}>
+              "Staff was very friendly, but service was slow."
+            </p>
+          </div>
 
-            <div className="lp-step-card">
-              <span className="lp-step-num">STEP 02</span>
-              <h3 className="lp-step-title">AI analyzes it</h3>
-              <p className="lp-step-desc">
-                ReviewAuto instantly parses sentiment, categorizes customer intent, and scores liability risks for every single submission.
-              </p>
-            </div>
-
-            <div className="lp-step-card">
-              <span className="lp-step-num">STEP 03</span>
-              <h3 className="lp-step-title">Understand the problems</h3>
-              <p className="lp-step-desc">
-                Identify service bottlenecks, staff friction, or kitchen delays. Recurring patterns are flagged so you fix the root cause.
-              </p>
-            </div>
-
-            <div className="lp-step-card">
-              <span className="lp-step-num">STEP 04</span>
-              <h3 className="lp-step-title">Take action</h3>
-              <p className="lp-step-desc">
-                Approve contextual AI responses, escalate high-risk complaints to management, and publish verified replies with one click.
-              </p>
-            </div>
+          <div style={{ backgroundColor: "#111827", padding: "24px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+            <div style={{ color: "#EF4444", marginBottom: "8px" }}>★★☆☆☆</div>
+            <p style={{ fontSize: "14px", color: "#D1D5DB", lineHeight: "1.5", margin: 0 }}>
+              "Waited 25 minutes just to receive our dessert."
+            </p>
           </div>
         </div>
       </section>
 
-      {/* 4. PRODUCT */}
-      <section id="product" className="lp-section">
-        <div className="lp-section-inner">
-          <div className="lp-problem-header">
-            <div className="lp-eyebrow">
-              <span className="lp-eyebrow-dot" />
-              INTELLIGENCE IN ACTION
-            </div>
-            <h2>Built for business operators, not algorithms.</h2>
-            <p>Everything you need to safeguard your reputation and improve your operations.</p>
+      {/* 5. How It Works */}
+      <section style={{ maxWidth: "1000px", margin: "0 auto", padding: "60px 24px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+        <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: "700", color: "#FFFFFF", textAlign: "center", marginBottom: "48px" }}>
+          How ReviewAuto AI Works
+        </h2>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px" }}>
+          <div>
+            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>01</div>
+            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Collect</h3>
+            <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
+              Capture first-party reviews via QR code table stands, direct links (/f/:slug), or embeddable website widgets.
+            </p>
           </div>
 
-          <div className="lp-product-grid">
-            <div className="lp-feature-card">
-              <div className="lp-feature-icon">★</div>
-              <h3>Real-Time Sentiment</h3>
-              <p>
-                Identifies nuanced sentiment across positive, mixed, and negative reviews—flagging subtle passive dissatisfaction that ordinary rating averages miss.
-              </p>
-            </div>
+          <div>
+            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>02</div>
+            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Analyze</h3>
+            <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
+              Groq AI breaks down sentiment, evaluates operational risk, and determines customer intent without manual sorting.
+            </p>
+          </div>
 
-            <div className="lp-feature-card">
-              <div className="lp-feature-icon">⚡</div>
-              <h3>Automated Risk Detection</h3>
-              <p>
-                Flags critical issues such as food safety, extreme wait times, billing discrepancies, or staff misconduct so managers can intervene immediately.
-              </p>
-            </div>
+          <div>
+            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>03</div>
+            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Understand</h3>
+            <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
+              The Action Engine recommends specific operational fixes so your team fixes the root cause rather than just apologizing.
+            </p>
+          </div>
 
-            <div className="lp-feature-card">
-              <div className="lp-feature-icon">⌖</div>
-              <h3>Customer Intent Recognition</h3>
-              <p>
-                Separates compliments from operational grievances, refund requests, and product inquiries. Know exactly why customers are reaching out.
-              </p>
-            </div>
-
-            <div className="lp-feature-card">
-              <div className="lp-feature-icon">▣</div>
-              <h3>Autonomous & Approved Replies</h3>
-              <p>
-                Let safe responses publish automatically while keeping delicate or high-risk feedback queued for one-click human review and editing.
-              </p>
-            </div>
+          <div>
+            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>04</div>
+            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Respond & Act</h3>
+            <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
+              Safe reviews automate smoothly. 1-star and critical reviews strictly wait for your review and approval.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* 5. FINAL CTA */}
-      <section className="lp-cta-section">
-        <h2>Your customers are giving you the answers.</h2>
-        <h3>ReviewAuto helps you find them.</h3>
-        <button type="button" className="lp-cta-btn" onClick={onGetStarted}>
-          Get Started with ReviewAuto
+      {/* 6. Final Call to Action */}
+      <section style={{ maxWidth: "800px", margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
+        <h2 style={{ fontSize: "clamp(26px, 4vw, 40px)", fontWeight: "700", color: "#FFFFFF", marginBottom: "16px" }}>
+          Your customers are giving you the answers. ReviewAuto helps you find them.
+        </h2>
+        <p style={{ color: "#9CA3AF", fontSize: "16px", marginBottom: "32px" }}>
+          Start collecting first-party reviews and uncovering actionable business intelligence today.
+        </p>
+        <button
+          type="button"
+          onClick={onGetStarted}
+          style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "10px", padding: "14px 32px", fontSize: "16px", fontWeight: "600", cursor: "pointer", boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)" }}
+        >
+          Get Started Free
         </button>
       </section>
 
-      {/* FOOTER */}
-      <footer className="lp-footer">
-        <div className="lp-footer-container">
-          <div>
-            <strong>ReviewAuto</strong> — Autonomous Feedback Intelligence & Operational Insights.
+      {/* 7. Footer With Functional Legal Modal Links */}
+      <footer style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", padding: "36px 24px", backgroundColor: "#080B11" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "20px" }}>
+          <div style={{ fontSize: "14px", color: "#6B7280" }}>
+            © {new Date().getFullYear()} ReviewAuto AI. All rights reserved.
           </div>
-          <div>
-            © {new Date().getFullYear()} ReviewAuto. All rights reserved.
+
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", alignItems: "center" }}>
+            <button
+              type="button"
+              onClick={() => setLegalPolicy("privacy")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+            >
+              Privacy Policy
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLegalPolicy("terms")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+            >
+              Terms of Service
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLegalPolicy("cookies")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+            >
+              Cookies Policy
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLegalPolicy("refund")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+            >
+              Refund Policy
+            </button>
           </div>
         </div>
       </footer>
+
+      {/* 8. Self-Contained Legal Modal (Opens when any policy button is clicked) */}
+      <LegalModal
+        policy={legalPolicy}
+        onClose={() => setLegalPolicy(null)}
+      />
     </div>
   );
 }
