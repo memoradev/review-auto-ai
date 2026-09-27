@@ -3125,7 +3125,6 @@ function useIsMobile() {
 }
 
 function MobileDashboard(props) {
-  // Defensive props fallback to ensure zero breaking changes
   const business = props.business || props.workspace || {};
   const reviews = Array.isArray(props.reviews) ? props.reviews : [];
   const onNavigate = props.onNavigate || props.setCurrentTab || props.setActiveTab || (() => {});
@@ -3133,23 +3132,22 @@ function MobileDashboard(props) {
   const onAnalyzeReview = props.onAnalyzeReview || props.onAnalyze || (() => {});
 
   const [copied, setCopied] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("all"); // 'all' | 'needs_attention' | 'automated'
+  const [filter, setFilter] = useState("all"); // 'all' | 'needs_review' | 'automated'
 
-  // Dynamic feedback URL
   const feedbackSlug = business.feedback_slug || "";
   const feedbackUrl = feedbackSlug
     ? `${typeof window !== "undefined" ? window.location.origin : ""}/f/${feedbackSlug}`
     : "";
 
-  function handleCopyLink() {
+  function handleCopy() {
     if (!feedbackUrl) return;
     navigator.clipboard.writeText(feedbackUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
-  // Triage Calculations
-  const needsAttentionList = reviews.filter(
+  // Triage logic matching Master Context
+  const pendingApprovalReviews = reviews.filter(
     (r) =>
       r.rating === 1 ||
       r.ai_risk_level === "high" ||
@@ -3158,247 +3156,284 @@ function MobileDashboard(props) {
       (r.reply_status === "not_replied" && r.ai_generated_reply)
   );
 
-  const automatedList = reviews.filter(
+  const autoProcessedReviews = reviews.filter(
     (r) =>
       r.automation_status === "approved" ||
       (r.rating >= 4 && r.reply_status === "replied")
   );
 
-  const displayedReviews =
-    activeFilter === "needs_attention"
-      ? needsAttentionList
-      : activeFilter === "automated"
-      ? automatedList
+  const displayedList =
+    filter === "needs_review"
+      ? pendingApprovalReviews
+      : filter === "automated"
+      ? autoProcessedReviews
       : reviews;
 
+  // Clean SVG Icons (Linear / Feather standard)
+  const Icons = {
+    ShieldCheck: () => (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+    ),
+    Copy: () => (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+      </svg>
+    ),
+    Check: () => (
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    ),
+    Star: ({ filled }) => (
+      <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? "#F59E0B" : "#E4E4E7"} stroke={filled ? "#F59E0B" : "#D4D4D8"} strokeWidth="1">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      </svg>
+    ),
+    Activity: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+      </svg>
+    ),
+    MessageSquare: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+    ),
+    Cpu: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="16" height="16" x="4" y="4" rx="2" />
+        <rect width="6" height="6" x="9" y="9" rx="1" />
+        <path d="M15 2v2" /><path d="M15 20v2" /><path d="M2 15h2" /><path d="M2 9h2" />
+        <path d="M20 15h2" /><path d="M20 9h2" /><path d="M9 2v2" /><path d="M9 20v2" />
+      </svg>
+    ),
+    Settings: () => (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+  };
+
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#F8FAFC", color: "#0F172A", paddingBottom: "90px", boxSizing: "border-box", fontFamily: "system-ui, -apple-system, sans-serif" }}>
-      {/* 1. Live Engine Status Bar */}
-      <div style={{ backgroundColor: "#0F172A", color: "#FFFFFF", padding: "12px 16px", borderBottom: "1px solid #1E293B" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#FAFAFA", color: "#09090B", paddingBottom: "88px", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif", WebkitFontSmoothing: "antialiased" }}>
+      {/* 1. Precision Status Header (Stripe/Linear Style) */}
+      <header style={{ backgroundColor: "#FFFFFF", borderBottom: "1px solid #E4E4E7", position: "sticky", top: 0, zIndex: 50 }}>
+        <div style={{ padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10B981", display: "inline-block", boxShadow: "0 0 8px #10B981" }} />
-            <span style={{ fontSize: "12px", fontWeight: "700", letterSpacing: "0.04em", textTransform: "uppercase", color: "#E2E8F0" }}>
-              Engine: Active
+            <span style={{ width: "7px", height: "7px", borderRadius: "50%", backgroundColor: "#10B981", display: "inline-block" }} />
+            <span style={{ fontSize: "13px", fontWeight: "600", color: "#18181B", letterSpacing: "-0.01em" }}>
+              {business.name || "Workspace"}
             </span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(255, 255, 255, 0.08)", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", color: "#CBD5E1" }}>
-            <span>🛡️</span>
-            <span>1-Star Human Guardrail ON</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "#F4F4F5", border: "1px solid #E4E4E7", padding: "3px 8px", borderRadius: "6px", fontSize: "11px", color: "#52525B", fontWeight: "500" }}>
+            <Icons.ShieldCheck />
+            <span>1★ Guardrail Active</span>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
-        {/* 2. Business Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          <div>
-            <h1 style={{ fontSize: "20px", fontWeight: "800", color: "#0F172A", margin: "0 0 2px 0", letterSpacing: "-0.02em" }}>
-              {business.name || "My Business"}
-            </h1>
-            <p style={{ fontSize: "12px", color: "#64748B", margin: 0 }}>
-              Autonomous Review Operations
-            </p>
+      <div style={{ maxWidth: "600px", margin: "0 auto", padding: "16px 16px 0 16px" }}>
+        {/* 2. Micro Collection Strip */}
+        <div style={{ backgroundColor: "#FFFFFF", border: "1px solid #E4E4E7", borderRadius: "10px", padding: "10px 14px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: "10px" }}>
+            <span style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.04em", color: "#71717A", fontWeight: "600", display: "block", marginBottom: "2px" }}>
+              Collection Endpoint
+            </span>
+            <span style={{ fontSize: "12px", fontFamily: "monospace", color: "#27272A" }}>
+              {feedbackSlug ? `/f/${feedbackSlug}` : "Set in Settings"}
+            </span>
           </div>
+
           <button
             type="button"
-            onClick={() => onNavigate("settings")}
-            style={{ backgroundColor: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "6px 12px", fontSize: "12px", fontWeight: "600", color: "#475569", cursor: "pointer" }}
+            onClick={handleCopy}
+            disabled={!feedbackSlug}
+            style={{ backgroundColor: copied ? "#10B981" : "#18181B", color: "#FFFFFF", border: "none", borderRadius: "6px", padding: "6px 12px", fontSize: "12px", fontWeight: "500", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", transition: "all 0.15s ease", minWidth: "70px", justifyContent: "center" }}
           >
-            ⚙️ Settings
+            {copied ? <><Icons.Check /><span>Copied</span></> : <><Icons.Copy /><span>Copy</span></>}
           </button>
         </div>
 
-        {/* 3. Automation Triage Hero Cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "16px" }}>
-          {/* Needs Attention Card */}
+        {/* 3. Executive KPI Metrics (High-Contrast Segmented Cards) */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
+          {/* Attention Metric */}
           <div
-            onClick={() => setActiveFilter(activeFilter === "needs_attention" ? "all" : "needs_attention")}
+            onClick={() => setFilter(filter === "needs_review" ? "all" : "needs_review")}
             style={{
-              backgroundColor: activeFilter === "needs_attention" ? "#FEF2F2" : "#FFFFFF",
-              border: activeFilter === "needs_attention" ? "2px solid #EF4444" : "1px solid #E2E8F0",
-              borderRadius: "14px",
+              backgroundColor: "#FFFFFF",
+              border: filter === "needs_review" ? "2px solid #E11D48" : "1px solid #E4E4E7",
+              borderRadius: "12px",
               padding: "14px",
               cursor: "pointer",
               transition: "all 0.15s ease",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "#EF4444", textTransform: "uppercase", letterSpacing: "0.04em" }}>Attention</span>
-              <span style={{ fontSize: "14px" }}>⚠️</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <span style={{ fontSize: "11px", fontWeight: "600", color: "#71717A", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                Needs Review
+              </span>
+              {pendingApprovalReviews.length > 0 && (
+                <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#E11D48" }} />
+              )}
             </div>
-            <div style={{ fontSize: "24px", fontWeight: "800", color: "#0F172A" }}>
-              {needsAttentionList.length}
+            <div style={{ fontSize: "28px", fontWeight: "700", color: "#09090B", letterSpacing: "-0.03em" }}>
+              {pendingApprovalReviews.length}
             </div>
-            <div style={{ fontSize: "11px", color: "#64748B", marginTop: "2px" }}>
-              Human sign-off required
+            <div style={{ fontSize: "11px", color: "#71717A", marginTop: "2px" }}>
+              Pending owner approval
             </div>
           </div>
 
-          {/* Autopilot Handled Card */}
+          {/* Autopilot Handled Metric */}
           <div
-            onClick={() => setActiveFilter(activeFilter === "automated" ? "all" : "automated")}
+            onClick={() => setFilter(filter === "automated" ? "all" : "automated")}
             style={{
-              backgroundColor: activeFilter === "automated" ? "#F0FDF4" : "#FFFFFF",
-              border: activeFilter === "automated" ? "2px solid #10B981" : "1px solid #E2E8F0",
-              borderRadius: "14px",
+              backgroundColor: "#FFFFFF",
+              border: filter === "automated" ? "2px solid #09090B" : "1px solid #E4E4E7",
+              borderRadius: "12px",
               padding: "14px",
               cursor: "pointer",
               transition: "all 0.15s ease",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-              <span style={{ fontSize: "11px", fontWeight: "700", color: "#10B981", textTransform: "uppercase", letterSpacing: "0.04em" }}>Autopilot</span>
-              <span style={{ fontSize: "14px" }}>⚡</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+              <span style={{ fontSize: "11px", fontWeight: "600", color: "#71717A", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                Autopilot
+              </span>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#10B981" }} />
             </div>
-            <div style={{ fontSize: "24px", fontWeight: "800", color: "#0F172A" }}>
-              {automatedList.length}
+            <div style={{ fontSize: "28px", fontWeight: "700", color: "#09090B", letterSpacing: "-0.03em" }}>
+              {autoProcessedReviews.length}
             </div>
-            <div style={{ fontSize: "11px", color: "#64748B", marginTop: "2px" }}>
-              Processed safely by AI
+            <div style={{ fontSize: "11px", color: "#71717A", marginTop: "2px" }}>
+              Routed via safety rules
             </div>
           </div>
         </div>
 
-        {/* 4. Instant 1-Tap Collection Hub */}
-        <div style={{ backgroundColor: "#FFFFFF", borderRadius: "14px", border: "1px solid #E2E8F0", padding: "14px 16px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-            <span style={{ fontSize: "12px", fontWeight: "700", color: "#0F172A", textTransform: "uppercase", letterSpacing: "0.03em" }}>
-              Customer Feedback Hub
-            </span>
-            <span style={{ fontSize: "11px", color: business.feedback_enabled ? "#10B981" : "#64748B", fontWeight: "600" }}>
-              {business.feedback_enabled ? "● Link Active" : "○ Disabled"}
-            </span>
-          </div>
-
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-            <div style={{ flex: 1, backgroundColor: "#F1F5F9", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", color: "#475569", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {feedbackUrl || "Configure slug in Settings"}
-            </div>
+        {/* 4. Linear-Style Segmented View Controls */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
+          <div style={{ display: "flex", backgroundColor: "#F4F4F5", padding: "3px", borderRadius: "8px", border: "1px solid #E4E4E7" }}>
             <button
               type="button"
-              onClick={handleCopyLink}
-              disabled={!feedbackUrl}
-              style={{ backgroundColor: copied ? "#10B981" : "#0F172A", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "8px 14px", fontSize: "12px", fontWeight: "600", cursor: "pointer", transition: "background 0.15s ease", minWidth: "75px" }}
+              onClick={() => setFilter("all")}
+              style={{ background: filter === "all" ? "#FFFFFF" : "none", border: "none", borderRadius: "6px", padding: "4px 10px", fontSize: "12px", fontWeight: filter === "all" ? "600" : "500", color: filter === "all" ? "#09090B" : "#71717A", cursor: "pointer", boxShadow: filter === "all" ? "0 1px 2px rgba(0,0,0,0.06)" : "none" }}
             >
-              {copied ? "Copied!" : "Copy"}
+              All ({reviews.length})
             </button>
-          </div>
-        </div>
-
-        {/* 5. Live Feed Section Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-          <div>
-            <h2 style={{ fontSize: "15px", fontWeight: "700", color: "#0F172A", margin: 0 }}>
-              {activeFilter === "needs_attention"
-                ? "Reviews Requiring Attention"
-                : activeFilter === "automated"
-                ? "Autopilot Processed Reviews"
-                : "Live Review Feed"}
-            </h2>
-            <p style={{ fontSize: "11px", color: "#64748B", margin: "2px 0 0 0" }}>
-              Showing {displayedReviews.length} records
-            </p>
-          </div>
-
-          {activeFilter !== "all" && (
             <button
               type="button"
-              onClick={() => setActiveFilter("all")}
-              style={{ background: "none", border: "none", color: "#2563EB", fontSize: "12px", fontWeight: "600", cursor: "pointer", padding: "4px" }}
+              onClick={() => setFilter("needs_review")}
+              style={{ background: filter === "needs_review" ? "#FFFFFF" : "none", border: "none", borderRadius: "6px", padding: "4px 10px", fontSize: "12px", fontWeight: filter === "needs_review" ? "600" : "500", color: filter === "needs_review" ? "#E11D48" : "#71717A", cursor: "pointer", boxShadow: filter === "needs_review" ? "0 1px 2px rgba(0,0,0,0.06)" : "none" }}
             >
-              Clear Filter
+              Attention ({pendingApprovalReviews.length})
             </button>
-          )}
+          </div>
+
+          <span style={{ fontSize: "11px", color: "#A1A1AA" }}>
+            Feed Sync Active
+          </span>
         </div>
 
-        {/* 6. Feed Cards (Mobile-Native Cards, Not Table Columns) */}
-        {displayedReviews.length === 0 ? (
-          <div style={{ backgroundColor: "#FFFFFF", borderRadius: "14px", border: "1px dashed #CBD5E1", padding: "36px 16px", textAlign: "center" }}>
-            <span style={{ fontSize: "28px", display: "block", marginBottom: "8px" }}>✨</span>
-            <div style={{ fontSize: "14px", fontWeight: "600", color: "#0F172A", marginBottom: "4px" }}>All Caught Up</div>
-            <div style={{ fontSize: "12px", color: "#64748B" }}>No reviews match the selected filter.</div>
+        {/* 5. Production Feed (Stripe Radar / Linear Issue Architecture) */}
+        {displayedList.length === 0 ? (
+          <div style={{ backgroundColor: "#FFFFFF", borderRadius: "12px", border: "1px dashed #D4D4D8", padding: "36px 16px", textAlign: "center" }}>
+            <div style={{ fontSize: "13px", fontWeight: "600", color: "#18181B", marginBottom: "2px" }}>Queue Clear</div>
+            <div style={{ fontSize: "12px", color: "#71717A" }}>No items matching this triage state.</div>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {displayedReviews.map((review) => {
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {displayedList.map((review) => {
               const isOneStar = review.rating === 1;
               const isHighRisk = review.ai_risk_level === "high" || review.ai_risk_level === "critical";
-              const requiresApproval = isOneStar || isHighRisk || review.automation_status === "awaiting_approval";
+              const requiresSignoff = isOneStar || isHighRisk || review.automation_status === "awaiting_approval";
 
               return (
                 <div
                   key={review.id || review.idx}
                   style={{
                     backgroundColor: "#FFFFFF",
-                    borderRadius: "14px",
-                    border: requiresApproval ? "1px solid #FECACA" : "1px solid #E2E8F0",
+                    borderRadius: "12px",
+                    border: requiresSignoff ? "1px solid #FECDD3" : "1px solid #E4E4E7",
                     padding: "16px",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)",
                   }}
                 >
-                  {/* Card Header: Customer & Rating */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
-                    <div>
-                      <div style={{ fontWeight: "700", fontSize: "14px", color: "#0F172A" }}>
-                        {review.customer_name || "Anonymous Customer"}
-                      </div>
-                      <div style={{ color: "#F59E0B", fontSize: "13px", marginTop: "2px" }}>
-                        {"★".repeat(review.rating || 5)}
-                        {"☆".repeat(5 - (review.rating || 5))}
+                  {/* Card Header: Identity + Rating */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontWeight: "600", fontSize: "13px", color: "#09090B" }}>
+                        {review.customer_name || "Anonymous"}
+                      </span>
+                      <div style={{ display: "flex", gap: "2px" }}>
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Icons.Star key={s} filled={s <= (review.rating || 5)} />
+                        ))}
                       </div>
                     </div>
 
-                    {requiresApproval && (
-                      <span style={{ backgroundColor: "#FEF2F2", color: "#DC2626", border: "1px solid #FEE2E2", fontSize: "10px", fontWeight: "700", padding: "3px 8px", borderRadius: "6px", textTransform: "uppercase" }}>
-                        Human Review
+                    {requiresSignoff ? (
+                      <span style={{ fontSize: "10px", fontWeight: "600", letterSpacing: "0.03em", textTransform: "uppercase", backgroundColor: "#FFF1F2", color: "#E11D48", border: "1px solid #FFE4E6", padding: "2px 6px", borderRadius: "4px" }}>
+                        Action Required
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: "10px", color: "#A1A1AA" }}>
+                        Resolved
                       </span>
                     )}
                   </div>
 
-                  {/* Review Text */}
-                  <p style={{ fontSize: "13px", lineHeight: "1.5", color: "#334155", margin: "0 0 12px 0" }}>
+                  {/* Customer Review Body */}
+                  <p style={{ fontSize: "13px", lineHeight: "1.5", color: "#27272A", margin: "0 0 12px 0" }}>
                     "{review.review_text}"
                   </p>
 
-                  {/* AI Intelligence Strip */}
+                  {/* AI Diagnostic Strip (Linear-Style Tags) */}
                   {(review.ai_sentiment || review.ai_risk_level || review.ai_action_type) && (
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}>
                       {review.ai_risk_level && (
-                        <span style={{ fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px", backgroundColor: isHighRisk ? "#FEE2E2" : "#F1F5F9", color: isHighRisk ? "#DC2626" : "#475569" }}>
+                        <span style={{ fontSize: "11px", fontWeight: "500", padding: "2px 7px", borderRadius: "5px", backgroundColor: isHighRisk ? "#FFF1F2" : "#F4F4F5", color: isHighRisk ? "#BE123C" : "#52525B", border: isHighRisk ? "1px solid #FFE4E6" : "1px solid #E4E4E7" }}>
                           Risk: {review.ai_risk_level}
                         </span>
                       )}
                       {review.ai_sentiment && (
-                        <span style={{ fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px", backgroundColor: review.ai_sentiment === "positive" ? "#DCFCE7" : review.ai_sentiment === "negative" ? "#FEE2E2" : "#F1F5F9", color: review.ai_sentiment === "positive" ? "#15803D" : review.ai_sentiment === "negative" ? "#B91C1C" : "#475569" }}>
+                        <span style={{ fontSize: "11px", fontWeight: "500", padding: "2px 7px", borderRadius: "5px", backgroundColor: review.ai_sentiment === "positive" ? "#F0FDF4" : "#F4F4F5", color: review.ai_sentiment === "positive" ? "#15803D" : "#52525B", border: review.ai_sentiment === "positive" ? "1px solid #DCFCE7" : "1px solid #E4E4E7" }}>
                           {review.ai_sentiment}
                         </span>
                       )}
                       {review.ai_action_type && (
-                        <span style={{ fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px", backgroundColor: "#EFF6FF", color: "#1D4ED8" }}>
-                          Action: {review.ai_action_type.replace(/_/g, " ")}
+                        <span style={{ fontSize: "11px", fontWeight: "500", padding: "2px 7px", borderRadius: "5px", backgroundColor: "#EFF6FF", color: "#1D4ED8", border: "1px solid #DBEAFE" }}>
+                          {review.ai_action_type.replace(/_/g, " ")}
                         </span>
                       )}
                     </div>
                   )}
 
-                  {/* Operational Recommendation Box */}
+                  {/* Operational Root Cause (Linear Radar Detail) */}
                   {review.ai_action_reason && (
-                    <div style={{ backgroundColor: "#F8FAFC", borderLeft: "3px solid #3B82F6", padding: "8px 12px", borderRadius: "0 8px 8px 0", fontSize: "12px", color: "#475569", marginBottom: "12px" }}>
-                      <strong>Operational Note:</strong> {review.ai_action_reason}
+                    <div style={{ borderLeft: "2px solid #09090B", paddingLeft: "10px", margin: "0 0 12px 0" }}>
+                      <div style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.04em", color: "#71717A", fontWeight: "600" }}>
+                        Internal Operation Remedy
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#3F3F46", marginTop: "2px" }}>
+                        {review.ai_action_reason}
+                      </div>
                     </div>
                   )}
 
-                  {/* AI Generated Reply Draft & Action Button */}
+                  {/* AI Suggested Response Box */}
                   {review.ai_generated_reply ? (
-                    <div style={{ backgroundColor: "#F1F5F9", borderRadius: "10px", padding: "12px", marginTop: "8px" }}>
-                      <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", textTransform: "uppercase", marginBottom: "4px" }}>
-                        Suggested Response
+                    <div style={{ backgroundColor: "#F4F4F5", borderRadius: "8px", padding: "10px 12px", marginTop: "10px", border: "1px solid #E4E4E7" }}>
+                      <div style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.04em", color: "#71717A", fontWeight: "600", marginBottom: "4px" }}>
+                        AI Drafted Reply
                       </div>
-                      <p style={{ fontSize: "12px", color: "#334155", lineHeight: "1.4", margin: "0 0 10px 0" }}>
+                      <p style={{ fontSize: "12px", lineHeight: "1.45", color: "#3F3F46", margin: "0 0 10px 0" }}>
                         "{review.ai_generated_reply}"
                       </p>
 
@@ -3406,14 +3441,14 @@ function MobileDashboard(props) {
                         <button
                           type="button"
                           onClick={() => onApproveReview(review)}
-                          style={{ flex: 1, backgroundColor: "#0F172A", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "8px", fontSize: "12px", fontWeight: "600", cursor: "pointer", minHeight: "38px" }}
+                          style={{ flex: 1, backgroundColor: "#09090B", color: "#FFFFFF", border: "none", borderRadius: "6px", padding: "7px 12px", fontSize: "12px", fontWeight: "600", cursor: "pointer", transition: "background 0.15s ease" }}
                         >
-                          Approve & Reply
+                          Approve Response
                         </button>
                         <button
                           type="button"
                           onClick={() => onNavigate("reviews")}
-                          style={{ backgroundColor: "#FFFFFF", color: "#475569", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", fontWeight: "600", cursor: "pointer", minHeight: "38px" }}
+                          style={{ backgroundColor: "#FFFFFF", color: "#18181B", border: "1px solid #D4D4D8", borderRadius: "6px", padding: "7px 12px", fontSize: "12px", fontWeight: "500", cursor: "pointer" }}
                         >
                           Edit
                         </button>
@@ -3424,10 +3459,9 @@ function MobileDashboard(props) {
                       <button
                         type="button"
                         onClick={() => onAnalyzeReview(review)}
-                        style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "8px 14px", fontSize: "12px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+                        style={{ backgroundColor: "#18181B", color: "#FFFFFF", border: "none", borderRadius: "6px", padding: "6px 12px", fontSize: "12px", fontWeight: "500", cursor: "pointer" }}
                       >
-                        <span>⚡</span>
-                        <span>Analyze with AI</span>
+                        Run AI Diagnostic
                       </button>
                     </div>
                   )}
@@ -3438,42 +3472,42 @@ function MobileDashboard(props) {
         )}
       </div>
 
-      {/* 7. Native Mobile App Bottom Navigation Bar */}
+      {/* 6. Stripe/Linear Native Bottom Navigation (SVG Stroke Icons) */}
       <nav
         style={{
           position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: "#FFFFFF",
-          borderTop: "1px solid #E2E8F0",
+          backgroundColor: "rgba(255, 255, 255, 0.92)",
+          backdropFilter: "blur(16px)",
+          borderTop: "1px solid #E4E4E7",
           display: "flex",
           justifyContent: "space-around",
           alignItems: "center",
-          padding: "10px 0 14px 0",
-          zIndex: 999,
-          boxShadow: "0 -4px 10px rgba(0,0,0,0.03)",
+          padding: "8px 0 12px 0",
+          zIndex: 100,
         }}
       >
         <button
           type="button"
           onClick={() => onNavigate("dashboard")}
-          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#0F172A", cursor: "pointer" }}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "#09090B", cursor: "pointer", minWidth: "64px" }}
         >
-          <span style={{ fontSize: "18px" }}>📊</span>
-          <span style={{ fontSize: "10px", fontWeight: "700" }}>Dashboard</span>
+          <Icons.Activity />
+          <span style={{ fontSize: "10px", fontWeight: "600", letterSpacing: "-0.01em" }}>Dashboard</span>
         </button>
 
         <button
           type="button"
           onClick={() => onNavigate("reviews")}
-          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#64748B", cursor: "pointer", position: "relative" }}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "#71717A", cursor: "pointer", position: "relative", minWidth: "64px" }}
         >
-          <span style={{ fontSize: "18px" }}>💬</span>
-          <span style={{ fontSize: "10px", fontWeight: "600" }}>Reviews</span>
-          {needsAttentionList.length > 0 && (
-            <span style={{ position: "absolute", top: "-2px", right: "8px", backgroundColor: "#EF4444", color: "#FFFFFF", fontSize: "9px", fontWeight: "800", width: "16px", height: "16px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              {needsAttentionList.length}
+          <Icons.MessageSquare />
+          <span style={{ fontSize: "10px", fontWeight: "500", letterSpacing: "-0.01em" }}>Reviews</span>
+          {pendingApprovalReviews.length > 0 && (
+            <span style={{ position: "absolute", top: "-1px", right: "16px", backgroundColor: "#E11D48", color: "#FFFFFF", fontSize: "9px", fontWeight: "700", width: "15px", height: "15px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {pendingApprovalReviews.length}
             </span>
           )}
         </button>
@@ -3481,19 +3515,19 @@ function MobileDashboard(props) {
         <button
           type="button"
           onClick={() => onNavigate("automation")}
-          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#64748B", cursor: "pointer" }}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "#71717A", cursor: "pointer", minWidth: "64px" }}
         >
-          <span style={{ fontSize: "18px" }}>⚡</span>
-          <span style={{ fontSize: "10px", fontWeight: "600" }}>Automation</span>
+          <Icons.Cpu />
+          <span style={{ fontSize: "10px", fontWeight: "500", letterSpacing: "-0.01em" }}>Automation</span>
         </button>
 
         <button
           type="button"
           onClick={() => onNavigate("settings")}
-          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#64748B", cursor: "pointer" }}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "#71717A", cursor: "pointer", minWidth: "64px" }}
         >
-          <span style={{ fontSize: "18px" }}>⚙️</span>
-          <span style={{ fontSize: "10px", fontWeight: "600" }}>Settings</span>
+          <Icons.Settings />
+          <span style={{ fontSize: "10px", fontWeight: "500", letterSpacing: "-0.01em" }}>Settings</span>
         </button>
       </nav>
     </div>
