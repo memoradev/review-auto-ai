@@ -1,4 +1,82 @@
 import { useEffect, useState } from "react";
+
+/* -------------------------------------------------------------
+   INLINE SVG ICON SYSTEM
+   No icon font, emoji, or extra dependency required.
+------------------------------------------------------------- */
+function SvgIcon({ name, size = 18, strokeWidth = 1.8, className = "", fill = "none", style, ...rest }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill,
+    stroke: "currentColor",
+    strokeWidth,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    className,
+    style,
+    "aria-hidden": true,
+    ...rest,
+  };
+
+  const paths = {
+    dashboard: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+    reviews: <><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.8 9.8 0 0 1-4-.8L3 21l1.8-4.4A8.3 8.3 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z" /><path d="M8 11h.01M12 11h.01M16 11h.01" /></>,
+    analytics: <><path d="M4 19V5" /><path d="M4 19h16" /><path d="m7 15 3-4 3 2 5-7" /></>,
+    widget: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M8 4v5M16 4v5" /></>,
+    location: <><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></>,
+    zap: <path d="m13 2-9 12h7l-1 8 10-13h-7l0-7Z" />,
+    settings: <><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" /><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 1.7-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V20h-2.4v-.2a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.7-1.7.06-.06A1.7 1.7 0 0 0 8.4 15a1.7 1.7 0 0 0-1.56-1.03H6.6v-2.4h.24A1.7 1.7 0 0 0 8.4 10a1.7 1.7 0 0 0-.34-1.88L8 8.06l1.7-1.7.06.06A1.7 1.7 0 0 0 11.64 6a1.7 1.7 0 0 0 1.03-1.56V4h2.4v.44A1.7 1.7 0 0 0 16.1 6a1.7 1.7 0 0 0 1.88-.34l.06-.06 1.7 1.7-.06.06A1.7 1.7 0 0 0 19.34 9c.18.55.68.95 1.26.98H21v2.4h-.4A1.7 1.7 0 0 0 19.4 15Z" /></>,
+    bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></>,
+    sparkles: <><path d="m12 3-1.2 3.8L7 8l3.8 1.2L12 13l1.2-3.8L17 8l-3.8-1.2L12 3Z" /><path d="m19 13-.7 2.3L16 16l2.3.7L19 19l.7-2.3L22 16l-2.3-.7L19 13Z" /><path d="m5 13-.5 1.5L3 15l1.5.5L5 17l.5-1.5L7 15l-1.5-.5L5 13Z" /></>,
+    arrowUpRight: <><path d="M7 17 17 7" /><path d="M7 7h10v10" /></>,
+    menu: <><path d="M4 6h16M4 12h16M4 18h16" /></>,
+    x: <><path d="m6 6 12 12M18 6 6 18" /></>,
+    arrowLeft: <><path d="m15 18-6-6 6-6" /><path d="M9 12h12" /></>,
+    logout: <><path d="M10 17l5-5-5-5" /><path d="M15 12H3" /><path d="M21 19V5a2 2 0 0 0-2-2h-5" /></>,
+    check: <path d="m5 12 4 4L19 6" />,
+    star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3Z" />,
+    arrowRight: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
+    circle: <circle cx="12" cy="12" r="9" />,
+    qr: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 18v3" /></>,
+    external: <><path d="M14 3h7v7" /><path d="M10 14 21 3" /><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" /></>,
+    loader: <><path d="M21 12a9 9 0 1 1-3-6.7" /><path d="M21 3v6h-6" /></>,
+    alert: <><path d="M10.3 3.8 2.5 17a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.8a2 2 0 0 0-3.4 0Z" /><path d="M12 9v4M12 17h.01" /></>,
+    circleCheck: <><circle cx="12" cy="12" r="9" /><path d="m8 12 2.5 2.5L16 9" /></>,
+    circleX: <><circle cx="12" cy="12" r="9" /><path d="m9 9 6 6M15 9l-6 6" /></>,
+    lightbulb: <><path d="M9 18h6M10 22h4" /><path d="M8.5 14.5A6 6 0 1 1 15.5 14c-.9.8-1.5 1.4-1.5 2.5h-4c0-1.1-.6-1.7-1.5-2.5Z" /></>,
+  };
+
+  return <svg {...common}>{paths[name]}</svg>;
+}
+
+const LayoutDashboard = (p) => <SvgIcon name="dashboard" {...p} />;
+const MessageSquareText = (p) => <SvgIcon name="reviews" {...p} />;
+const BarChart3 = (p) => <SvgIcon name="analytics" {...p} />;
+const PanelsTopLeft = (p) => <SvgIcon name="widget" {...p} />;
+const MapPin = (p) => <SvgIcon name="location" {...p} />;
+const Zap = (p) => <SvgIcon name="zap" {...p} />;
+const Settings = (p) => <SvgIcon name="settings" {...p} />;
+const Bell = (p) => <SvgIcon name="bell" {...p} />;
+const Sparkles = (p) => <SvgIcon name="sparkles" {...p} />;
+const ArrowUpRight = (p) => <SvgIcon name="arrowUpRight" {...p} />;
+const Menu = (p) => <SvgIcon name="menu" {...p} />;
+const X = (p) => <SvgIcon name="x" {...p} />;
+const ArrowLeft = (p) => <SvgIcon name="arrowLeft" {...p} />;
+const LogOut = (p) => <SvgIcon name="logout" {...p} />;
+const Check = (p) => <SvgIcon name="check" {...p} />;
+const Star = (p) => <SvgIcon name="star" {...p} />;
+const ArrowRight = (p) => <SvgIcon name="arrowRight" {...p} />;
+const Circle = (p) => <SvgIcon name="circle" {...p} />;
+const QrCode = (p) => <SvgIcon name="qr" {...p} />;
+const ExternalLink = (p) => <SvgIcon name="external" {...p} />;
+const LoaderCircle = (p) => <SvgIcon name="loader" {...p} />;
+const CircleAlert = (p) => <SvgIcon name="alert" {...p} />;
+const CircleCheck = (p) => <SvgIcon name="circleCheck" {...p} />;
+const CircleX = (p) => <SvgIcon name="circleX" {...p} />;
+const Lightbulb = (p) => <SvgIcon name="lightbulb" {...p} />;
+
 import QRCode from "qrcode";
 import { supabase } from "./lib/supabaseClient";
 import Auth from "./components/Auth";
@@ -7,14 +85,36 @@ import WebsiteWidget from "./components/WebsiteWidget";
 import AutomationPage from "./components/AutomationPage";
 
 const navigation = [
-  { name: "Dashboard", icon: "⌂" },
-  { name: "Reviews", icon: "★" },
-  { name: "Analytics", icon: "◒" },
-  { name: "Website Widget", icon: "▣" },
-  { name: "Locations", icon: "⌖" },
-  { name: "Automation", icon: "⚡" },
-  { name: "Settings", icon: "⚙" },
+  { name: "Dashboard", icon: LayoutDashboard },
+  { name: "Reviews", icon: MessageSquareText },
+  { name: "Analytics", icon: BarChart3 },
+  { name: "Website Widget", icon: PanelsTopLeft },
+  { name: "Locations", icon: MapPin },
+  { name: "Automation", icon: Zap },
+  { name: "Settings", icon: Settings },
 ];
+
+function AppIcon({ icon: Icon, size = 18, strokeWidth = 1.8, className = "" }) {
+  if (!Icon) return null;
+  return <Icon size={size} strokeWidth={strokeWidth} className={className} aria-hidden="true" />;
+}
+
+function RatingStars({ rating, size = 14, className = "" }) {
+  const value = Number(rating) || 0;
+  return (
+    <span className={className} aria-label={`${value} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={size}
+          strokeWidth={1.8}
+          fill={star <= value ? "currentColor" : "none"}
+          aria-hidden="true"
+        />
+      ))}
+    </span>
+  );
+}
 
 /* -------------------------------------------------------------
    RAZORPAY SCRIPT LOADER HELPER
@@ -382,6 +482,9 @@ function LandingPageStyles() {
         font-size: 9px;
         color: #f59e0b;
         margin-top: 3px;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
       }
 
       .lp-mock-review-body strong {
@@ -442,6 +545,9 @@ function LandingPageStyles() {
       }
 
       .lp-mock-ai-header {
+        display: flex;
+        align-items: center;
+        gap: 5px;
         font-size: 10px;
         font-weight: 800;
         letter-spacing: 0.08em;
@@ -870,7 +976,7 @@ function LandingPage({ onGetStarted, onLogin }) {
               </div>
               <div className="lp-mock-stat">
                 <span className="lp-mock-stat-label">Average Rating</span>
-                <div className="lp-mock-stat-value">4.6 ★</div>
+                <div className="lp-mock-stat-value" style={{ display: "flex", alignItems: "center", gap: "4px" }}>4.6 <Star size={16} strokeWidth={1.8} fill="currentColor" aria-hidden="true" /></div>
                 <span className="lp-mock-stat-sub">Across all locations</span>
               </div>
               <div className="lp-mock-stat">
@@ -889,7 +995,7 @@ function LandingPage({ onGetStarted, onLogin }) {
               <div className="lp-mock-left">
                 <div className="lp-mock-rating-badge">
                   <span className="lp-mock-rating-num">2/5</span>
-                  <span className="lp-mock-rating-stars">★★☆☆☆</span>
+                  <RatingStars rating={2} size={12} className="lp-mock-rating-stars" />
                 </div>
                 <div className="lp-mock-review-body">
                   <strong>Marcus Sterling</strong>
@@ -907,7 +1013,7 @@ function LandingPage({ onGetStarted, onLogin }) {
 
               <div className="lp-mock-right">
                 <div>
-                  <div className="lp-mock-ai-header">✨ AI Generated Reply Draft</div>
+                  <div className="lp-mock-ai-header"><Sparkles size={14} strokeWidth={1.8} aria-hidden="true" /> AI Generated Reply Draft</div>
                   <p className="lp-mock-ai-reply">
                     “Hi Marcus, thank you for praising our food, but a 35-minute wait without check-in is below our standard. I have shared this with our floor supervisor to improve peak-hour table pacing.”
                   </p>
@@ -945,7 +1051,7 @@ function LandingPage({ onGetStarted, onLogin }) {
               </div>
               <div className="lp-quote-meta">
                 <span>Direct Table QR</span>
-                <span>★ ★ ☆ ☆ ☆</span>
+                <RatingStars rating={2} size={12} />
               </div>
             </div>
 
@@ -955,7 +1061,7 @@ function LandingPage({ onGetStarted, onLogin }) {
               </div>
               <div className="lp-quote-meta">
                 <span>Customer Survey</span>
-                <span>★ ★ ★ ☆ ☆</span>
+                <RatingStars rating={3} size={12} />
               </div>
             </div>
 
@@ -965,7 +1071,7 @@ function LandingPage({ onGetStarted, onLogin }) {
               </div>
               <div className="lp-quote-meta">
                 <span>Website Widget</span>
-                <span>★ ★ ★ ☆ ☆</span>
+                <RatingStars rating={3} size={12} />
               </div>
             </div>
           </div>
@@ -1041,7 +1147,7 @@ function LandingPage({ onGetStarted, onLogin }) {
 
           <div className="lp-product-grid">
             <div className="lp-feature-card">
-              <div className="lp-feature-icon">★</div>
+              <div className="lp-feature-icon"><Star size={20} strokeWidth={1.8} aria-hidden="true" /></div>
               <h3>Real-Time Sentiment</h3>
               <p>
                 Identifies nuanced sentiment across positive, mixed, and negative reviews—flagging subtle passive dissatisfaction that ordinary rating averages miss.
@@ -1049,7 +1155,7 @@ function LandingPage({ onGetStarted, onLogin }) {
             </div>
 
             <div className="lp-feature-card">
-              <div className="lp-feature-icon">⚡</div>
+              <div className="lp-feature-icon"><Zap size={20} strokeWidth={1.8} aria-hidden="true" /></div>
               <h3>Automated Risk Detection</h3>
               <p>
                 Flags critical issues such as food safety, extreme wait times, billing discrepancies, or staff misconduct so managers can intervene immediately.
@@ -1057,7 +1163,7 @@ function LandingPage({ onGetStarted, onLogin }) {
             </div>
 
             <div className="lp-feature-card">
-              <div className="lp-feature-icon">⌖</div>
+              <div className="lp-feature-icon"><MapPin size={20} strokeWidth={1.8} aria-hidden="true" /></div>
               <h3>Customer Intent Recognition</h3>
               <p>
                 Separates compliments from operational grievances, refund requests, and product inquiries. Know exactly why customers are reaching out.
@@ -1065,7 +1171,7 @@ function LandingPage({ onGetStarted, onLogin }) {
             </div>
 
             <div className="lp-feature-card">
-              <div className="lp-feature-icon">▣</div>
+              <div className="lp-feature-icon"><PanelsTopLeft size={20} strokeWidth={1.8} aria-hidden="true" /></div>
               <h3>Autonomous & Approved Replies</h3>
               <p>
                 Let safe responses publish automatically while keeping delicate or high-risk feedback queued for one-click human review and editing.
@@ -1974,6 +2080,11 @@ function DashboardReviewsStyles() {
         font-weight: 800;
       }
 
+      .billing-features li svg {
+        color: currentColor;
+        flex: 0 0 auto;
+      }
+
       .billing-status-alert {
         padding: 12px 16px;
         border-radius: 8px;
@@ -2124,6 +2235,8 @@ function DashboardReviewsStyles() {
       .star-glyph {
         font-size: 8px;
         line-height: 1;
+        display: inline-block;
+        flex: 0 0 auto;
       }
 
       .star-glyph.filled {
@@ -3054,7 +3167,8 @@ function AuthenticatedApp() {
                 boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               }}
             >
-              ← Back to Overview
+              <ArrowLeft size={15} strokeWidth={1.9} aria-hidden="true" />
+              Back to Overview
             </button>
           )}
           <Auth />
@@ -3156,7 +3270,7 @@ function MobileDashboard({
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(true)}
           >
-            ☰
+            <Menu size={20} strokeWidth={1.9} aria-hidden="true" />
           </button>
           <div className="mobile-brand">
             <strong>ReviewAuto</strong>
@@ -3182,7 +3296,7 @@ function MobileDashboard({
                 aria-label="Close navigation"
                 onClick={() => setMenuOpen(false)}
               >
-                ×
+                <X size={19} strokeWidth={1.9} aria-hidden="true" />
               </button>
             </div>
 
@@ -3196,7 +3310,7 @@ function MobileDashboard({
                   }`}
                   onClick={() => navigate(item.name)}
                 >
-                  <span>{item.icon}</span>
+                  <AppIcon icon={item.icon} size={18} />
                   <span>{item.name}</span>
                 </button>
               ))}
@@ -4024,7 +4138,7 @@ function Sidebar({
             className={activePage === item.name ? "nav-item active" : "nav-item"}
             onClick={() => setActivePage(item.name)}
           >
-            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-icon"><AppIcon icon={item.icon} size={18} /></span>
             <span>{item.name}</span>
           </button>
         ))}
@@ -4051,7 +4165,7 @@ function Sidebar({
             onClick={onSignOut}
             title="Sign out"
           >
-            ↪
+            <LogOut size={17} strokeWidth={1.9} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -4079,7 +4193,7 @@ function Header({ activePage, businessName }) {
 
       <div className="header-actions">
         <button type="button" className="header-button" aria-label="Notifications">
-          🔔
+          <Bell size={18} strokeWidth={1.8} aria-hidden="true" />
         </button>
         <button type="button" className="header-button" aria-label="Help">
           ?
@@ -4223,14 +4337,14 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
         </div>
 
         <div className="dashboard-activation-progress">
-          <span className="activation-check">✓</span>
+          <span className="activation-check"><Check size={14} strokeWidth={2} aria-hidden="true" /></span>
           <span>Workspace</span>
-          <span className="activation-divider">→</span>
-          <span className="activation-check">✓</span>
+          <span className="activation-divider"><ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" /></span>
+          <span className="activation-check"><Check size={14} strokeWidth={2} aria-hidden="true" /></span>
           <span>Link</span>
-          <span className="activation-divider">→</span>
+          <span className="activation-divider"><ArrowRight size={14} strokeWidth={1.8} aria-hidden="true" /></span>
           <span className={activated ? "activation-check" : "activation-pending"}>
-            {activated ? "✓" : "○"}
+            {activated ? <Check size={14} strokeWidth={2} aria-hidden="true" /> : <Circle size={12} strokeWidth={1.8} aria-hidden="true" />}
           </span>
           <span>Deployment</span>
         </div>
@@ -4238,7 +4352,7 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
 
       <div className="dashboard-activation-options">
         <div className="activation-option">
-          <div className="activation-option-icon">↗</div>
+          <div className="activation-option-icon"><ArrowUpRight size={18} strokeWidth={1.8} aria-hidden="true" /></div>
           <div className="activation-option-content">
             <h3>Direct Link</h3>
             <p>Share with customers via SMS, WhatsApp, Email or receipt slips.</p>
@@ -4254,7 +4368,7 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
         </div>
 
         <div className="activation-option">
-          <div className="activation-option-icon">#</div>
+          <div className="activation-option-icon"><QrCode size={18} strokeWidth={1.8} aria-hidden="true" /></div>
           <div className="activation-option-content">
             <h3>QR Code</h3>
             <p>Generate high-res QR for menus, tables, packaging or counter stands.</p>
@@ -4271,7 +4385,7 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
         </div>
 
         <div className="activation-option">
-          <div className="activation-option-icon">▣</div>
+          <div className="activation-option-icon"><PanelsTopLeft size={18} strokeWidth={1.8} aria-hidden="true" /></div>
           <div className="activation-option-content">
             <h3>Embed Widget</h3>
             <p>Embed an elegant feedback component into your website.</p>
@@ -4286,7 +4400,7 @@ function DashboardActivationCard({ workspace, onOpenWebsiteWidget }) {
         </div>
 
         <div className="activation-option disabled">
-          <div className="activation-option-icon">⌖</div>
+          <div className="activation-option-icon"><MapPin size={18} strokeWidth={1.8} aria-hidden="true" /></div>
           <div className="activation-option-content">
             <div className="activation-option-title-row">
               <h3>Google Reviews</h3>
@@ -4376,7 +4490,7 @@ function DashboardContent({
 
         <StatCard
           label="Average Rating"
-          value={averageRating !== "—" ? `${averageRating} ★` : "—"}
+          value={averageRating !== "—" ? <span>{averageRating} <Star size={13} strokeWidth={1.8} fill="currentColor" aria-hidden="true" /></span> : "—"}
           detail={totalReviews > 0 ? "Overall satisfaction score" : "Awaiting first rating"}
         />
 
@@ -4487,7 +4601,7 @@ function AnalyticsPage({ reviews = [], loading }) {
         />
         <StatCard
           label="Average Rating"
-          value={averageRating !== "—" ? `${averageRating} ★` : "—"}
+          value={averageRating !== "—" ? <span>{averageRating} <Star size={13} strokeWidth={1.8} fill="currentColor" aria-hidden="true" /></span> : "—"}
           detail={total > 0 ? "Across all channels" : "Waiting for reviews"}
         />
         <StatCard
@@ -4786,7 +4900,7 @@ function ReviewsPanel({ reviews, setReviews, loading }) {
         <div className="empty-state">Loading reviews...</div>
       ) : reviews.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">★</div>
+          <div className="empty-state-icon"><Star size={24} strokeWidth={1.7} aria-hidden="true" /></div>
           <h3>No reviews yet</h3>
           <p>Your incoming feedback will appear here in real-time.</p>
         </div>
@@ -4816,7 +4930,7 @@ function ReviewsPage({ reviews, setReviews, loading }) {
         <div className="empty-state">Loading feedback stream...</div>
       ) : reviews.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">★</div>
+          <div className="empty-state-icon"><Star size={24} strokeWidth={1.7} aria-hidden="true" /></div>
           <h3>No customer reviews found</h3>
           <p>Share your feedback link or embed the website widget to get started.</p>
         </div>
@@ -4985,16 +5099,14 @@ function ReviewWorkflowRow({ review, setReviews }) {
           </div>
           <div className="rating-stars-row">
             {[1, 2, 3, 4, 5].map((star) => (
-              <span
+              <Star
                 key={star}
-                className={
-                  star <= Number(review.rating)
-                    ? "star-glyph filled"
-                    : "star-glyph empty"
-                }
-              >
-                ★
-              </span>
+                size={15}
+                strokeWidth={1.8}
+                className={star <= Number(review.rating) ? "star-glyph filled" : "star-glyph empty"}
+                fill={star <= Number(review.rating) ? "currentColor" : "none"}
+                aria-hidden="true"
+              />
             ))}
           </div>
         </div>
@@ -5049,8 +5161,8 @@ function ReviewWorkflowRow({ review, setReviews }) {
           />
         ) : (
           <div className="ai-reply">
-            <div className="eyebrow" style={{ color: "#2563eb", marginBottom: "4px" }}>
-              ✨ AI Draft Response
+            <div className="eyebrow" style={{ color: "#2563eb", marginBottom: "4px", display: "flex", alignItems: "center", gap: "5px" }}>
+              <Sparkles size={13} strokeWidth={1.8} aria-hidden="true" /> AI Draft Response
             </div>
             <p>{reply || "No response generated. Click Analyze to create one."}</p>
           </div>
@@ -5111,7 +5223,7 @@ function ReviewRow({ review }) {
   return (
     <article className="review-row">
       <div className="review-rating-compact">
-        <span style={{ color: "#f59e0b" }}>★</span>
+        <Star size={14} strokeWidth={1.8} fill="currentColor" style={{ color: "#f59e0b" }} aria-hidden="true" />
         <span>{review.rating || "—"}</span>
       </div>
 
@@ -5195,11 +5307,11 @@ function SettingsContent({
                 ₹0 <span>/ month</span>
               </div>
               <ul className="billing-features">
-                <li><span>✓</span> Manual review analysis</li>
-                <li><span>✓</span> Direct feedback form & QR Code</li>
-                <li><span>✓</span> Standard response queue</li>
-                <li style={{ color: "#94a3b8" }}>✕ Autonomous background processing</li>
-                <li style={{ color: "#94a3b8" }}>✕ Advanced sentiment risk alerts</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> Manual review analysis</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> Direct feedback form & QR Code</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> Standard response queue</li>
+                <li style={{ color: "#94a3b8" }}><X size={14} strokeWidth={2} aria-hidden="true" /> Autonomous background processing</li>
+                <li style={{ color: "#94a3b8" }}><X size={14} strokeWidth={2} aria-hidden="true" /> Advanced sentiment risk alerts</li>
               </ul>
             </div>
             {!isPro ? (
@@ -5224,11 +5336,11 @@ function SettingsContent({
                 ₹1,999 <span>/ month</span>
               </div>
               <ul className="billing-features">
-                <li><span>✓</span> Autonomous 24/7 AI review pipeline</li>
-                <li><span>✓</span> High-risk complaint & bottleneck alerts</li>
-                <li><span>✓</span> 1-star human approval protection</li>
-                <li><span>✓</span> Direct QR codes & embeddable web widget</li>
-                <li><span>✓</span> Full activity velocity & sentiment analytics</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> Autonomous 24/7 AI review pipeline</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> High-risk complaint & bottleneck alerts</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> 1-star human approval protection</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> Direct QR codes & embeddable web widget</li>
+                <li><Check size={14} strokeWidth={2} aria-hidden="true" /> Full activity velocity & sentiment analytics</li>
               </ul>
             </div>
 
@@ -5270,7 +5382,7 @@ function SettingsContent({
         {/* FEEDBACK BANNER ON STATUS */}
         {paymentStatus && (
           <div className={`billing-status-alert ${paymentStatus.state}`}>
-            <span>{paymentStatus.state === "success" ? "✓" : paymentStatus.state === "verifying" ? "◒" : "!"}</span>
+            <span>{paymentStatus.state === "success" ? <CircleCheck size={16} strokeWidth={1.9} aria-hidden="true" /> : paymentStatus.state === "verifying" ? <LoaderCircle size={16} strokeWidth={1.9} aria-hidden="true" /> : <CircleAlert size={16} strokeWidth={1.9} aria-hidden="true" />}</span>
             <span>{paymentStatus.message}</span>
           </div>
         )}
@@ -5446,7 +5558,7 @@ function LocationsPage() {
       </div>
 
       <div className="empty-state" style={{ marginTop: "24px" }}>
-        <div className="empty-state-icon">⌖</div>
+        <div className="empty-state-icon"><MapPin size={24} strokeWidth={1.7} aria-hidden="true" /></div>
         <h3>No locations linked</h3>
         <p>Google Business Profile sync will become available in the next release.</p>
         <div style={{ marginTop: "16px" }}>
@@ -5462,7 +5574,7 @@ function LocationsPage() {
 function PlaceholderPage({ page, onBack }) {
   return (
     <section className="placeholder-page">
-      <div className="placeholder-icon">✦</div>
+      <div className="placeholder-icon"><Lightbulb size={24} strokeWidth={1.7} aria-hidden="true" /></div>
       <h2>{page}</h2>
       <p>This module will be connected during the upcoming development cycle.</p>
       <button type="button" className="primary-button" onClick={onBack}>
