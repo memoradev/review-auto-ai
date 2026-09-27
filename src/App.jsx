@@ -792,31 +792,81 @@ function LandingPage({ onGetStarted, onLogin }) {
   const [legalPolicy, setLegalPolicy] = useState(null);
 
   return (
-    <div className="landing-container" style={{ minHeight: "100vh", backgroundColor: "#0B0F19", color: "#F3F4F6", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+    <div className="landing-root" style={{ minHeight: "100vh", backgroundColor: "#0B0F19", color: "#F3F4F6", fontFamily: "system-ui, -apple-system, sans-serif", overflowX: "hidden" }}>
+      {/* Scoped CSS for Mobile Perfection (Only applies below 640px) */}
+      <style>{`
+        .landing-hero-btn-primary, .landing-hero-btn-secondary {
+          width: auto;
+        }
+        @media (max-width: 640px) {
+          .landing-header-inner {
+            padding: 14px 16px !important;
+          }
+          .landing-hero-section {
+            padding: 48px 16px 40px !important;
+          }
+          .landing-hero-buttons {
+            flex-direction: column !important;
+            width: 100% !important;
+            gap: 12px !important;
+          }
+          .landing-hero-btn-primary, .landing-hero-btn-secondary {
+            width: 100% !important;
+            padding: 14px 20px !important;
+            text-align: center !important;
+            box-sizing: border-box !important;
+          }
+          .landing-preview-card {
+            padding: 18px 14px !important;
+            border-radius: 12px !important;
+          }
+          .landing-preview-grid {
+            grid-template-columns: 1fr !important;
+            gap: 10px !important;
+          }
+          .landing-section {
+            padding: 48px 16px !important;
+          }
+          .landing-cards-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
+          .landing-footer-inner {
+            flex-direction: column !important;
+            text-align: center !important;
+            gap: 24px !important;
+          }
+          .landing-footer-links {
+            justify-content: center !important;
+            gap: 8px !important;
+          }
+          .landing-footer-btn {
+            padding: 8px 12px !important;
+            font-size: 13px !important;
+          }
+        }
+      `}</style>
+
       {/* 1. Header / Navigation */}
-      <header style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)", padding: "18px 24px", position: "sticky", top: 0, backgroundColor: "rgba(11, 15, 25, 0.9)", backdropFilter: "blur(12px)", zIndex: 100 }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontSize: "22px", filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}>⚡</span>
-            <span style={{ fontWeight: "700", fontSize: "19px", letterSpacing: "-0.02em", color: "#FFFFFF" }}>ReviewAuto AI</span>
+      <header style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.08)", position: "sticky", top: 0, backgroundColor: "rgba(11, 15, 25, 0.92)", backdropFilter: "blur(12px)", zIndex: 100 }}>
+        <div className="landing-header-inner" style={{ maxWidth: "1200px", margin: "0 auto", padding: "18px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "20px" }}>⚡</span>
+            <span style={{ fontWeight: "700", fontSize: "18px", letterSpacing: "-0.02em", color: "#FFFFFF" }}>ReviewAuto AI</span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button
               type="button"
               onClick={onLogin}
-              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", fontWeight: "600", cursor: "pointer", padding: "8px 14px", transition: "color 0.15s ease" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", fontWeight: "600", cursor: "pointer", padding: "8px 10px", minHeight: "40px", transition: "color 0.15s ease" }}
             >
               Sign In
             </button>
             <button
               type="button"
               onClick={onGetStarted}
-              style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "9px 18px", fontSize: "14px", fontWeight: "600", cursor: "pointer", transition: "background 0.15s ease", boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1D4ED8")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#2563EB")}
+              style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "9px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", minHeight: "40px", boxShadow: "0 2px 8px rgba(37, 99, 235, 0.3)" }}
             >
               Get Started
             </button>
@@ -825,78 +875,70 @@ function LandingPage({ onGetStarted, onLogin }) {
       </header>
 
       {/* 2. Hero Section */}
-      <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 60px", textAlign: "center" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "rgba(37, 99, 235, 0.12)", border: "1px solid rgba(37, 99, 235, 0.25)", padding: "6px 14px", borderRadius: "100px", marginBottom: "28px" }}>
-          <span style={{ fontSize: "12px", color: "#60A5FA", fontWeight: "600", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+      <section className="landing-hero-section" style={{ maxWidth: "1100px", margin: "0 auto", padding: "80px 24px 60px", textAlign: "center", boxSizing: "border-box" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "rgba(37, 99, 235, 0.12)", border: "1px solid rgba(37, 99, 235, 0.25)", padding: "6px 14px", borderRadius: "100px", marginBottom: "24px" }}>
+          <span style={{ fontSize: "11px", color: "#60A5FA", fontWeight: "600", letterSpacing: "0.04em", textTransform: "uppercase" }}>
             Actionable Feedback Intelligence
           </span>
         </div>
 
-        <h1 style={{ fontSize: "clamp(34px, 5.5vw, 58px)", fontWeight: "800", lineHeight: "1.12", letterSpacing: "-0.03em", color: "#FFFFFF", margin: "0 auto 24px", maxWidth: "900px" }}>
+        <h1 style={{ fontSize: "clamp(26px, 5.5vw, 56px)", fontWeight: "800", lineHeight: "1.16", letterSpacing: "-0.03em", color: "#FFFFFF", margin: "0 auto 20px", maxWidth: "900px" }}>
           Turn customer feedback into clear insights, appropriate responses, and actionable business decisions.
         </h1>
 
-        <p style={{ fontSize: "clamp(16px, 2.2vw, 19px)", lineHeight: "1.6", color: "#9CA3AF", margin: "0 auto 36px", maxWidth: "680px" }}>
+        <p style={{ fontSize: "clamp(15px, 2.2vw, 19px)", lineHeight: "1.6", color: "#9CA3AF", margin: "0 auto 32px", maxWidth: "680px" }}>
           Your customers are already telling you what is wrong. ReviewAuto AI analyzes sentiment and risk, recommends internal actions, and drafts safe responses.
         </p>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "64px" }}>
+        <div className="landing-hero-buttons" style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "48px" }}>
           <button
             type="button"
+            className="landing-hero-btn-primary"
             onClick={onGetStarted}
-            style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "10px", padding: "14px 28px", fontSize: "16px", fontWeight: "600", cursor: "pointer", transition: "transform 0.15s ease, background 0.15s ease", boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)" }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#1D4ED8";
-              e.currentTarget.style.transform = "translateY(-1px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#2563EB";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
+            style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "10px", padding: "14px 28px", fontSize: "15px", fontWeight: "600", cursor: "pointer", boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)", minHeight: "48px" }}
           >
             Start Free Trial
           </button>
           <button
             type="button"
+            className="landing-hero-btn-secondary"
             onClick={onLogin}
-            style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", color: "#FFFFFF", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "10px", padding: "14px 28px", fontSize: "16px", fontWeight: "600", cursor: "pointer", transition: "background 0.15s ease" }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)")}
+            style={{ backgroundColor: "rgba(255, 255, 255, 0.05)", color: "#FFFFFF", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: "10px", padding: "14px 28px", fontSize: "15px", fontWeight: "600", cursor: "pointer", minHeight: "48px" }}
           >
             Sign In to Dashboard
           </button>
         </div>
 
         {/* 3. Product Visual / Review Card Mockup */}
-        <div style={{ maxWidth: "820px", margin: "0 auto", backgroundColor: "#111827", borderRadius: "16px", border: "1px solid rgba(255, 255, 255, 0.12)", padding: "28px", textAlign: "left", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: "14px", flexWrap: "wrap", gap: "10px" }}>
+        <div className="landing-preview-card" style={{ maxWidth: "820px", margin: "0 auto", backgroundColor: "#111827", borderRadius: "16px", border: "1px solid rgba(255, 255, 255, 0.12)", padding: "28px", textAlign: "left", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)", boxSizing: "border-box" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
             <div>
-              <span style={{ fontWeight: "700", color: "#FFFFFF", fontSize: "16px" }}>Sarah M.</span>
-              <span style={{ color: "#F59E0B", marginLeft: "10px", fontSize: "15px" }}>★★☆☆☆</span>
+              <span style={{ fontWeight: "700", color: "#FFFFFF", fontSize: "15px" }}>Sarah M.</span>
+              <span style={{ color: "#F59E0B", marginLeft: "8px", fontSize: "14px" }}>★★☆☆☆</span>
             </div>
             <span style={{ fontSize: "12px", color: "#9CA3AF" }}>Direct Customer Feedback</span>
           </div>
 
-          <p style={{ fontSize: "15px", lineHeight: "1.6", color: "#D1D5DB", marginBottom: "20px" }}>
+          <p style={{ fontSize: "14px", lineHeight: "1.6", color: "#D1D5DB", marginBottom: "18px" }}>
             "The food was excellent, but we waited 40 minutes for our main course on a Saturday evening. The table next to us arrived after us and received their food first."
           </p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px", marginBottom: "20px" }}>
-            <div style={{ backgroundColor: "#1F2937", padding: "14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+          <div className="landing-preview-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "18px" }}>
+            <div style={{ backgroundColor: "#1F2937", padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
               <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "#9CA3AF", marginBottom: "4px" }}>AI Assessment</div>
               <div style={{ fontSize: "13px", color: "#EF4444", fontWeight: "600" }}>Risk: Medium (Service Delay)</div>
             </div>
 
-            <div style={{ backgroundColor: "#1F2937", padding: "14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
+            <div style={{ backgroundColor: "#1F2937", padding: "12px 14px", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
               <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", color: "#9CA3AF", marginBottom: "4px" }}>Recommended Action</div>
               <div style={{ fontSize: "13px", color: "#60A5FA", fontWeight: "600" }}>Review Kitchen Expediting</div>
             </div>
           </div>
 
-          <div style={{ backgroundColor: "rgba(31, 41, 55, 0.6)", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "16px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+          <div style={{ backgroundColor: "rgba(31, 41, 55, 0.6)", borderRadius: "10px", border: "1px solid rgba(255, 255, 255, 0.08)", padding: "14px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
               <span style={{ fontSize: "12px", color: "#9CA3AF", fontWeight: "600" }}>AI Response Draft</span>
-              <span style={{ fontSize: "11px", backgroundColor: "#FEF3C7", color: "#92400E", padding: "3px 8px", borderRadius: "4px", fontWeight: "600" }}>
+              <span style={{ fontSize: "11px", backgroundColor: "#FEF3C7", color: "#92400E", padding: "2px 8px", borderRadius: "4px", fontWeight: "600" }}>
                 Human Approval Required
               </span>
             </div>
@@ -908,32 +950,32 @@ function LandingPage({ onGetStarted, onLogin }) {
       </section>
 
       {/* 4. Problem Section */}
-      <section style={{ maxWidth: "1000px", margin: "0 auto", padding: "60px 24px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: "700", color: "#FFFFFF", marginBottom: "12px" }}>
+      <section className="landing-section" style={{ maxWidth: "1000px", margin: "0 auto", padding: "60px 24px", borderTop: "1px solid rgba(255, 255, 255, 0.08)", boxSizing: "border-box" }}>
+        <div style={{ textAlign: "center", marginBottom: "36px" }}>
+          <h2 style={{ fontSize: "clamp(22px, 3.5vw, 34px)", fontWeight: "700", color: "#FFFFFF", marginBottom: "10px" }}>
             You see individual reviews. ReviewAuto helps you see the pattern.
           </h2>
-          <p style={{ color: "#9CA3AF", fontSize: "16px", maxWidth: "600px", margin: "0 auto" }}>
+          <p style={{ color: "#9CA3AF", fontSize: "15px", maxWidth: "600px", margin: "0 auto" }}>
             Isolated complaints usually point to systemic operational bottlenecks.
           </p>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px" }}>
-          <div style={{ backgroundColor: "#111827", padding: "24px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+        <div className="landing-cards-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))", gap: "16px" }}>
+          <div style={{ backgroundColor: "#111827", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
             <div style={{ color: "#F59E0B", marginBottom: "8px" }}>★★★☆☆</div>
             <p style={{ fontSize: "14px", color: "#D1D5DB", lineHeight: "1.5", margin: 0 }}>
               "Loved the food, but the table wait was 35 minutes."
             </p>
           </div>
 
-          <div style={{ backgroundColor: "#111827", padding: "24px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+          <div style={{ backgroundColor: "#111827", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
             <div style={{ color: "#F59E0B", marginBottom: "8px" }}>★★★☆☆</div>
             <p style={{ fontSize: "14px", color: "#D1D5DB", lineHeight: "1.5", margin: 0 }}>
               "Staff was very friendly, but service was slow."
             </p>
           </div>
 
-          <div style={{ backgroundColor: "#111827", padding: "24px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+          <div style={{ backgroundColor: "#111827", padding: "20px", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
             <div style={{ color: "#EF4444", marginBottom: "8px" }}>★★☆☆☆</div>
             <p style={{ fontSize: "14px", color: "#D1D5DB", lineHeight: "1.5", margin: 0 }}>
               "Waited 25 minutes just to receive our dessert."
@@ -943,39 +985,39 @@ function LandingPage({ onGetStarted, onLogin }) {
       </section>
 
       {/* 5. How It Works */}
-      <section style={{ maxWidth: "1000px", margin: "0 auto", padding: "60px 24px", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
-        <h2 style={{ fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: "700", color: "#FFFFFF", textAlign: "center", marginBottom: "48px" }}>
+      <section className="landing-section" style={{ maxWidth: "1000px", margin: "0 auto", padding: "60px 24px", borderTop: "1px solid rgba(255, 255, 255, 0.08)", boxSizing: "border-box" }}>
+        <h2 style={{ fontSize: "clamp(22px, 3.5vw, 34px)", fontWeight: "700", color: "#FFFFFF", textAlign: "center", marginBottom: "40px" }}>
           How ReviewAuto AI Works
         </h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px" }}>
+        <div className="landing-cards-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: "20px" }}>
           <div>
-            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>01</div>
-            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Collect</h3>
+            <div style={{ fontSize: "26px", fontWeight: "800", color: "#2563EB", marginBottom: "6px" }}>01</div>
+            <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#FFFFFF", marginBottom: "6px" }}>Collect</h3>
             <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
               Capture first-party reviews via QR code table stands, direct links (/f/:slug), or embeddable website widgets.
             </p>
           </div>
 
           <div>
-            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>02</div>
-            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Analyze</h3>
+            <div style={{ fontSize: "26px", fontWeight: "800", color: "#2563EB", marginBottom: "6px" }}>02</div>
+            <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#FFFFFF", marginBottom: "6px" }}>Analyze</h3>
             <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
               Groq AI breaks down sentiment, evaluates operational risk, and determines customer intent without manual sorting.
             </p>
           </div>
 
           <div>
-            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>03</div>
-            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Understand</h3>
+            <div style={{ fontSize: "26px", fontWeight: "800", color: "#2563EB", marginBottom: "6px" }}>03</div>
+            <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#FFFFFF", marginBottom: "6px" }}>Understand</h3>
             <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
-              The Action Engine recommends specific operational fixes so your team fixes the root cause rather than just apologizing.
+              The Action Engine recommends specific operational fixes so your team fixes root causes rather than just apologizing.
             </p>
           </div>
 
           <div>
-            <div style={{ fontSize: "28px", fontWeight: "800", color: "#2563EB", marginBottom: "8px" }}>04</div>
-            <h3 style={{ fontSize: "17px", fontWeight: "600", color: "#FFFFFF", marginBottom: "8px" }}>Respond & Act</h3>
+            <div style={{ fontSize: "26px", fontWeight: "800", color: "#2563EB", marginBottom: "6px" }}>04</div>
+            <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#FFFFFF", marginBottom: "6px" }}>Respond & Act</h3>
             <p style={{ fontSize: "14px", color: "#9CA3AF", lineHeight: "1.5", margin: 0 }}>
               Safe reviews automate smoothly. 1-star and critical reviews strictly wait for your review and approval.
             </p>
@@ -984,66 +1026,62 @@ function LandingPage({ onGetStarted, onLogin }) {
       </section>
 
       {/* 6. Final Call to Action */}
-      <section style={{ maxWidth: "800px", margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
-        <h2 style={{ fontSize: "clamp(26px, 4vw, 40px)", fontWeight: "700", color: "#FFFFFF", marginBottom: "16px" }}>
+      <section className="landing-section" style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px", textAlign: "center", boxSizing: "border-box" }}>
+        <h2 style={{ fontSize: "clamp(24px, 4vw, 38px)", fontWeight: "700", color: "#FFFFFF", marginBottom: "14px" }}>
           Your customers are giving you the answers. ReviewAuto helps you find them.
         </h2>
-        <p style={{ color: "#9CA3AF", fontSize: "16px", marginBottom: "32px" }}>
+        <p style={{ color: "#9CA3AF", fontSize: "15px", marginBottom: "28px" }}>
           Start collecting first-party reviews and uncovering actionable business intelligence today.
         </p>
         <button
           type="button"
           onClick={onGetStarted}
-          style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "10px", padding: "14px 32px", fontSize: "16px", fontWeight: "600", cursor: "pointer", boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)" }}
+          style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "10px", padding: "14px 32px", fontSize: "16px", fontWeight: "600", cursor: "pointer", boxShadow: "0 8px 24px rgba(37, 99, 235, 0.35)", minHeight: "48px" }}
         >
           Get Started Free
         </button>
       </section>
 
-      {/* 7. Footer With Functional Legal Modal Links */}
-      <footer style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", padding: "36px 24px", backgroundColor: "#080B11" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "20px" }}>
-          <div style={{ fontSize: "14px", color: "#6B7280" }}>
+      {/* 7. Footer With Mobile Touch-Friendly Legal Links */}
+      <footer style={{ borderTop: "1px solid rgba(255, 255, 255, 0.08)", padding: "32px 20px", backgroundColor: "#080B11" }}>
+        <div className="landing-footer-inner" style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
+          <div style={{ fontSize: "13px", color: "#6B7280" }}>
             © {new Date().getFullYear()} ReviewAuto AI. All rights reserved.
           </div>
 
-          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", alignItems: "center" }}>
+          <div className="landing-footer-links" style={{ display: "flex", gap: "4px", flexWrap: "wrap", alignItems: "center" }}>
             <button
               type="button"
+              className="landing-footer-btn"
               onClick={() => setLegalPolicy("privacy")}
-              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: "10px 12px", minHeight: "44px" }}
             >
               Privacy Policy
             </button>
 
             <button
               type="button"
+              className="landing-footer-btn"
               onClick={() => setLegalPolicy("terms")}
-              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: "10px 12px", minHeight: "44px" }}
             >
               Terms of Service
             </button>
 
             <button
               type="button"
+              className="landing-footer-btn"
               onClick={() => setLegalPolicy("cookies")}
-              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: "10px 12px", minHeight: "44px" }}
             >
               Cookies Policy
             </button>
 
             <button
               type="button"
+              className="landing-footer-btn"
               onClick={() => setLegalPolicy("refund")}
-              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: 0 }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#FFFFFF")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+              style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: "14px", cursor: "pointer", padding: "10px 12px", minHeight: "44px" }}
             >
               Refund Policy
             </button>
@@ -1051,7 +1089,7 @@ function LandingPage({ onGetStarted, onLogin }) {
         </div>
       </footer>
 
-      {/* 8. Self-Contained Legal Modal (Opens when any policy button is clicked) */}
+      {/* 8. Self-Contained Legal Modal */}
       <LegalModal
         policy={legalPolicy}
         onClose={() => setLegalPolicy(null)}
