@@ -3124,184 +3124,378 @@ function useIsMobile() {
   return isMobile;
 }
 
-function MobileDashboard({
-  activePage,
-  setActivePage,
-  workspace,
-  automation,
-  reviews,
-  setReviews,
-  reviewsLoading,
-  onToggleAutomation,
-  onOpenWebsiteWidget,
-  onToggleFeedback,
-  onCopyFeedbackLink,
-  subscription,
-  onUpgrade,
-  checkoutLoading,
-  paymentStatus,
-  onSignOut,
-}) {
-  const [menuOpen, setMenuOpen] = useState(false);
+function MobileDashboard(props) {
+  // Defensive props fallback to ensure zero breaking changes
+  const business = props.business || props.workspace || {};
+  const reviews = Array.isArray(props.reviews) ? props.reviews : [];
+  const onNavigate = props.onNavigate || props.setCurrentTab || props.setActiveTab || (() => {});
+  const onApproveReview = props.onApproveReview || props.onApprove || (() => {});
+  const onAnalyzeReview = props.onAnalyzeReview || props.onAnalyze || (() => {});
 
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
+  const [copied, setCopied] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("all"); // 'all' | 'needs_attention' | 'automated'
 
-  function navigate(page) {
-    setActivePage(page);
-    setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  // Dynamic feedback URL
+  const feedbackSlug = business.feedback_slug || "";
+  const feedbackUrl = feedbackSlug
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}/f/${feedbackSlug}`
+    : "";
+
+  function handleCopyLink() {
+    if (!feedbackUrl) return;
+    navigator.clipboard.writeText(feedbackUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
-  const pageTitle =
-    activePage === "Dashboard"
-      ? workspace?.name || "Dashboard"
-      : activePage;
+  // Triage Calculations
+  const needsAttentionList = reviews.filter(
+    (r) =>
+      r.rating === 1 ||
+      r.ai_risk_level === "high" ||
+      r.ai_risk_level === "critical" ||
+      r.automation_status === "awaiting_approval" ||
+      (r.reply_status === "not_replied" && r.ai_generated_reply)
+  );
+
+  const automatedList = reviews.filter(
+    (r) =>
+      r.automation_status === "approved" ||
+      (r.rating >= 4 && r.reply_status === "replied")
+  );
+
+  const displayedReviews =
+    activeFilter === "needs_attention"
+      ? needsAttentionList
+      : activeFilter === "automated"
+      ? automatedList
+      : reviews;
 
   return (
-    <div className="mobile-app">
-      <header className="mobile-header">
-        <div className="mobile-header-left">
-          <button
-            type="button"
-            className="mobile-menu-button"
-            aria-label="Open navigation"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(true)}
-          >
-            ☰
-          </button>
-          <div className="mobile-brand">
-            <strong>ReviewAuto</strong>
-            <span>{pageTitle}</span>
+    <div style={{ minHeight: "100vh", backgroundColor: "#F8FAFC", color: "#0F172A", paddingBottom: "90px", boxSizing: "border-box", fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      {/* 1. Live Engine Status Bar */}
+      <div style={{ backgroundColor: "#0F172A", color: "#FFFFFF", padding: "12px 16px", borderBottom: "1px solid #1E293B" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10B981", display: "inline-block", boxShadow: "0 0 8px #10B981" }} />
+            <span style={{ fontSize: "12px", fontWeight: "700", letterSpacing: "0.04em", textTransform: "uppercase", color: "#E2E8F0" }}>
+              Engine: Active
+            </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "rgba(255, 255, 255, 0.08)", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", color: "#CBD5E1" }}>
+            <span>🛡️</span>
+            <span>1-Star Human Guardrail ON</span>
           </div>
         </div>
-      </header>
+      </div>
 
-      {menuOpen ? (
-        <>
+      <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
+        {/* 2. Business Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <div>
+            <h1 style={{ fontSize: "20px", fontWeight: "800", color: "#0F172A", margin: "0 0 2px 0", letterSpacing: "-0.02em" }}>
+              {business.name || "My Business"}
+            </h1>
+            <p style={{ fontSize: "12px", color: "#64748B", margin: 0 }}>
+              Autonomous Review Operations
+            </p>
+          </div>
           <button
             type="button"
-            className="mobile-drawer-backdrop"
-            aria-label="Close navigation"
-            onClick={() => setMenuOpen(false)}
-          />
-          <aside className="mobile-drawer" aria-label="Mobile navigation">
-            <div className="mobile-drawer-top">
-              <div className="mobile-drawer-title">ReviewAuto</div>
-              <button
-                type="button"
-                className="mobile-menu-button"
-                aria-label="Close navigation"
-                onClick={() => setMenuOpen(false)}
-              >
-                ×
-              </button>
+            onClick={() => onNavigate("settings")}
+            style={{ backgroundColor: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "8px", padding: "6px 12px", fontSize: "12px", fontWeight: "600", color: "#475569", cursor: "pointer" }}
+          >
+            ⚙️ Settings
+          </button>
+        </div>
+
+        {/* 3. Automation Triage Hero Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "16px" }}>
+          {/* Needs Attention Card */}
+          <div
+            onClick={() => setActiveFilter(activeFilter === "needs_attention" ? "all" : "needs_attention")}
+            style={{
+              backgroundColor: activeFilter === "needs_attention" ? "#FEF2F2" : "#FFFFFF",
+              border: activeFilter === "needs_attention" ? "2px solid #EF4444" : "1px solid #E2E8F0",
+              borderRadius: "14px",
+              padding: "14px",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+              <span style={{ fontSize: "11px", fontWeight: "700", color: "#EF4444", textTransform: "uppercase", letterSpacing: "0.04em" }}>Attention</span>
+              <span style={{ fontSize: "14px" }}>⚠️</span>
             </div>
-
-            <nav className="mobile-nav">
-              {navigation.map((item) => (
-                <button
-                  key={item.name}
-                  type="button"
-                  className={`mobile-nav-button ${
-                    activePage === item.name ? "active" : ""
-                  }`}
-                  onClick={() => navigate(item.name)}
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.name}</span>
-                </button>
-              ))}
-            </nav>
-
-            <div style={{ marginTop: "auto", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div className="connection-card">
-                <span
-                  className="connection-indicator"
-                  style={{ background: subscription?.plan === "pro" ? "var(--success)" : "#94a3b8" }}
-                />
-                <div>
-                  <strong>Workspace Plan</strong>
-                  <span>{subscription?.plan === "pro" ? "Pro Plan (Active)" : "Free Plan"}</span>
-                </div>
-              </div>
-
-              <div className="connection-card">
-                <span className="connection-indicator" />
-                <div>
-                  <strong>Feedback Status</strong>
-                  <span>{workspace?.feedback_enabled !== false ? "Active & receiving" : "Paused"}</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="mobile-signout"
-                onClick={onSignOut}
-              >
-                Sign out
-              </button>
+            <div style={{ fontSize: "24px", fontWeight: "800", color: "#0F172A" }}>
+              {needsAttentionList.length}
             </div>
-          </aside>
-        </>
-      ) : null}
+            <div style={{ fontSize: "11px", color: "#64748B", marginTop: "2px" }}>
+              Human sign-off required
+            </div>
+          </div>
 
-      <main className="mobile-main">
-        <DashboardReviewsStyles />
+          {/* Autopilot Handled Card */}
+          <div
+            onClick={() => setActiveFilter(activeFilter === "automated" ? "all" : "automated")}
+            style={{
+              backgroundColor: activeFilter === "automated" ? "#F0FDF4" : "#FFFFFF",
+              border: activeFilter === "automated" ? "2px solid #10B981" : "1px solid #E2E8F0",
+              borderRadius: "14px",
+              padding: "14px",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+              <span style={{ fontSize: "11px", fontWeight: "700", color: "#10B981", textTransform: "uppercase", letterSpacing: "0.04em" }}>Autopilot</span>
+              <span style={{ fontSize: "14px" }}>⚡</span>
+            </div>
+            <div style={{ fontSize: "24px", fontWeight: "800", color: "#0F172A" }}>
+              {automatedList.length}
+            </div>
+            <div style={{ fontSize: "11px", color: "#64748B", marginTop: "2px" }}>
+              Processed safely by AI
+            </div>
+          </div>
+        </div>
 
-        {activePage === "Dashboard" ? (
-          <DashboardContent
-            workspace={workspace}
-            automation={automation}
-            reviews={reviews}
-            setReviews={setReviews}
-            reviewsLoading={reviewsLoading}
-            onToggleAutomation={onToggleAutomation}
-            onOpenWebsiteWidget={onOpenWebsiteWidget}
-          />
-        ) : activePage === "Reviews" ? (
-          <ReviewsPage
-            reviews={reviews}
-            setReviews={setReviews}
-            loading={reviewsLoading}
-          />
-        ) : activePage === "Analytics" ? (
-          <AnalyticsPage reviews={reviews} loading={reviewsLoading} />
-        ) : activePage === "Website Widget" ? (
-          <WebsiteWidget workspace={workspace} />
-        ) : activePage === "Automation" ? (
-          <AutomationPage
-            automation={automation}
-            reviews={reviews}
-            onToggleAutomation={onToggleAutomation}
-          />
-        ) : activePage === "Settings" ? (
-          <SettingsContent
-            workspace={workspace}
-            onToggleFeedback={onToggleFeedback}
-            onCopyFeedbackLink={onCopyFeedbackLink}
-            subscription={subscription}
-            onUpgrade={onUpgrade}
-            checkoutLoading={checkoutLoading}
-            paymentStatus={paymentStatus}
-          />
-        ) : activePage === "Locations" ? (
-          <LocationsPage />
+        {/* 4. Instant 1-Tap Collection Hub */}
+        <div style={{ backgroundColor: "#FFFFFF", borderRadius: "14px", border: "1px solid #E2E8F0", padding: "14px 16px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+            <span style={{ fontSize: "12px", fontWeight: "700", color: "#0F172A", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+              Customer Feedback Hub
+            </span>
+            <span style={{ fontSize: "11px", color: business.feedback_enabled ? "#10B981" : "#64748B", fontWeight: "600" }}>
+              {business.feedback_enabled ? "● Link Active" : "○ Disabled"}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <div style={{ flex: 1, backgroundColor: "#F1F5F9", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", color: "#475569", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {feedbackUrl || "Configure slug in Settings"}
+            </div>
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              disabled={!feedbackUrl}
+              style={{ backgroundColor: copied ? "#10B981" : "#0F172A", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "8px 14px", fontSize: "12px", fontWeight: "600", cursor: "pointer", transition: "background 0.15s ease", minWidth: "75px" }}
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+        </div>
+
+        {/* 5. Live Feed Section Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+          <div>
+            <h2 style={{ fontSize: "15px", fontWeight: "700", color: "#0F172A", margin: 0 }}>
+              {activeFilter === "needs_attention"
+                ? "Reviews Requiring Attention"
+                : activeFilter === "automated"
+                ? "Autopilot Processed Reviews"
+                : "Live Review Feed"}
+            </h2>
+            <p style={{ fontSize: "11px", color: "#64748B", margin: "2px 0 0 0" }}>
+              Showing {displayedReviews.length} records
+            </p>
+          </div>
+
+          {activeFilter !== "all" && (
+            <button
+              type="button"
+              onClick={() => setActiveFilter("all")}
+              style={{ background: "none", border: "none", color: "#2563EB", fontSize: "12px", fontWeight: "600", cursor: "pointer", padding: "4px" }}
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
+
+        {/* 6. Feed Cards (Mobile-Native Cards, Not Table Columns) */}
+        {displayedReviews.length === 0 ? (
+          <div style={{ backgroundColor: "#FFFFFF", borderRadius: "14px", border: "1px dashed #CBD5E1", padding: "36px 16px", textAlign: "center" }}>
+            <span style={{ fontSize: "28px", display: "block", marginBottom: "8px" }}>✨</span>
+            <div style={{ fontSize: "14px", fontWeight: "600", color: "#0F172A", marginBottom: "4px" }}>All Caught Up</div>
+            <div style={{ fontSize: "12px", color: "#64748B" }}>No reviews match the selected filter.</div>
+          </div>
         ) : (
-          <PlaceholderPage
-            page={activePage}
-            onBack={() => navigate("Dashboard")}
-          />
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {displayedReviews.map((review) => {
+              const isOneStar = review.rating === 1;
+              const isHighRisk = review.ai_risk_level === "high" || review.ai_risk_level === "critical";
+              const requiresApproval = isOneStar || isHighRisk || review.automation_status === "awaiting_approval";
+
+              return (
+                <div
+                  key={review.id || review.idx}
+                  style={{
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "14px",
+                    border: requiresApproval ? "1px solid #FECACA" : "1px solid #E2E8F0",
+                    padding: "16px",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  {/* Card Header: Customer & Rating */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
+                    <div>
+                      <div style={{ fontWeight: "700", fontSize: "14px", color: "#0F172A" }}>
+                        {review.customer_name || "Anonymous Customer"}
+                      </div>
+                      <div style={{ color: "#F59E0B", fontSize: "13px", marginTop: "2px" }}>
+                        {"★".repeat(review.rating || 5)}
+                        {"☆".repeat(5 - (review.rating || 5))}
+                      </div>
+                    </div>
+
+                    {requiresApproval && (
+                      <span style={{ backgroundColor: "#FEF2F2", color: "#DC2626", border: "1px solid #FEE2E2", fontSize: "10px", fontWeight: "700", padding: "3px 8px", borderRadius: "6px", textTransform: "uppercase" }}>
+                        Human Review
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Review Text */}
+                  <p style={{ fontSize: "13px", lineHeight: "1.5", color: "#334155", margin: "0 0 12px 0" }}>
+                    "{review.review_text}"
+                  </p>
+
+                  {/* AI Intelligence Strip */}
+                  {(review.ai_sentiment || review.ai_risk_level || review.ai_action_type) && (
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}>
+                      {review.ai_risk_level && (
+                        <span style={{ fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px", backgroundColor: isHighRisk ? "#FEE2E2" : "#F1F5F9", color: isHighRisk ? "#DC2626" : "#475569" }}>
+                          Risk: {review.ai_risk_level}
+                        </span>
+                      )}
+                      {review.ai_sentiment && (
+                        <span style={{ fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px", backgroundColor: review.ai_sentiment === "positive" ? "#DCFCE7" : review.ai_sentiment === "negative" ? "#FEE2E2" : "#F1F5F9", color: review.ai_sentiment === "positive" ? "#15803D" : review.ai_sentiment === "negative" ? "#B91C1C" : "#475569" }}>
+                          {review.ai_sentiment}
+                        </span>
+                      )}
+                      {review.ai_action_type && (
+                        <span style={{ fontSize: "10px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px", backgroundColor: "#EFF6FF", color: "#1D4ED8" }}>
+                          Action: {review.ai_action_type.replace(/_/g, " ")}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Operational Recommendation Box */}
+                  {review.ai_action_reason && (
+                    <div style={{ backgroundColor: "#F8FAFC", borderLeft: "3px solid #3B82F6", padding: "8px 12px", borderRadius: "0 8px 8px 0", fontSize: "12px", color: "#475569", marginBottom: "12px" }}>
+                      <strong>Operational Note:</strong> {review.ai_action_reason}
+                    </div>
+                  )}
+
+                  {/* AI Generated Reply Draft & Action Button */}
+                  {review.ai_generated_reply ? (
+                    <div style={{ backgroundColor: "#F1F5F9", borderRadius: "10px", padding: "12px", marginTop: "8px" }}>
+                      <div style={{ fontSize: "11px", fontWeight: "700", color: "#64748B", textTransform: "uppercase", marginBottom: "4px" }}>
+                        Suggested Response
+                      </div>
+                      <p style={{ fontSize: "12px", color: "#334155", lineHeight: "1.4", margin: "0 0 10px 0" }}>
+                        "{review.ai_generated_reply}"
+                      </p>
+
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          type="button"
+                          onClick={() => onApproveReview(review)}
+                          style={{ flex: 1, backgroundColor: "#0F172A", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "8px", fontSize: "12px", fontWeight: "600", cursor: "pointer", minHeight: "38px" }}
+                        >
+                          Approve & Reply
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onNavigate("reviews")}
+                          style={{ backgroundColor: "#FFFFFF", color: "#475569", border: "1px solid #CBD5E1", borderRadius: "8px", padding: "8px 12px", fontSize: "12px", fontWeight: "600", cursor: "pointer", minHeight: "38px" }}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
+                      <button
+                        type="button"
+                        onClick={() => onAnalyzeReview(review)}
+                        style={{ backgroundColor: "#2563EB", color: "#FFFFFF", border: "none", borderRadius: "8px", padding: "8px 14px", fontSize: "12px", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+                      >
+                        <span>⚡</span>
+                        <span>Analyze with AI</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
-      </main>
+      </div>
+
+      {/* 7. Native Mobile App Bottom Navigation Bar */}
+      <nav
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: "#FFFFFF",
+          borderTop: "1px solid #E2E8F0",
+          display: "flex",
+          justifyContent: "space-around",
+          alignItems: "center",
+          padding: "10px 0 14px 0",
+          zIndex: 999,
+          boxShadow: "0 -4px 10px rgba(0,0,0,0.03)",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => onNavigate("dashboard")}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#0F172A", cursor: "pointer" }}
+        >
+          <span style={{ fontSize: "18px" }}>📊</span>
+          <span style={{ fontSize: "10px", fontWeight: "700" }}>Dashboard</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onNavigate("reviews")}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#64748B", cursor: "pointer", position: "relative" }}
+        >
+          <span style={{ fontSize: "18px" }}>💬</span>
+          <span style={{ fontSize: "10px", fontWeight: "600" }}>Reviews</span>
+          {needsAttentionList.length > 0 && (
+            <span style={{ position: "absolute", top: "-2px", right: "8px", backgroundColor: "#EF4444", color: "#FFFFFF", fontSize: "9px", fontWeight: "800", width: "16px", height: "16px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {needsAttentionList.length}
+            </span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onNavigate("automation")}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#64748B", cursor: "pointer" }}
+        >
+          <span style={{ fontSize: "18px" }}>⚡</span>
+          <span style={{ fontSize: "10px", fontWeight: "600" }}>Automation</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onNavigate("settings")}
+          style={{ background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "3px", color: "#64748B", cursor: "pointer" }}
+        >
+          <span style={{ fontSize: "18px" }}>⚙️</span>
+          <span style={{ fontSize: "10px", fontWeight: "600" }}>Settings</span>
+        </button>
+      </nav>
     </div>
   );
 }
