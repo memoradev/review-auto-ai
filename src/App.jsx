@@ -5,6 +5,7 @@ import Auth from "./components/Auth";
 import FeedbackPage from "./components/FeedbackPage";
 import WebsiteWidget from "./components/WebsiteWidget";
 import AutomationPage from "./components/AutomationPage";
+import ModernMobileDashboard from "./components/ModernMobileDashboard";
 
 const navigation = [
   { name: "Dashboard", icon: "⌂" },
@@ -3751,7 +3752,7 @@ function Dashboard({ session }) {
 
   if (isMobile) {
     return (
-      <MobileDashboard
+      <ModernMobileDashboard
         activePage={activePage}
         setActivePage={setActivePage}
         workspace={workspace}
