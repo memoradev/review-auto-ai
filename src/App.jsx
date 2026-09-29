@@ -5,7 +5,6 @@ import Auth from "./components/Auth";
 import FeedbackPage from "./components/FeedbackPage";
 import WebsiteWidget from "./components/WebsiteWidget";
 import AutomationPage from "./components/AutomationPage";
-import MobileDashboard from "./components/MobileDashboard";
 
 const navigation = [
   { name: "Dashboard", icon: "⌂" },
