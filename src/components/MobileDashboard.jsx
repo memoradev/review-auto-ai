@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from "react";
 
-/* ---------- Icons (unchanged, self-contained) ---------- */
-const svg = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 24 24" };
+/* ---------- Icon set: one consistent style (24px grid, 2px round strokes) ---------- */
+const base = { fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 24 24", "aria-hidden": true, focusable: false };
 const Icons = {
-  Menu: () => (<svg {...svg} width="22" height="22"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>),
-  Close: () => (<svg {...svg} width="22" height="22"><line x1="18" x2="6" y1="6" y2="18" /><line x1="6" x2="18" y1="6" y2="18" /></svg>),
-  ShieldCheck: () => (<svg {...svg} width="13" height="13"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg>),
-  Star: ({ filled }) => (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? "#F59E0B" : "#E4E4E7"} stroke={filled ? "#F59E0B" : "#D4D4D8"} strokeWidth="1" style={{ flexShrink: 0 }}>
+  Menu: () => (<svg {...base} width="22" height="22"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>),
+  Close: () => (<svg {...base} width="22" height="22"><line x1="18" x2="6" y1="6" y2="18" /><line x1="6" x2="18" y1="6" y2="18" /></svg>),
+  ArrowLeft: () => (<svg {...base} width="16" height="16"><line x1="19" x2="5" y1="12" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>),
+  Lock: () => (<svg {...base} width="13" height="13"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>),
+  ShieldCheck: () => (<svg {...base} width="13" height="13"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg>),
+  Star: ({ filled, size = 12 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill={filled ? "#F59E0B" : "#E4E4E7"} stroke={filled ? "#F59E0B" : "#D4D4D8"} strokeWidth="1" strokeLinejoin="round" style={{ flexShrink: 0 }}>
       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
     </svg>
   ),
-  Dashboard: () => (<svg {...svg} width="20" height="20"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>),
-  Reviews: () => (<svg {...svg} width="20" height="20"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>),
-  Automation: () => (<svg {...svg} width="20" height="20"><rect width="16" height="16" x="4" y="4" rx="2" /><rect width="6" height="6" x="9" y="9" rx="1" /><path d="M15 2v2" /><path d="M15 20v2" /><path d="M2 15h2" /><path d="M2 9h2" /></svg>),
-  Settings: () => (<svg {...svg} width="20" height="20"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>),
-  Copy: () => (<svg {...svg} width="14" height="14"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>),
-  Check: () => (<svg {...svg} width="14" height="14" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>),
+  Dashboard: () => (<svg {...base} width="20" height="20"><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="16" rx="1" /></svg>),
+  Reviews: () => (<svg {...base} width="20" height="20"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>),
+  Automation: () => (<svg {...base} width="20" height="20"><rect width="16" height="16" x="4" y="4" rx="2" /><rect width="6" height="6" x="9" y="9" rx="1" /><path d="M15 2v2" /><path d="M15 20v2" /><path d="M2 15h2" /><path d="M2 9h2" /></svg>),
+  Settings: () => (<svg {...base} width="20" height="20"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>),
+  Copy: () => (<svg {...base} width="14" height="14"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>),
+  Check: () => (<svg {...base} width="14" height="14" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>),
+  Quote: () => (<svg {...base} width="12" height="12"><path d="M3 21c3 0 7-1 7-8V5a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h4" /><path d="M15 21c3 0 7-1 7-8V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h4" /></svg>),
 };
 
 /* ---------- Viewport hook (SSR-safe) ---------- */
@@ -120,9 +123,13 @@ export default function MobileDashboard({
             <div style={{ fontSize: "11px", color: "#71717A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{activePage}</div>
           </div>
         </div>
-        <div title="1★ reviews are locked for human sign-off" style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: "#F4F4F5", border: "1px solid #E4E4E7", padding: "6px 8px", borderRadius: "6px", fontSize: "11px", color: "#52525B", flexShrink: 0 }}>
-          <Icons.ShieldCheck />
-          {!isNarrow && <span style={{ fontWeight: "500" }}>1★ Lock</span>}
+        <div title="1-star reviews are locked for human sign-off" style={{ display: "flex", alignItems: "center", gap: "5px", backgroundColor: "#F4F4F5", border: "1px solid #E4E4E7", padding: "6px 8px", borderRadius: "6px", fontSize: "11px", color: "#52525B", flexShrink: 0 }}>
+          <Icons.Lock />
+          {!isNarrow && (
+            <span style={{ display: "flex", alignItems: "center", gap: "3px", fontWeight: "500" }}>
+              1<Icons.Star filled size={11} /> Lock
+            </span>
+          )}
         </div>
       </header>
 
@@ -228,7 +235,7 @@ export default function MobileDashboard({
 
             {/* Feed */}
             {reviewsLoading && reviews.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "32px 16px", fontSize: "13px", color: "#71717A" }}>Loading reviews…</div>
+              <div style={{ textAlign: "center", padding: "32px 16px", fontSize: "13px", color: "#71717A" }}>Loading reviews...</div>
             ) : displayedReviews.length === 0 ? (
               <div style={{ backgroundColor: "#FFFFFF", borderRadius: "10px", border: "1px dashed #D4D4D8", padding: "32px 16px", textAlign: "center" }}>
                 <div style={{ fontSize: "13px", fontWeight: "600", color: "#18181B", marginBottom: "2px" }}>No reviews to display</div>
@@ -246,18 +253,22 @@ export default function MobileDashboard({
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, flexWrap: "wrap" }}>
                           <span style={{ fontWeight: "600", fontSize: "13px", ...wrapText }}>{review.customer_name || "Customer"}</span>
-                          <div style={{ display: "flex", gap: "2px" }}>
+                          <div style={{ display: "flex", gap: "2px" }} role="img" aria-label={`${review.rating || 5} out of 5 stars`}>
                             {[1, 2, 3, 4, 5].map((s) => (<Icons.Star key={s} filled={s <= (review.rating || 5)} />))}
                           </div>
                         </div>
                         {requiresSignoff ? (
-                          <span style={{ fontSize: "10px", fontWeight: "700", textTransform: "uppercase", backgroundColor: "#FFF1F2", color: "#E11D48", padding: "2px 6px", borderRadius: "4px", flexShrink: 0 }}>Sign-off</span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "10px", fontWeight: "700", textTransform: "uppercase", backgroundColor: "#FFF1F2", color: "#E11D48", padding: "2px 6px", borderRadius: "4px", flexShrink: 0 }}>
+                            <Icons.Lock />Sign-off
+                          </span>
                         ) : (
-                          <span style={{ fontSize: "10px", color: "#A1A1AA", flexShrink: 0 }}>Resolved</span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "10px", color: "#A1A1AA", flexShrink: 0 }}>
+                            <Icons.Check />Resolved
+                          </span>
                         )}
                       </div>
 
-                      <p style={{ fontSize: "13px", lineHeight: "1.5", color: "#27272A", margin: "0 0 10px 0", ...wrapText }}>"{review.review_text}"</p>
+                      <p style={{ fontSize: "13px", lineHeight: "1.5", color: "#27272A", margin: "0 0 10px 0", ...wrapText }}>{review.review_text}</p>
 
                       {(review.ai_sentiment || review.ai_risk_level || review.ai_action_type) && (
                         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
@@ -281,8 +292,10 @@ export default function MobileDashboard({
 
                       {review.ai_generated_reply && (
                         <div style={{ backgroundColor: "#F4F4F5", borderRadius: "6px", padding: "10px", marginTop: "8px", border: "1px solid #E4E4E7" }}>
-                          <div style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.04em", color: "#71717A", fontWeight: "700", marginBottom: "4px" }}>AI Suggested Reply</div>
-                          <p style={{ fontSize: "12px", lineHeight: "1.45", color: "#27272A", margin: "0 0 10px 0", ...wrapText }}>"{review.ai_generated_reply}"</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.04em", color: "#71717A", fontWeight: "700", marginBottom: "4px" }}>
+                            <Icons.Quote />AI Suggested Reply
+                          </div>
+                          <p style={{ fontSize: "12px", lineHeight: "1.45", color: "#27272A", margin: "0 0 10px 0", ...wrapText }}>{review.ai_generated_reply}</p>
                           <button type="button" onClick={() => navigate("Reviews")}
                             style={{ ...btnBase, width: "100%", backgroundColor: "#09090B", color: "#FFFFFF", padding: "0 12px", fontSize: "13px", fontWeight: "600", borderRadius: "6px" }}>
                             Inspect & Reply
@@ -300,8 +313,8 @@ export default function MobileDashboard({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
               <h2 style={{ fontSize: "18px", fontWeight: "700", margin: 0, minWidth: 0, ...wrapText }}>{activePage}</h2>
               <button type="button" onClick={() => navigate("Dashboard")}
-                style={{ ...TAP, background: "none", border: "none", color: "#2563EB", fontSize: "13px", fontWeight: "500", cursor: "pointer", minHeight: "44px", padding: "0 4px", whiteSpace: "nowrap", flexShrink: 0 }}>
-                ← Dashboard
+                style={{ ...TAP, background: "none", border: "none", color: "#2563EB", fontSize: "13px", fontWeight: "500", cursor: "pointer", minHeight: "44px", padding: "0 4px", whiteSpace: "nowrap", flexShrink: 0, display: "flex", alignItems: "center", gap: "6px" }}>
+                <Icons.ArrowLeft />Dashboard
               </button>
             </div>
 
