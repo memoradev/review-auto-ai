@@ -1,3 +1,4 @@
+import MobileDashboard from "./components/MobileDashboard";
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { supabase } from "./lib/supabaseClient";
